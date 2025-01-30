@@ -858,7 +858,7 @@ random,0,0.4270833333333333,mean_reward,0.11283306985480009,learning_rate,-0.379
 random,1,0.5104166666666666,mean_reward,0.09920659596101819,learning_rate,0.3156407878820651,optimism_bias,0.030206595961018184,difference to optimal LR,0.14364078788206514,difference to optimal optimism bias
 random,2,0.4791666666666667,mean_reward,0.0,learning_rate,0.15536602628782809,optimism_bias,0.069,difference to optimal LR,0.0166339737121719,difference to optimal optimism bias
 random,3,0.5104166666666666,mean_reward,0.994684159889284,learning_rate,-0.00041449698743814664,optimism_bias,0.925684159889284,difference to optimal LR,0.17241449698743813,difference to optimal optimism bias
-random,4,0.5625,mean_reward,0.4290974090656297,learning_rate,0.5759084324844467,optimism_bias,0.3600974090656297,difference to optimal LR,0.4039084324844467,difference to optimal optimism bias
+random,4,0.5625,mean_reward,0.4291077507243549,learning_rate,0.5759495493648356,optimism_bias,0.3601077507243549,difference to optimal LR,0.40394954936483557,difference to optimal optimism bias
 random,5,0.4895833333333333,mean_reward,9.662003397962172e-05,learning_rate,-0.0560396302865653,optimism_bias,0.0689033799660203,difference to optimal LR,0.2280396302865653,difference to optimal optimism bias
 random,6,0.5416666666666666,mean_reward,0.0002962102461874,learning_rate,0.161535863207211,optimism_bias,0.0687037897538125,difference to optimal LR,0.0104641367927889,difference to optimal optimism bias
 random,7,0.4479166666666667,mean_reward,0.0,learning_rate,-0.4862823878955042,optimism_bias,0.069,difference to optimal LR,0.6582823878955042,difference to optimal optimism bias
