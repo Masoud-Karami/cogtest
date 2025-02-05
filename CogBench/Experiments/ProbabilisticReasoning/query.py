@@ -32,7 +32,7 @@ class LearningToInferExpForLLM(Experiment):
         super().__init__(get_llm)
         self.add_arguments_()
 
-    def add_arguments_(self):
+    def add_arguments_(self):makarf
         # Add any additional arguments here
         self.parser.add_argument('--num_runs', type=int, default=200, help='Number of runs')
         self.parser.add_argument('--version_number', type=str, default='1', help='Version number of the experiment.')
