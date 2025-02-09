@@ -55,6 +55,7 @@ class TemporalDiscuountingExpForLLM(Experiment):
             prompt = lambda pay_options: f"{Q_} What do you prefer between the following two options:\n - Option 1: Receive {pay_options[0]} dollars now.\n - Option 2: Receive {pay_options[1]} dollars in 12 months."
             score, max_value_factor = self.temporal_discounting(base_pay, prompt, llm_choice, get_max_value_factor=True)
             score += self.temporal_discounting(base_pay*10, prompt, llm_choice)
+            
             # gain-loss asymmetry
             prompt = lambda pay_options: f"{Q_} What do you prefer between the following two options:\n - Option 1: Pay {pay_options[0]} dollars now.\n - Option 2: Pay {pay_options[1]} dollars in 12 months."
             score += self.temporal_discounting(base_pay, prompt, llm_choice)
