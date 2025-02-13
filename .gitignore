@@ -1,6 +1,7 @@
 # Ignore virtual environments
 venv/
 CogTestvenv/
+cogvenv/
 
 # Ignore macOS system files
 .DS_Store
