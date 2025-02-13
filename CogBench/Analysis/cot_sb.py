@@ -22,8 +22,7 @@ if __name__ == '__main__':
     # including_agents = 'all' # if all agents are wanted
 
     #! Merge scores data with llm features
-    df = pd.read_csv(
-        f'../CogBench/Experiments/{experiment}/scores_data.csv')
+    df = pd.read_csv(f'../Experiments/{experiment}/scores_data.csv')
     llm_df = pd.read_csv(f'./data/llm_features.csv')
     increasing_param_feature = 'No of Parameters'
     # Add column names to the df
