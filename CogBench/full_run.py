@@ -24,16 +24,17 @@ Note:
 import os
 import argparse
 import subprocess
-import tensorflow as tf
+# import tensorflow as tf
 
 # Check for GPU availability
-gpus = tf.config.list_physical_devices('GPU')
+""" gpus = tf.config.list_physical_devices('GPU')
 
 if gpus:
     print(f"✅ GPU detected: {gpus}")
 else:
     print("❌ No GPU found. Running on CPU.")
     os.environ["CUDA_VISIBLE_DEVICES"] = "-1"  # Force CPU mode
+ """
 
 
 def run_benchmark(engine):
