@@ -24,6 +24,18 @@ Note:
 import os
 import argparse
 import subprocess
+# import tensorflow as tf
+
+# Check for GPU availability
+""" gpus = tf.config.list_physical_devices('GPU')
+
+if gpus:
+    print(f"✅ GPU detected: {gpus}")
+else:
+    print("❌ No GPU found. Running on CPU.")
+    os.environ["CUDA_VISIBLE_DEVICES"] = "-1"  # Force CPU mode
+ """
+
 
 def run_benchmark(engine):
     """
@@ -41,32 +53,38 @@ def run_benchmark(engine):
 
     if not args.only_analysis:
         # Get all the experiment folders
-        experiment_folders = [f.path for f in os.scandir(experiments_dir) if f.is_dir()]
+        experiment_folders = [f.path for f in os.scandir(
+            experiments_dir) if f.is_dir()]
 
         for folder in experiment_folders:
             # Run query.py and store.py for each experiment
             os.chdir(folder)
             print(f'Running experiment {os.path.basename(folder)}')
             subprocess.run(['python3', 'query.py', '--engines', engine])
-            print(f'Storing the behavioral scores for experiment {os.path.basename(folder)}')
+            print(
+                f'Storing the behavioral scores for experiment {os.path.basename(folder)}')
             subprocess.run(['python3', 'store.py', '--engines', engine])
             os.chdir('../..')  # Go back to the root directory
 
     # Run phenotype_comp.py in the Analysis folder
     os.chdir(analysis_dir)
     print(f'Behaviour scores:')
-    subprocess.run(['python3', 'phenotype_comp.py', '--models', args.engine] + args.compare_with + 
+    subprocess.run(['python3', 'phenotype_comp.py', '--models', args.engine] + args.compare_with +
                    ['--interest', 'behaviour', '--store_id', 'full_run', '--print_scores', '--print_scores_for', 'human', 'random', args.engine] + args.compare_with)
     print(f'Performance scores:')
-    subprocess.run(['python3', 'phenotype_comp.py', '--models', args.engine] + args.compare_with + 
-                   ['--interest', 'performance', '--store_id', 'full_run', '--print_scores', '--print_scores_for', 'human', 'random', args.engine] + args.compare_with) 
-    
+    subprocess.run(['python3', 'phenotype_comp.py', '--models', args.engine] + args.compare_with +
+                   ['--interest', 'performance', '--store_id', 'full_run', '--print_scores', '--print_scores_for', 'human', 'random', args.engine] + args.compare_with)
+
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Run the entire benchmark for a chosen LLM.')
-    parser.add_argument('--engine', type=str, required=True, help='The LLM to run the benchmark on.')
-    parser.add_argument('--compare_with', type=str, nargs='+', default=['gpt-4', 'claude-2'], help='The models to compare against.')
-    parser.add_argument('--only_analysis', action='store_true', help='If set, only run the analysis and skip the experiment running and storing steps.')
+    parser = argparse.ArgumentParser(
+        description='Run the entire benchmark for a chosen LLM.')
+    parser.add_argument('--engine', type=str, required=True,
+                        help='The LLM to run the benchmark on.')
+    parser.add_argument('--compare_with', type=str, nargs='+',
+                        default=['gpt-4', 'claude-2'], help='The models to compare against.')
+    parser.add_argument('--only_analysis', action='store_true',
+                        help='If set, only run the analysis and skip the experiment running and storing steps.')
     args = parser.parse_args()
 
     run_benchmark(args.engine)

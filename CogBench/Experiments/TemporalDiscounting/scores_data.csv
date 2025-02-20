@@ -1067,3 +1067,4 @@ random,996,9.0,temporal discounting score,0.0,present bias,1.0,subaddictivity,1.
 random,997,10.0,temporal discounting score,1.0,present bias,0.0,subaddictivity,0.0,delay-speedup asymmetry-1,0.0,delay-length asymmetry-2
 random,998,8.0,temporal discounting score,1.0,present bias,1.0,subaddictivity,0.0,delay-speedup asymmetry-1,1.0,delay-length asymmetry-2
 random,999,6.0,temporal discounting score,0.0,present bias,0.0,subaddictivity,0.0,delay-speedup asymmetry-1,0.0,delay-length asymmetry-2
+claud-1,0,5.0,temporal discounting score,1.0,present bias,1.0,subaddictivity,1.0,delay-speedup asymmetry-1,1.0,delay-length asymmetry-2
