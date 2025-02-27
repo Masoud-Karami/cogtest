@@ -1,7 +1,9 @@
 # Ignore virtual environments
 venv/
 CogTestvenv/
+.cogvenv/
 cogvenv/
+.venv/
 
 # Ignore macOS system files
 .DS_Store
@@ -32,6 +34,7 @@ __pycache__/
 
 #Where my keys are stored
 .env
+.config
 
 # Ignore some human data files that should not be open source because not mine and was given to me just to compare to LLMs overall statistics
 Experiments/RestlessBandit/data/human.csv
