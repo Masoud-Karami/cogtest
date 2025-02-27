@@ -37,6 +37,8 @@ Let me know if you need modifications!
 
 ## Scoring are based on
 
-`performance_score1 (Accuracy)` Proportion of correctly recalled words.
-`behaviour_score1 (Initiation Errors)`: Frequency of incorrect first-word recalls.
-`behaviour_score2 (Intertrial Forgetting)`: Mean rate of forgetting between trials.
+- `performance_score1 (Accuracy)` Proportion of correctly recalled words.
+
+- `behaviour_score1 (Initiation Errors)`: Frequency of incorrect first-word recalls.
+
+- `behaviour_score2 (Intertrial Forgetting)`: Mean rate of forgetting between trials.
