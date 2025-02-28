@@ -17,24 +17,14 @@ Note:
     The fitting of scores is generally fast for all experiments, except for the InstrumentalLearning experiment which can be very slow. 
     Please be patient when running this experiment.
     After the analysis, a summary table is printed with the scores for the chosen agent, as well as the human & random agents and the reference scores for the models specified with the `--compare_with` flag. 
-    The performance and behavior normalized scores versus the models specified with the `--compare_with` flag are also plotted.
+    The performance and behavior normalized scores versus the models specified with the `--compare_with` flag are also plotted. 
     The plots are saved in the `./Analysis/plots/phenotypes/full_runs{interest}.pdf` directory.
 """
 
 import os
 import argparse
 import subprocess
-# import tensorflow as tf
-
-# Check for GPU availability
-""" gpus = tf.config.list_physical_devices('GPU')
-
-if gpus:
-    print(f"✅ GPU detected: {gpus}")
-else:
-    print("❌ No GPU found. Running on CPU.")
-    os.environ["CUDA_VISIBLE_DEVICES"] = "-1"  # Force CPU mode
- """
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
 
 def run_benchmark(engine):
