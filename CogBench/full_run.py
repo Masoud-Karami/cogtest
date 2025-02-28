@@ -41,18 +41,31 @@ def run_benchmark(engine):
     experiments_dir = './Experiments'
     analysis_dir = './Analysis'
 
+    # Define folders to exclude
+    all_experiments = {'ProbabilisticReasoning', 'HorizonTask', 'RestlessBandit',
+                       'InstrumentalLearning', 'TwoStepTask', 'BART', 'TemporalDiscounting', 'SerialMemoryTask'}
+
+    excluded_experiments = {'ProbabilisticReasoning', 'HorizonTask', 'RestlessBandit', 'InstrumentalLearning',
+                            'TwoStepTask', 'BART', 'SerialMemoryTask'}  # Add folder names you want to skip
+
     if not args.only_analysis:
         # Get all the experiment folders
         experiment_folders = [f.path for f in os.scandir(
             experiments_dir) if f.is_dir()]
 
-        for folder in experiment_folders:
+        for task in experiment_folders:
+            folder_name = os.path.basename(task)
+
+            if folder_name in excluded_experiments:
+                print(f'Skipping folder: {folder_name}')
+                continue  # Skip this folder
+
             # Run query.py and store.py for each experiment
-            os.chdir(folder)
-            print(f'Running experiment {os.path.basename(folder)}')
+            os.chdir(task)
+            print(f'Running experiment {folder_name}')
             subprocess.run(['python3', 'query.py', '--engines', engine])
             print(
-                f'Storing the behavioral scores for experiment {os.path.basename(folder)}')
+                f'Storing the behavioral scores for experiment {folder_name}')
             subprocess.run(['python3', 'store.py', '--engines', engine])
             os.chdir('../..')  # Go back to the root directory
 

@@ -1,8 +1,10 @@
-# CogBench: a large language model walks into a psychology lab
+# Replicating CogBench: a large language model walks into a psychology lab
 
-![Overview Figure](./overview_figure.png)
+<!---!
+[Overview Figure](./overview_figure.png)
+-->
 
-This repository contains the code for CogBench, a cognitive psychology benchmark. The project is structured into three main folders: `Experiments`, `llm_utils`, and `Analysis`.
+This repository contains the extention analysis code for CogBench, a cognitive psychology benchmark. The project is structured into three main folders: `Experiments`, `llm_utils`, and `Analysis`.
 
 ## Experiments
 
@@ -18,15 +20,17 @@ The `Analysis` folder contains scripts that merge information from the LLMs and 
 
 ### add analysis
 
-1. create a folder in Experimrnts directory including subfolders
+1. create a new experiment folder including the following subfolders
 
-- data
-- envs
-  as well as
-- readme.md,
-- query.py
-- score.py
-- scores_data.csv
+- data subfolder
+- envs subfolder
+
+as well as the following files
+
+- readme.md file
+- query.py file
+- score.py file
+- scores_data.csv file
 
 2.
 
