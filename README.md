@@ -2,6 +2,9 @@
 
 <!---!
 [Overview Figure](./overview_figure.png)
+Cheat Sheet: Adding Math Notation to Markdown (https://www.upyesp.org/posts/makrdown-vscode-math-notation/)
+Markdown Cheat Sheet Basic (https://www.markdownguide.org/cheat-sheet/)
+
 -->
 
 This repository contains the extention analysis code for CogBench, a cognitive psychology benchmark. The project is structured into three main folders: `Experiments`, `llm_utils`, and `Analysis`.
@@ -27,10 +30,10 @@ The `Analysis` folder contains scripts that merge information from the LLMs and 
 
 as well as the following files
 
-- readme.md file
-- query.py file
-- score.py file
-- scores_data.csv file
+- readme.md
+- query.py
+- score.py
+- scores_data.csv
 
 2.
 
