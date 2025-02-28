@@ -16,6 +16,20 @@ The `llm_utils` folder contains scripts for different LLMs. If you want to add y
 
 The `Analysis` folder contains scripts that merge information from the LLMs and the Experiments scores. You are encouraged to add your own analysis scripts to this folder.
 
+### add analysis
+
+1. create a folder in Experimrnts directory including subfolders
+
+- data
+- envs
+  as well as
+- readme.md,
+- query.py
+- score.py
+- scores_data.csv
+
+2.
+
 ## Requirements
 
 Before running any scripts, please install all the dependencies listed in the `requirements.txt` file.
@@ -33,7 +47,9 @@ Here's how you can use the script with the `random` agent as an example:
 ```bash
 python3 full_run.py --engine random
 ```
+
 You can use the `--only_analysis` flag if you only want to run the analysis and skip the experiment running and storing steps. This can be useful if you have already run the experiments and just want to see the analysis results or if you want to just run the analysis for the LLMs that have already been run (for which the data is already stored). Here is how you can use the script with the agent (here claude-1 as example) and the --only_analysis flag:
+
 ```bash
 python3 full_run.py --engine claude-1 --only_analysis
 ```
@@ -43,7 +59,7 @@ After the analysis, a summary table is printed with the scores (before normaliza
 You can specify the models to compare against when running the script. For example, to compare against gpt-4 and claude-1, you would use the `--compare_with` flag like this:
 
 ```bash
-python3 full_run.py --engine random --compare_with gpt-4 claude-1 
+python3 full_run.py --engine random --compare_with gpt-4 claude-1
 ```
 
 ## Contributing
@@ -72,3 +88,4 @@ If you use CogBench in your research, please cite our paper:
   url = 	 {https://proceedings.mlr.press/v235/coda-forno24a.html}
 }
 
+```
