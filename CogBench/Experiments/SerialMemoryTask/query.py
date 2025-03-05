@@ -120,7 +120,7 @@ class SerialMemoryTaskExpForLLM(Experiment):
         if env.condition == 'constant':
             instruction = "You will study a list of words. Each time, the list starts from the same first word."
         elif env.condition == 'spin':
-            instruction = "You will study a list of words. Each time, the list starts from a different word (spun list)."
+            instruction = "You will study a list of words. Each time, the list starts from a different word (span list)."
 
         study_list_text = " ".join(env.current_study_list)
 
