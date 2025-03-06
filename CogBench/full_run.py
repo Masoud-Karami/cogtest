@@ -47,7 +47,7 @@ def run_benchmark(engine):
 
     excluded_experiments = {'ProbabilisticReasoning', 'HorizonTask', 'RestlessBandit', 'InstrumentalLearning',
                             'TwoStepTask', 'BART', 'SerialMemoryTask', 'TemporalDiscounting'}
-    
+
     focusing_experiments = list(all_experiments - excluded_experiments)
     # Add folder names you want to skip 'TwoStepTask'
 
@@ -56,12 +56,15 @@ def run_benchmark(engine):
         experiment_folders = [f.path for f in os.scandir(
             experiments_dir) if f.is_dir()]
 
+        # Correct set difference
+        focusing_folders = list(all_experiments - excluded_experiments)
+
         for task in experiment_folders:
             folder_name = os.path.basename(task)
 
             if folder_name in excluded_experiments:
                 print(f'Skipping folder: {folder_name}')
-                print(f'focusing folder: {list((all_experiments - excluded_experiments).elements())}')
+                print(f'Focusing folders: {focusing_folders}')
                 continue  # Skip this folder
 
             # Run query.py and store.py for each experiment
