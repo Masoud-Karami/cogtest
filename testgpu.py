@@ -1,5 +1,7 @@
-import tensorflow as tf
+all_experiments = {'ProbabilisticReasoning', 'HorizonTask', 'RestlessBandit',
+                       'InstrumentalLearning', 'TwoStepTask', 'BART', 'SerialMemoryTask', 'TemporalDiscounting'}
 
-print("Num GPUs Available:", len(tf.config.list_physical_devices('GPU')))
-print("GPU Devices:", tf.config.list_physical_devices('GPU'))
-"""  """
+excluded_experiments = {'ProbabilisticReasoning', 'HorizonTask', 'RestlessBandit', 'InstrumentalLearning',
+                            'TwoStepTask', 'BART', 'SerialMemoryTask', 'TemporalDiscounting'}
+
+print(f'focusing folder: {list((all_experiments - excluded_experiments).elements())}')

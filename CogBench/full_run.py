@@ -42,14 +42,10 @@ def run_benchmark(engine):
     analysis_dir = './Analysis'
 
     # Define folders to exclude
-    all_experiments = {'ProbabilisticReasoning', 'HorizonTask', 'RestlessBandit',
-                   'InstrumentalLearning', 'TwoStepTask', 'BART', 'TemporalDiscounting', 'SerialMemoryTask'}
-
-    excluded_experiments = {'ProbabilisticReasoning', 'HorizonTask', 'InstrumentalLearning',
-                        'TwoStepTask', 'BART', 'SerialMemoryTask', 'TemporalDiscounting'}
-
+    all_experiments = {'ProbabilisticReasoning','HorizonTask','RestlessBandit','InstrumentalLearning','TwoStepTask','BART','SerialMemoryTask','TemporalDiscounting'}
+    excluded_experiments = {'ProbabilisticReasoning','HorizonTask','RestlessBandit','InstrumentalLearning','TwoStepTask','BART','SerialMemoryTask'}  
+    # Add folder names you want to skip 'TwoStepTask'
     focusing_folders = list(all_experiments - excluded_experiments)
-
     if not args.only_analysis:
         # Get all the experiment folders
         experiment_folders = [f.path for f in os.scandir(experiments_dir) if f.is_dir()]
