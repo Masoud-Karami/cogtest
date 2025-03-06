@@ -47,6 +47,8 @@ def run_benchmark(engine):
 
     excluded_experiments = {'ProbabilisticReasoning', 'HorizonTask', 'RestlessBandit', 'InstrumentalLearning',
                             'TwoStepTask', 'BART', 'SerialMemoryTask', 'TemporalDiscounting'}
+    
+    focusing_experiments = list(all_experiments - excluded_experiments)
     # Add folder names you want to skip 'TwoStepTask'
 
     if not args.only_analysis:
