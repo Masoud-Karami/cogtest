@@ -59,6 +59,7 @@ def run_benchmark(engine):
 
             if folder_name in excluded_experiments:
                 print(f'Skipping folder: {folder_name}')
+                print(f'focusing folder: {list((all_experiments - excluded_experiments).elements())}')
                 continue  # Skip this folder
 
             # Run query.py and store.py for each experiment
