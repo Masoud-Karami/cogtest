@@ -43,31 +43,33 @@ def run_benchmark(engine):
 
     # Define folders to exclude
     all_experiments = {'ProbabilisticReasoning', 'HorizonTask', 'RestlessBandit',
-                       'InstrumentalLearning', 'TwoStepTask', 'BART', 'TemporalDiscounting', 'SerialMemoryTask'}
+                   'InstrumentalLearning', 'TwoStepTask', 'BART', 'TemporalDiscounting', 'SerialMemoryTask'}
 
     excluded_experiments = {'ProbabilisticReasoning', 'HorizonTask', 'InstrumentalLearning',
-                            'TwoStepTask', 'BART', 'SerialMemoryTask', 'TemporalDiscounting'}  # Add folder names you want to skip
+                        'TwoStepTask', 'BART', 'SerialMemoryTask', 'TemporalDiscounting'}
+
+    focusing_folders = list(all_experiments - excluded_experiments)
 
     if not args.only_analysis:
         # Get all the experiment folders
-        experiment_folders = [f.path for f in os.scandir(
-            experiments_dir) if f.is_dir()]
+        experiment_folders = [f.path for f in os.scandir(experiments_dir) if f.is_dir()]
+
+        # Filter to only include focusing folders
+        experiment_folders = [f for f in experiment_folders if os.path.basename(f) in focusing_folders]
+
+        print(f'Focusing tasks: {focusing_folders}')
 
         for task in experiment_folders:
             folder_name = os.path.basename(task)
-
-            if folder_name in excluded_experiments:
-                print(f'Skipping folder: {folder_name}')
-                continue  # Skip this folder
 
             # Run query.py and store.py for each experiment
             os.chdir(task)
             print(f'Running experiment {folder_name}')
             subprocess.run(['python3', 'query.py', '--engines', engine])
-            print(
-                f'Storing the behavioral scores for experiment {folder_name}')
+            print(f'Storing the behavioral scores for experiment {folder_name}')
             subprocess.run(['python3', 'store.py', '--engines', engine])
             os.chdir('../..')  # Go back to the root directory
+
 
     # Run phenotype_comp.py in the Analysis folder
     os.chdir(analysis_dir)

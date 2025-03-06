@@ -1,4 +1,5 @@
 # Serial Recall Learning for LLMs
+\href{https://doi.org/10.3758/mc.38.1.92}{**Positional cues in serial learning: The spin-list technique**}
 
 ## Key Features of the Implementation
 
