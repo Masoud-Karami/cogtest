@@ -43,9 +43,9 @@ def run_benchmark(engine):
 
     # Define folders to exclude
     all_experiments = {'ProbabilisticReasoning', 'HorizonTask', 'RestlessBandit',
-                       'InstrumentalLearning', 'TwoStepTask', 'BART', 'TemporalDiscounting', 'SerialMemoryTask'}
+                       'InstrumentalLearning', 'TwoStepTask', 'BART', 'SerialMemoryTask', 'TemporalDiscounting'}
 
-    excluded_experiments = {'ProbabilisticReasoning', 'HorizonTask', 'InstrumentalLearning',
+    excluded_experiments = {'ProbabilisticReasoning', 'HorizonTask', 'RestlessBandit', 'InstrumentalLearning',
                             'TwoStepTask', 'BART', 'SerialMemoryTask', 'TemporalDiscounting'}  # Add folder names you want to skip
 
     if not args.only_analysis:
