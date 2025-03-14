@@ -1,71 +1,63 @@
 import os
 import sys
 import time
-import anthropic
-import openai
+# import anthropic
+# import openai
 from ..base_classes import RandomLLM 
 from ..base_classes import InteractiveLLM
 from dotenv import load_dotenv
 # Import scripts for the different LLMs
-from .gpt import GPT3LLM, GPT4LLM
-from .anthropic import AnthropicLLM
-from .google import GoogleLLM
+# from .gpt import GPT3LLM, GPT4LLM
+# from .anthropic import AnthropicLLM
+# from .google import GoogleLLM
 from .hf import HF_API_LLM
 
-def get_llm(engine, temp, max_tokens, with_suffix=False):
-    '''
-    Based on the engine name, returns the corresponding LLM object
-    '''
-    # Initialize flags for step back and CoT as False
-    step_back = False
-    cot = False
+# Load environment variables (for API keys if required)
+load_dotenv()
 
-    # Check if the engine name is a prompt engineering technique which 
-    # therefore requires more tokens and a boolean flag for signal the appending required at the end
+def get_llm(engine, temp, max_tokens, with_suffix=False):
+    """
+    Returns the corresponding LLM object based on the engine name.
+    Supports:
+      - Random Model (`RandomLLM`)
+      - Interactive Mode (`InteractiveLLM`)
+      - Hugging Face Models (`HF_API_LLM`)
+    """
+    
+    # Initialize step_back and CoT flags
+    step_back, cot = False, False
+
+    # Handle suffix-based modifications
     if engine.endswith('_sb'):
-        engine = engine[:-3]
+        engine = engine[:-3]  # Remove "_sb"
         max_tokens = 350
         step_back = True
     elif engine.endswith('_cot'):
-        engine = engine[:-4]
+        engine = engine[:-4]  # Remove "_cot"
         max_tokens = 350
         cot = True
 
-    # Check which engine is being used and assign the corresponding LLM object with the required parameters (e.g: API keys)
+    # Select the correct model
     if engine == "interactive":
         llm = InteractiveLLM('interactive')
-    elif engine.startswith("text-davinci") or engine.startswith("text-curie") or engine.startswith("text-babbage") or engine.startswith("text-ada"):
-        load_dotenv(); gpt_key = os.getenv("OPENAI_API_KEY")
-        llm = GPT3LLM((gpt_key, engine, with_suffix))
-    elif engine.startswith("gpt"):
-        # load_dotenv(); gpt_key = os.getenv(f"OPENAI_API_KEY{2 if engine == 'gpt-4' else ''}")
-        load_dotenv(); gpt_key = os.getenv(f"OPENAI_API_KEY")
-        llm = GPT4LLM((gpt_key, engine))
-    elif engine.startswith("claude"):
-        load_dotenv(); anthropic_key = os.getenv("ANTHROPIC_API_KEY")
-        llm = AnthropicLLM((anthropic_key, engine))
-    elif engine.startswith("hf") or engine.startswith("llama-2") :
-        llm = HF_API_LLM((engine, max_tokens, temp))
-    # elif engine.startswith("gemini"):
-    #     load_dotenv(); gemini_key = os.getenv("GOOGLE_CREDENTIALS_FILENAME2")
-    #     llm = GeminiLLM((gemini_key, engine))
-    #     llm.is_gemini = True #See the TODO below
-    elif ('bison' in engine):
-        load_dotenv(); google_key = os.getenv("GOOGLE_CREDENTIALS_FILENAME2")
-        llm = GoogleLLM((google_key, engine))
+    elif engine.startswith("hf") or engine.startswith("llama-2"):
+        try:
+            llm = HF_API_LLM((engine, max_tokens, temp))
+        except Exception as e:
+            print(f"Error initializing HF API model ({engine}): {e}")
+            llm = None
     else:
-        print('No key found')
+        print("No key found, defaulting to RandomLLM.")
         llm = RandomLLM(engine)
 
-    #TODO: I am thinking for some models which really are stubborn/tedious processing, to maybe set some flag here in the form is_X = True which could eb recognized in the experiments to mitigate the issues? For now no, to keep things simple and not hardcoded for each LLM.
-    # if not hasattr(llm, 'is_X'):
-    #     llm.is_X = False
-        
-    # Set temperature and max_tokens
+    # Ensure a valid model was initialized
+    if llm is None:
+        raise RuntimeError(f"Failed to initialize LLM: {engine}")
+
+    # Set additional attributes
     llm.temperature = temp
     llm.max_tokens = max_tokens
     llm.step_back = step_back
     llm.cot = cot
-    return llm
 
-       
+    return llm
