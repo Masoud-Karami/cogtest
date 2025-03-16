@@ -92,7 +92,7 @@ python3 full_run.py --engine random --compare_with gpt-4 claude-1
 
 ## computecanada
   ### Login to a Compute Canada server
-  ```ssh masoud@beluga.computecanada.ca```
+  ```ssh username@beluga.computecanada.ca```
 
   ### Create a directory for HuggingFace models
   ```mkdir ~scratch/huggingface/meta-llama```
