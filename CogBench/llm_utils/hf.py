@@ -5,6 +5,8 @@ from huggingface_hub import HfApi, HfFolder, InferenceApi
 from transformers import pipeline, AutoTokenizer, AutoModelForCausalLM
 from ..base_classes import LLM 
 
+os.environ["HF_HOME"] = os.path.expanduser("~/scratch/huggingface/") # only for computecanada directory Beluga
+
 class HF_API_LLM(LLM):
     def __init__(self, llm_info):
         super().__init__(llm_info)
@@ -60,7 +62,7 @@ class HF_API_LLM(LLM):
         else:
             raise NotImplementedError(f"Unknown HF model: {engine}")
 
-        engine=os.getenv('TRANSFORMERS_CACHE')+engine
+        engine=os.getenv('HF_HOME')+engine
         print(engine)
         
         print(f"Loading model: {engine}")

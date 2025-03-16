@@ -9,7 +9,7 @@ Markdown Cheat Sheet Basic (https://www.markdownguide.org/cheat-sheet/)
 
 # SSH configuration file
 
-## [avoid typing command each time](https://docs.alliancecan.ca/wiki/SSH_configuration_file)
+## [avoid typing command each time](https://docs.alliancecan.ca/wiki/SSH_configuration_file) and [transfere file](https://docs.alliancecan.ca/wiki/Transferring_data)
 
 ssh -i ~/.ssh/your_private_key username@narval.alliancecan.ca
 
