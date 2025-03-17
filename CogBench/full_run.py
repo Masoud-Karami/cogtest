@@ -24,7 +24,7 @@ Note:
 import os
 import argparse
 import subprocess
-os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+#os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
 
 def run_benchmark(engine):
@@ -43,7 +43,8 @@ def run_benchmark(engine):
 
     # Define folders to exclude
     all_experiments = {'ProbabilisticReasoning','HorizonTask','RestlessBandit','InstrumentalLearning','TwoStepTask','BART','SerialMemoryTask','TemporalDiscounting'}
-    excluded_experiments = {'ProbabilisticReasoning','HorizonTask','RestlessBandit','InstrumentalLearning','TwoStepTask','BART','SerialMemoryTask'}  
+    excluded_experiments = set()
+    #if exlude all, replace with set() instead of exc_exp{''}
     # Add folder names you want to skip 'TwoStepTask'
     focusing_folders = list(all_experiments - excluded_experiments)
     if not args.only_analysis:
