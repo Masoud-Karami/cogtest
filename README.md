@@ -7,9 +7,48 @@ Markdown Cheat Sheet Basic (https://www.markdownguide.org/cheat-sheet/)
 
 -->
 
-This repository contains the extention analysis code for CogBench, a cognitive psychology benchmark. The project is structured into three main folders: `Experiments`, `llm_utils`, and `Analysis`.
+# SSH configuration file
 
-## Experiments
+## [avoid typing command each time](https://docs.alliancecan.ca/wiki/SSH_configuration_file) and [transfere file](https://docs.alliancecan.ca/wiki/Transferring_data)
+
+ssh -i ~/.ssh/your_private_key username@narval.alliancecan.ca
+
+1. add the following to `~/.ssh/config` on your local machine
+
+- ```Host narval beluga graham cedar
+   User username
+   HostName %h.alliancecan.ca
+   IdentityFile ~/.ssh/your_private_key```
+
+- `[name@yourLaptop ~] ssh narval`
+
+2. Then Transferring data would be easier
+
+- `[name@yourLaptop ~] scp local_file narval:work/`
+
+3. you need to install your `public SSH key` on each cluster separately
+
+
+```bash
+python3 full_run.py --engine claude-1 --only_analysis
+```
+
+```bash
+python3 full_run.py --engine random --compare_with gpt-4 claude-1
+```
+
+## Contributing
+`.csv`
+
+## Reference
+
+[ ](https:/).
+
+# wisellm: a large language model walks into a psychology lab
+
+This repository contains the code for wisellm, a cognitive psychology benchmark. The project is structured into three main folders: `Experiments`, `llm_utils`, and `Analysis`.
+
+## Experimentsexport HF_HOME=/blabla/cache/
 
 The `Experiments` folder contains different experiments that you can run. Each subfolder corresponds to a different cognitive psychology experiment. The folder contains a README.md file with instructions on how to run experiments and compute the behavioral metrics.
 
@@ -20,22 +59,6 @@ The `llm_utils` folder contains scripts for different LLMs. If you want to add y
 ## Analysis
 
 The `Analysis` folder contains scripts that merge information from the LLMs and the Experiments scores. You are encouraged to add your own analysis scripts to this folder.
-
-### add analysis
-
-1. create a new experiment folder including the following subfolders
-
-- data subfolder
-- envs subfolder
-
-as well as the following files
-
-- readme.md
-- query.py
-- score.py
-- scores_data.csv
-
-2.
 
 ## Requirements
 
@@ -53,10 +76,8 @@ Here's how you can use the script with the `random` agent as an example:
 
 ```bash
 python3 full_run.py --engine random
-```
-
+```(error)
 You can use the `--only_analysis` flag if you only want to run the analysis and skip the experiment running and storing steps. This can be useful if you have already run the experiments and just want to see the analysis results or if you want to just run the analysis for the LLMs that have already been run (for which the data is already stored). Here is how you can use the script with the agent (here claude-1 as example) and the --only_analysis flag:
-
 ```bash
 python3 full_run.py --engine claude-1 --only_analysis
 ```
@@ -66,33 +87,60 @@ After the analysis, a summary table is printed with the scores (before normaliza
 You can specify the models to compare against when running the script. For example, to compare against gpt-4 and claude-1, you would use the `--compare_with` flag like this:
 
 ```bash
-python3 full_run.py --engine random --compare_with gpt-4 claude-1
+python3 full_run.py --engine random --compare_with gpt-4 claude-1 
 ```
 
-## Contributing
+## computecanada
+  ### Login to a Compute Canada server
+  ```ssh username@beluga.computecanada.ca```
 
-Feel free to contribute to this project by adding your own experiments, LLM scripts, or analysis scripts. We are particularly interested in enhancing the information about LLMs in `./Analysis/data/llm_features.csv`. Better and more accurate data will allow us to leverage the benchmark results more effectively and gain deeper insights into LLM behavior. We welcome all improvements and additions.
+  ### Create a directory for HuggingFace models
+  ```mkdir ~scratch/huggingface/meta-llama```
+  
+  ```cd ~scratch/huggingface/meta-llama```
 
-## Reference
+  ### Load and install git LFS
+  ```module load git-lfs```
+  
+  ```git lfs install```
 
-For more information about CogBench, please refer to our [ICML paper](https://proceedings.mlr.press/v235/coda-forno24a.html).
+  ### Download Llama (you will need your username and token)
+  ```git lfs clone https://huggingface.co/meta-llama/Llama-2-7b-hf```
 
-## Cite
+  ### Set the HuggingFace environment variable
+  ```export TRANSFORMERS_CACHE=~/scratch/huggingface/``` [error](https://stackoverflow.com/questions/63312859/how-to-change-huggingface-transformers-default-cache-directory)
 
-If you use CogBench in your research, please cite our paper:
+  ```os.environ['HF_HOME'] = '~/scratch/huggingface/'```
+  
+  If TRANSFORMERS_CACHE still exists (`echo $TRANSFORMERS_CACHE` or 
+`echo $HF_HOME`), unset it:
+  `unset TRANSFORMERS_CACHE`
+  ```export HF_HOME=~/scratch/huggingface/```
 
-```bibtex
-@InProceedings{pmlr-v235-coda-forno24a,
-  title = 	 {CogBench: a large language model walks into a psychology lab},
-  author =       {Coda-Forno, Julian and Binz, Marcel and Wang, Jane X and Schulz, Eric},
-  booktitle = 	 {Proceedings of the 41st International Conference on Machine Learning},
-  pages = 	 {9076--9108},
-  year = 	 {2024},
-  volume = 	 {235},
-  series = 	 {Proceedings of Machine Learning Research},
-  month = 	 {21--27 Jul},
-  publisher =    {PMLR},
-  url = 	 {https://proceedings.mlr.press/v235/coda-forno24a.html}
-}
+  ### Clone my repository (check the commits)
+  ``c``d ~/scratch```
+  ```git clone https://github.com/mamerzouk/CogBench```
+  
+  ```git checkout computecanada-no-third-party```
 
-```
+  ### Move to a compute note (this allocation is temporary and just for tests)
+  ```srun --pty --cpus-per-task=8 --mem=16G --gres=gpu:1 --time=03:00:00 bash```
+
+  ### When you're in the compute node, load python, virtualenv and install the necessary libaries
+  ```cd ~/scratch/CogBench```
+  
+  ```module load python/3.11.5```
+  
+  ```virtualenv --no-download $SLURM_TMPDIR/env```
+  
+  ```source $SLURM_TMPDIR/env/bin/activate```
+
+  ```pip install --no-index --upgrade pip```
+  
+  ```pip install --no-index accelerate```
+  
+  ```pip install --no-index -r requirements.txt```
+
+  ### Run the experiments with llama2-7b
+  ```python3 full_run.py --engine llama-2-7```
+
