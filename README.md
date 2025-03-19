@@ -108,7 +108,7 @@ python3 full_run.py --engine random --compare_with gpt-4 claude-1
   ```git lfs clone https://huggingface.co/meta-llama/Llama-2-7b-hf```
 
   ### Set the HuggingFace environment variable
-  ```export TRANSFORMERS_CACHE=~/scratch/huggingface/``` [error](https://stackoverflow.com/questions/63312859/how-to-change-huggingface-transformers-default-cache-directory)
+  ~~```export TRANSFORMERS_CACHE=~/scratch/huggingface/```~~ [error](https://stackoverflow.com/questions/63312859/how-to-change-huggingface-transformers-default-cache-directory)
 
   ```os.environ['HF_HOME'] = '~/scratch/huggingface/'```
   
