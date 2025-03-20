@@ -1,5 +1,5 @@
 # Assuming the env is in serial_memory.py
-from serial_memory import SerialMemoryEnvironment
+# from serial_memory import SerialMemoryEnvironment
 from CogBench.llm_utils.llms import get_llm
 from CogBench.base_classes import Experiment
 import argparse
@@ -11,7 +11,7 @@ import random
 from tqdm import tqdm
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(
-    os.path.dirname(os.path.abspath(__file__))))))  # allows importing CogBench
+    os.path.dirname(os.path.abspath(__file__))))))  # allows importing CogBench as a package
 
 
 class SerialMemoryTaskExpForLLM(Experiment):
