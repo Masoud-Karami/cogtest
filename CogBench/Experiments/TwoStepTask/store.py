@@ -113,6 +113,7 @@ class StoringModelBasednessScores(StoringScores):
         df['reward'] = df['reward'].replace(0, -1)
         # -1 instead of 0 to avoid issues when calculating interaction effect
         df['common'] = df['common'].map({False: -1, True: 1})
+        # x3 is the interaction term of x1 and x2 (i.e., x1 × x2).
         df['interaction'] = df['reward'] * df['common']
         formula = 'stay ~ reward + common + interaction'
         # not multi_leveled because runs for a given LLM and not storing across different human participants

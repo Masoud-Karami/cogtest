@@ -11,7 +11,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(
     os.path.abspath(__file__))))))  # allows importing CogBench as a package
 
 
-class SerialMemoryExpForLLM(Experiment):
+class SerialMemoryTaskExpForLLM(Experiment):
     """
     This class represents the Serial Memory experiment adapted for LLMs.
     The LLM is tested on learning word lists with either constant or randomized (spin) start positions.
@@ -108,5 +108,5 @@ class SerialMemoryExpForLLM(Experiment):
 
 
 if __name__ == '__main__':
-    experiment = SerialMemoryExpForLLM(get_llm)
+    experiment = SerialMemoryTaskExpForLLM(get_llm)
     experiment.run()
