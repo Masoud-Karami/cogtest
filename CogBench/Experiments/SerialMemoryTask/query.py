@@ -9,7 +9,11 @@ import os
 import random
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(
-    os.path.abspath(__file__))))))  # allows importing CogBench as a package
+    os.path.abspath(__file__))))))  # allows to import CogBench as a package
+# allows importing CogBench as a package
+
+print("PYTHONPATH set to:", os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "../../..")))
 
 
 class SerialMemoryTaskExpForLLM(Experiment):
@@ -32,7 +36,7 @@ class SerialMemoryTaskExpForLLM(Experiment):
         self.parser.add_argument(
             '--num_sessions', type=int, default=3, help='Number of test sessions.')
         self.parser.add_argument('--max_trials', nargs='+', type=int,
-                                 default=[7, 13, 16], help='Max trials per list length.')
+                                 default=[70, 130, 160], help='Max trials per list length.')
         parser = self.parser.parse_args()
         self.list_lengths = parser.list_lengths
         self.starting_conditions = parser.starting_conditions

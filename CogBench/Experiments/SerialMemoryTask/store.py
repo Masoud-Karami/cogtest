@@ -6,8 +6,12 @@ import sys
 from tqdm import tqdm
 from CogBench.base_classes import StoringScores
 
-sys.path.append(os.path.dirname(os.path.dirname(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(
+    os.path.abspath(__file__))))))  # allows to import CogBench as a package
+
+print("PYTHONPATH set to:", os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "../../..")))
 
 
 class StoringSerialMemoryScores(StoringScores):
