@@ -3,19 +3,19 @@ from CogBench.base_classes import Experiment
 import argparse
 import numpy as np
 import pandas as pd
+from tqdm import tqdm
 import sys
 import os
 import random
-from tqdm import tqdm
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(
-    os.path.dirname(os.path.abspath(__file__))))))  # allows importing CogBench as a package
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(
+    os.path.abspath(__file__))))))  # allows importing CogBench as a package
 
 
 class SerialMemoryTaskExpForLLM(Experiment):
     """
     Serial Memory Task adapted for LLM-subjected experiments.
-    This implementation is self-contained and does not rely on an external environment class.
+    This implementation is self-contained and implements relative order scoring.
     """
 
     def __init__(self, get_llm):
@@ -70,10 +70,12 @@ class SerialMemoryTaskExpForLLM(Experiment):
                             recalled_list = self.extract_recalled_list(
                                 llm_answer, list_length)
 
-                            correct_recall = sum(
-                                [1 for a, b in zip(recalled_list, study_list) if a == b])
-                            initial_word_correct = int(
+                            relative_correct = self.relative_order_scoring(
+                                recalled_list, study_list)
+                            first_item_correct = int(
                                 recalled_list[0] == study_list[0]) if recalled_list else 0
+                            last_item_correct = int(
+                                recalled_list[-1] == study_list[-1]) if recalled_list else 0
                             forgetting_rate = self.compute_forgetting_rate(
                                 prev_recall, recalled_list)
                             prev_recall = recalled_list
@@ -86,13 +88,14 @@ class SerialMemoryTaskExpForLLM(Experiment):
                                 'trial': trial,
                                 'study_list': ','.join(study_list),
                                 'recalled_list': ','.join(recalled_list),
-                                'correct_recall': correct_recall,
-                                'initial_word_correct': initial_word_correct,
+                                'relative_correct': relative_correct,
+                                'initial_word_correct': first_item_correct,
+                                'final_word_correct': last_item_correct,
                                 'forgetting_rate': forgetting_rate
                             })
 
-                            if correct_recall == list_length:
-                                break  # terminate early if perfectly recalled
+                            if relative_correct == list_length - 1 and first_item_correct:
+                                break  # terminate if list is perfectly recalled
 
         return pd.DataFrame(results)
 
@@ -107,6 +110,16 @@ class SerialMemoryTaskExpForLLM(Experiment):
     def extract_recalled_list(self, llm_answer, list_length):
         words = llm_answer.replace('\n', ' ').replace(',', ' ').split()
         return words[:list_length]
+
+    def relative_order_scoring(self, recalled_list, study_list):
+        correct_count = 0
+        for i in range(len(recalled_list) - 1):
+            if recalled_list[i] in study_list and recalled_list[i + 1] in study_list:
+                idx1 = study_list.index(recalled_list[i])
+                idx2 = study_list.index(recalled_list[i + 1])
+                if idx2 == idx1 + 1:
+                    correct_count += 1
+        return correct_count
 
     def compute_forgetting_rate(self, prev_recall, current_recall):
         if not prev_recall:
