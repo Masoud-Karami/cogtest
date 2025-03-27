@@ -1,5 +1,3 @@
-# Assuming the env is in serial_memory.py
-# from serial_memory import SerialMemoryEnvironment
 from CogBench.llm_utils.llms import get_llm
 from CogBench.base_classes import Experiment
 import argparse
@@ -17,7 +15,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(
 class SerialMemoryTaskExpForLLM(Experiment):
     """
     Serial Memory Task adapted for LLM-subjected experiments.
-    Extends the Experiment class and implements the serial memory paradigm with constant and spin conditions.
+    This implementation is self-contained and does not rely on an external environment class.
     """
 
     def __init__(self, get_llm):
@@ -35,125 +33,93 @@ class SerialMemoryTaskExpForLLM(Experiment):
             '--num_sessions', type=int, default=3, help='Number of test sessions.')
         self.parser.add_argument('--max_trials', nargs='+', type=int,
                                  default=[7, 13, 16], help='Max trials per list length.')
+        parser = self.parser.parse_args()
+        self.list_lengths = parser.list_lengths
+        self.starting_conditions = parser.starting_conditions
+        self.num_lists_per_condition = parser.num_lists_per_condition
+        self.num_sessions = parser.num_sessions
+        self.max_trials_dict = {l: t for l, t in zip(
+            self.list_lengths, parser.max_trials)}
 
     def run_single_experiment(self, llm):
-        """
-        Runs a single experiment of the Serial Memory Task for a given LLM.
-        """
         Q_, A_ = llm.Q_A
-
-        list_lengths = self.parser.parse_args().list_lengths
-        starting_conditions = self.parser.parse_args().starting_conditions
-        num_lists_per_condition = self.parser.parse_args().num_lists_per_condition
-        num_sessions = self.parser.parse_args().num_sessions
-        max_trials_per_length = {l: m for l, m in zip(
-            list_lengths, self.parser.parse_args().max_trials)}
-
-        llm.format_answer = ""
-
-        all_data = []
         word_pool = self.get_word_pool()
+        results = []
 
-        for session in range(num_sessions):
-            for condition in starting_conditions:
-                for list_length in list_lengths:
-                    for list_idx in range(num_lists_per_condition):
-                        word_list = np.random.choice(
-                            word_pool, list_length, replace=False).tolist()
+        for session in range(self.num_sessions):
+            for condition in self.starting_conditions:
+                for list_length in self.list_lengths:
+                    max_trials = self.max_trials_dict[list_length]
 
-                        env = SerialMemoryEnvironment(
-                            word_list, condition, max_trials_per_length[list_length])
-                        list_data = self.run_list(llm, env, Q_, A_)
-                        list_data['session'] = session
-                        list_data['condition'] = condition
-                        list_data['list_length'] = list_length
-                        all_data.append(list_data)
+                    for list_idx in range(self.num_lists_per_condition):
+                        word_list = random.sample(word_pool, list_length)
+                        prev_recall = []
 
-        # Concatenate and return
-        df = pd.concat(all_data, ignore_index=True)
-        return df
+                        for trial in range(max_trials):
+                            # Compute spin (rotated) list
+                            if condition == "spin":
+                                spin_offset = trial % list_length
+                                study_list = word_list[spin_offset:] + \
+                                    word_list[:spin_offset]
+                            else:
+                                study_list = word_list
 
-    def run_list(self, llm, env, Q_, A_):
-        """
-        Run the learning of a single list with serial recall under constant or spin conditions.
-        """
-        history = ""
-        trial_data = []
+                            prompt = self.construct_prompt(
+                                Q_, study_list, condition)
+                            llm_answer = llm.generate(prompt)
+                            recalled_list = self.extract_recalled_list(
+                                llm_answer, list_length)
 
-        prev_recall = []
-        for trial in range(env.max_trials):
-            prompt = self.construct_prompt(env, history, Q_)
-            llm_answer = llm.generate(prompt)
+                            correct_recall = sum(
+                                [1 for a, b in zip(recalled_list, study_list) if a == b])
+                            initial_word_correct = int(
+                                recalled_list[0] == study_list[0]) if recalled_list else 0
+                            forgetting_rate = self.compute_forgetting_rate(
+                                prev_recall, recalled_list)
+                            prev_recall = recalled_list
 
-            recalled_list = self.extract_recalled_list(
-                llm_answer, env.list_length)
+                            results.append({
+                                'session': session,
+                                'condition': condition,
+                                'list_length': list_length,
+                                'list_index': list_idx,
+                                'trial': trial,
+                                'study_list': ','.join(study_list),
+                                'recalled_list': ','.join(recalled_list),
+                                'correct_recall': correct_recall,
+                                'initial_word_correct': initial_word_correct,
+                                'forgetting_rate': forgetting_rate
+                            })
 
-            correct_recall = sum(
-                [1 for a, b in zip(recalled_list, env.current_study_list) if a == b])
-            initial_word_correct = 1 if recalled_list[0] == env.current_study_list[0] else 0
+                            if correct_recall == list_length:
+                                break  # terminate early if perfectly recalled
 
-            forgetting_rate = self.compute_forgetting_rate(
-                prev_recall, recalled_list)
-            prev_recall = recalled_list
+        return pd.DataFrame(results)
 
-            trial_data.append({
-                'trial': trial,
-                'list_index': env.list_index,
-                'study_list': ','.join(env.current_study_list),
-                'recalled_list': ','.join(recalled_list),
-                'correct_recall': correct_recall,
-                'initial_word_correct': initial_word_correct,
-                'forgetting_rate': forgetting_rate
-            })
+    def construct_prompt(self, Q_, study_list, condition):
+        instruction = {
+            'constant': "You will study lists of words. Each time, the list starts from the same first word.\n\n",
+            'spin': "You will study lists of words. Each time, the list starts from a different word (spin list).\n\n"
+        }[condition]
 
-            env.next_trial()
-
-            if correct_recall == env.list_length:
-                break
-
-        return pd.DataFrame(trial_data)
-
-    def construct_prompt(self, env, history, Q_):
-        """
-        Construct the prompt for the LLM including study list and recall instruction.
-        """
-        if env.condition == 'constant':
-            instruction = "You will study a list of words. Each time, the list starts from the same first word."
-        elif env.condition == 'spin':
-            instruction = "You will study a list of words. Each time, the list starts from a different word (span list)."
-
-        study_list_text = " ".join(env.current_study_list)
-
-        return f"{Q_}\n{instruction}\nStudy list: {study_list_text}\n{history}\nPlease recall the list in order."
+        return f"{Q_}\n{instruction}\nStudy list: {' '.join(study_list)}\nPlease recall the list in order:"
 
     def extract_recalled_list(self, llm_answer, list_length):
-        """
-        Extract the recalled list from the LLM's generated text.
-        Expects a comma-separated or space-separated list.
-        """
         words = llm_answer.replace('\n', ' ').replace(',', ' ').split()
         return words[:list_length]
 
     def compute_forgetting_rate(self, prev_recall, current_recall):
-        """
-        Computes a forgetting rate between two trials.
-        The forgetting rate is the proportion of words previously recalled correctly that are now forgotten.
-        """
         if not prev_recall:
             return np.nan
-
         correctly_retained = sum([1 for w1, w2 in zip(
             prev_recall, current_recall) if w1 == w2])
         return 1 - (correctly_retained / len(prev_recall))
 
     def get_word_pool(self):
-        """
-        Load or generate the word pool (using Toronto Word Pool as example).
-        """
         return [
-            "apple", "table", "sun", "dog", "car", "book", "tree", "house", "river", "mountain",
-            "chair", "window", "phone", "garden", "ocean", "computer", "pencil", "hat", "lamp", "shoe",
-            "candle", "clock", "door", "guitar", "cat", "plane", "road", "bottle", "bird", "flower"
+            "Battig", "Bickley", "DOI", "Hermann", "Intersample", "Joelson", "Kucera", "Landauer", "Lorge", "Madigan",
+            "Paivio", "Streeter", "Tarka", "Thorndike", "Yuille", "al", "asymptote", "bigram", "emotionality",
+            "et", "etal", "pickList", "preprint", "pronunciability", "yorku"
         ]
 
 

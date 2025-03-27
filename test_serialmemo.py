@@ -1,7 +1,7 @@
 from CogBench.llm_utils.randomllm_serialmemo import RandomSerialMemoryLLM
 # from CogBench.Experiments.SerialMemoryTask.query import SerialMemoryExpForLLM
 # from CogBench.Experiments.SerialMemoryTask.query_test import SerialMemoryExpForLLM
-from CogBench.Experiments.SerialMemoryTask.querynoenvs import SerialMemoryTaskExpForLLM
+from CogBench.Experiments.SerialMemoryTask.query import SerialMemoryTaskExpForLLM
 
 # Initialize the new random LLM specialized for Serial Memory
 random_serial_llm = RandomSerialMemoryLLM(('random_serial_memory', 100, 0.7))
