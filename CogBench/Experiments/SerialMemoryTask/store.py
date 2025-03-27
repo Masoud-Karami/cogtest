@@ -1,9 +1,13 @@
 import argparse
 import numpy as np
 import pandas as pd
-import sys, os
-sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))  # Allows importing CogBench as a package
+import os
+import sys
+from tqdm import tqdm
 from CogBench.base_classes import StoringScores
+
+sys.path.append(os.path.dirname(os.path.dirname(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
 
 
 class StoringSerialMemoryScores(StoringScores):
@@ -12,52 +16,77 @@ class StoringSerialMemoryScores(StoringScores):
         self.add_arguments_()
 
     def add_arguments_(self):
-        """Add arguments for scoring."""
         self.parser.add_argument('--columns', nargs='+', default=[
-            'performance_score1', 'performance_score1_name', 
-            'behaviour_score1', 'behaviour_score1_name', 
-            'behaviour_score2', 'behaviour_score2_name'
-        ], help='List of columns to add to the CSV file')
+            'performance_score1', 'performance_score1_name',
+            'performance_score2', 'performance_score2_name',
+            'behaviour_score1', 'behaviour_score1_name',
+            'behaviour_score2', 'behaviour_score2_name',
+            'behaviour_score3', 'behaviour_score3_name',
+            'behaviour_score4', 'behaviour_score4_name'
+        ])
 
     def get_scores(self, df, storing_df, engine, run):
-        """
-        Compute serial memory task scores.
+        args = self.parser.parse_args()
+        for col in args.columns:
+            if col not in storing_df.columns:
+                storing_df[col] = np.nan
 
-        Args:
-            df (pd.DataFrame): DataFrame with experiment results.
-            storing_df (pd.DataFrame): DataFrame storing scores.
-            engine (str): LLM engine name.
-            run (int): Run identifier.
+        # --- Performance Metrics ---
+        total_words = df['list_length'].sum()
+        accuracy = df['correct_recall'].sum(
+        ) / total_words if total_words > 0 else 0
 
-        Returns:
-            pd.DataFrame: Updated DataFrame with computed scores.
-        """
-        # Ensure necessary columns exist
-        for column in self.parser.parse_args().columns:
-            if column not in storing_df.columns:
-                storing_df[column] = np.nan
+        ttc_df = df[df['ttc_achieved'] == True].groupby(
+            ['session', 'condition', 'list_index'])['trial'].min()
+        ttc_mean = ttc_df.mean() if len(ttc_df) > 0 else np.nan
+        ttc_achieved_ratio = df[df['ttc_achieved'] == True][['session', 'condition', 'list_index']].drop_duplicates().shape[0] \
+            / df[['session', 'condition', 'list_index']].drop_duplicates().shape[0]
 
-        # Compute scores
-        total_trials = len(df)
-        total_correct = df['correct_recall'].sum()  # Correctly recalled words
-        initiation_errors = (df['initial_word_correct'] == 0).sum()  # Incorrect first word recall
-        intertrial_forgetting = df['forgetting_rate'].mean()  # Avg forgetting rate between trials
+        # --- Behavioral Metrics ---
+        initiation_error_rate = 1 - df['initial_word_correct'].mean()
+        forgetting_rate = df['forgetting_rate'].mean()
 
-        accuracy = total_correct / total_trials if total_trials > 0 else 0
-        initiation_error_rate = initiation_errors / total_trials if total_trials > 0 else 0
+        # Serial position effects
+        primacy_correct = 0
+        recency_correct = 0
+        primacy_total = 0
+        recency_total = 0
 
-        # Store scores in the CSV file
-        if ((storing_df['engine'] == engine) & (storing_df['run'] == run)).any():
-            storing_df.loc[(storing_df['engine'] == engine) & (storing_df['run'] == run), 'performance_score1'] = accuracy
-            storing_df.loc[(storing_df['engine'] == engine) & (storing_df['run'] == run), 'behaviour_score1'] = initiation_error_rate
-            storing_df.loc[(storing_df['engine'] == engine) & (storing_df['run'] == run), 'behaviour_score2'] = intertrial_forgetting
+        for _, row in df.iterrows():
+            study = row['study_list'].split(',')
+            recall = row['recalled_list'].split(',')
+
+            if len(study) < 4 or len(recall) != len(study):
+                continue
+
+            primacy_correct += int(recall[0] == study[0]) + \
+                int(recall[1] == study[1])
+            primacy_total += 2
+            recency_correct += int(recall[-2] == study[-2]) + \
+                int(recall[-1] == study[-1])
+            recency_total += 2
+
+        primacy_effect = primacy_correct / primacy_total if primacy_total else np.nan
+        recency_effect = recency_correct / recency_total if recency_total else np.nan
+
+        # --- Store results ---
+        existing = (storing_df['engine'] == engine) & (
+            storing_df['run'] == run)
+        row_data = [
+            engine, run,
+            accuracy, 'serial memory accuracy',
+            ttc_mean, 'mean TTC',
+            initiation_error_rate, 'initiation error rate',
+            forgetting_rate, 'intertrial forgetting',
+            primacy_effect, 'primacy effect',
+            recency_effect, 'recency effect'
+        ]
+
+        if existing.any():
+            storing_df.loc[existing, args.columns] = row_data[2:]
         else:
-            storing_df.loc[len(storing_df)] = [
-                engine, run, accuracy, 'serial memory accuracy', 
-                initiation_error_rate, 'initiation errors', 
-                intertrial_forgetting, 'intertrial forgetting'
-            ]
-        
+            storing_df.loc[len(storing_df)] = row_data
+
         return storing_df
 
 
