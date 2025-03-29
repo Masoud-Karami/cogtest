@@ -15,11 +15,13 @@ class RandomSerialMemoryLLM(RandomLLM):
     def random_fct(self):
         """Generates random sequences to simulate Serial Memory recall."""
         # Predefined example word lists (7, 13, 19 words each)
+        # {"Battig", "Bickley", "DOI", "Hermann", "Intersample", "Joelson", "Kucera", "Landauer", "Lorge", "Madigan","Paivio", "Streeter", "Tarka", "Thorndike", "Yuille", "al", "asymptote", "bigram", "emotionality","et", "etal", "pickList", "preprint", "pronunciability", "yorku"}
         example_lists = {
-            7: ["apple", "banana", "cherry", "dog", "elephant", "fish", "grape"],
-            13: ["apple", "banana", "cherry", "dog", "elephant", "fish", "grape", "house", "island",
-                 "jungle", "kangaroo", "lion", "mountain"],
-            19: ["apple", "banana", "cherry", "dog", "elephant", "fish", "grape", "house", "island", "jungle", "kangaroo", "lion", "mountain", "notebook", "octopus", "penguin", "queen", "river", "sunflower"]
+            7: ["Battig", "Bickley", "DOI", "Hermann", "Intersample", "Joelson", "Kucera"],
+            13: ["Battig", "Bickley", "DOI", "Hermann", "Intersample", "Joelson", "Kucera", "Landauer", "Lorge", "Madigan",
+                 "Paivio", "Streeter", "Tarka"],
+            19: ["Battig", "Bickley", "DOI", "Hermann", "Intersample", "Joelson", "Kucera", "Landauer", "Lorge", "Madigan",
+                 "Paivio", "Streeter", "Tarka", "Thorndike", "Yuille", "al", "asymptote", "bigram", "emotionality"]
         }
 
         # Randomly pick a list length

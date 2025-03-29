@@ -130,7 +130,7 @@ class SerialMemoryTaskExpForLLM(Experiment):
             return np.nan
         correctly_retained = sum([1 for w1, w2 in zip(
             prev_recall, current_recall) if w1 == w2])
-        return 1 - (correctly_retained / len(prev_recall))
+        return 1 - (correctly_RandomSerialMemoryLLMretained / len(prev_recall))
 
     def get_word_pool(self):
         return [
