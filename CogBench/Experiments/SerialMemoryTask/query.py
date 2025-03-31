@@ -104,12 +104,32 @@ class SerialMemoryTaskExpForLLM(Experiment):
         return pd.DataFrame(results)
 
     def construct_prompt(self, Q_, study_list, condition):
-        instruction = {
-            'constant': "You will study lists of words. Each time, the list starts from the same first word.\n\n",
-            'spin': "You will study lists of words. Each time, the list starts from a different word (spin list).\n\n"
-        }[condition]
+        if condition == "constant":
+            instruction = ("You are participating in a positional cues in serial learning experiment.\n"
+                           "In this task, you will be repeatedly shown lists of words, always beginning with the same word on every trial.\n"
+                           "Your goal is to learn and recall the complete list in the correct order over multiple study-test trials.\n"
+                           "Focus on remembering the position of each word in the list.\n\n"
+                           )
+        elif condition == "spin":
+            instruction = ("You are participating in a positional cues in serial learning experiment.\n"
+                           "In this task, you will be repeatedly shown the same list of words.\n"
+                           "However, on each trial, the list will begin at a different starting point (a 'spin'), wrapping around to include all words.\n"
+                           "Your goal is to recall the presented list **in the exact order it appeared** during this trial.\n"
+                           "This task assesses your ability to adapt to varying positional cues.\n\n"
+                           )
+        else:
+            raise ValueError(
+                f"Unknown condition: {condition}. The condition should be either 'spin' or 'constant'")
 
-        return f"{Q_}\n{instruction}\nStudy list: {' '.join(study_list)}\nPlease recall the list in order:"
+        study_string = ' '.join(study_list)
+        prompt = (
+            f"{Q_}\n"
+            f"{instruction}"
+            f"Study list for this trial:\n"
+            f"{study_string}\n\n"
+            "Please recall the list **in the exact order presented above**.\n"
+            "Separate words with spaces. Begin your response now:"
+        )
 
     def extract_recalled_list(self, llm_answer, list_length):
         words = llm_answer.replace('\n', ' ').replace(',', ' ').split()
