@@ -121,14 +121,19 @@ class SerialMemoryTaskExpForLLM(Experiment):
             raise ValueError(
                 f"Unknown condition: {condition}. The condition should be either 'spin' or 'constant'")
 
-        study_string = ' '.join(study_list)
-        prompt = (
+        # In the original experiments, words were presented sequentially with controlled inter-stimulus intervals (e.g., 1 word/sec), to mirror real-time episodic encoding. The timing is crucial for humans to model working memory load, temporal encoding, and rehearsal effects. LLMs receive the entire prompt as a static input and do not perceive time or sequence delays as humans do. See Bommasani et al., 2021 (Foundation Models): "Unlike humans, LMs do not learn from temporally spaced tokens; sequence timing is absent from attention." Min et al., 2022: LLM performance is prompt-sensitive, not time-sensitive. Kojima et al., 2022: Encourage explicit ordering in prompt tokens, not timing. So simulating word-by-word presentation using a for loop or time delay does not impact the LLM’s behavior, because the full prompt is still sent as a complete token sequence.
+
+        # Simulate sequential presentation using ordered list format
+        sequential_list = '\n'.join(
+            [f"{i+1}. {word}" for i, word in enumerate(study_list)])
+
+        return (
             f"{Q_}\n"
             f"{instruction}"
-            f"Study list for this trial:\n"
-            f"{study_string}\n\n"
-            "Please recall the list **in the exact order presented above**.\n"
-            "Separate words with spaces. Begin your response now:"
+            "Study phase:\n"
+            f"{sequential_list}\n\n"
+            "Now recall the words in the **exact order** presented above. Separate them with spaces.\n"
+            "Your response:"
         )
 
         return prompt
