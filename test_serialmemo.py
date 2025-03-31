@@ -15,7 +15,7 @@ df_results = experiment.run_single_experiment(random_serial_llm)
 # Save results to data folder
 os.makedirs("data", exist_ok=True)
 df_results.to_csv(
-    "CogBench/Experiments/SerialMemoryTask/data/scores_data.csv", index=False)
+    "CogBench/Experiments/SerialMemoryTask/scores_data.csv", index=False)
 
 print("\n=== TEST OUTPUT ===")
 print(df_results.head())
