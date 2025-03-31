@@ -131,6 +131,8 @@ class SerialMemoryTaskExpForLLM(Experiment):
             "Separate words with spaces. Begin your response now:"
         )
 
+        return prompt
+
     def extract_recalled_list(self, llm_answer, list_length):
         words = llm_answer.replace('\n', ' ').replace(',', ' ').split()
         return words[:list_length]
