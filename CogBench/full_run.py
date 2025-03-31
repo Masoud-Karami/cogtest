@@ -46,7 +46,7 @@ def run_benchmark(engine):
                        'InstrumentalLearning', 'TwoStepTask', 'BART', 'SerialMemoryTask', 'TemporalDiscounting'}
     # if exlude all, replace with set() instead of exc_exp{''}
     # excluded_experiments = set()
-    excluded_experiments = {'ProbabilisticReasoning', 'HorizonTask',
+    excluded_experiments = {'ProbabilisticReasoning', 'HorizonTask', "TwoStepTask",
                             'RestlessBandit', 'InstrumentalLearning', 'BART', 'TemporalDiscounting'}
 
     # Add folder names you want to skip 'TwoStepTask'
