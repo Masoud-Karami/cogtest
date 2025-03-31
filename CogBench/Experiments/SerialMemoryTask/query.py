@@ -92,10 +92,10 @@ class SerialMemoryTaskExpForLLM(Experiment):
                                 'trial': trial,
                                 'study_list': ','.join(study_list),
                                 'recalled_list': ','.join(recalled_list),
-                                'relative_correct': relative_correct,
-                                'initial_word_correct': first_item_correct,
-                                'final_word_correct': last_item_correct,
-                                'forgetting_rate': forgetting_rate
+                                'rel_correct': relative_correct,
+                                'init_correct': first_item_correct,
+                                'last_correct': last_item_correct,
+                                'forget_rate': forgetting_rate
                             })
 
                             if relative_correct == list_length - 1 and first_item_correct:
@@ -130,7 +130,7 @@ class SerialMemoryTaskExpForLLM(Experiment):
             return np.nan
         correctly_retained = sum([1 for w1, w2 in zip(
             prev_recall, current_recall) if w1 == w2])
-        return 1 - (correctly_RandomSerialMemoryLLMretained / len(prev_recall))
+        return 1 - (correctly_retained / len(prev_recall))
 
     def get_word_pool(self):
         return [
