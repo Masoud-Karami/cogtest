@@ -104,6 +104,11 @@ python3 full_run.py --engine random --compare_with gpt-4 claude-1
   
   ```git lfs install```
 
+  ### Load proper branch
+  ```git branch -a```
+  
+  ```git checkout <newtask-serialmemory>```
+
   ### Download Llama (you will need your username and token)
   ```git lfs clone https://huggingface.co/meta-llama/Llama-2-7b-hf```
 
