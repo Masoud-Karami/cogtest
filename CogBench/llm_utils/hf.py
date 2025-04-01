@@ -3,39 +3,25 @@ import torch
 import transformers
 from huggingface_hub import HfApi, HfFolder, InferenceApi
 from transformers import pipeline, AutoTokenizer, AutoModelForCausalLM
-from ..base_classes import LLM 
+from ..base_classes import LLM
 
-os.environ["HF_HOME"] = os.path.expanduser("~/scratch/huggingface/") # only for computecanada directory Beluga
+# os.environ["HF_HOME"] = os.path.expanduser("~/scratch/huggingface/") # only for computecanada directory Beluga
+
 
 class HF_API_LLM(LLM):
     def __init__(self, llm_info):
         super().__init__(llm_info)
         engine, max_tokens, temperature = llm_info
-        
-        
+
+        # Define base model directory
+        hf_home = os.getenv("HF_HOME", "~/scratch/huggingface/")
+        hf_home = os.path.expanduser(hf_home)
+
         # Adapt engine name to Hugging Face API. Here I prepend hf_ to the engine name for all the hf models.
         if engine.startswith('hf_'):
-            engine = engine.split("hf_")[1] # remove the "hf_" part
-        padtokenId = 50256 # Falcon needs that to avoid some annoying warning
-        
-        # if engine.startswith("falcon"):
-        #     engine = "tiiuae/" + engine 
-        # elif engine.startswith("Yi"):
-        #     engine = "01-ai/" + engine
-        # elif (engine.startswith("mixtral")) or (engine.startswith("Mixtral")) or (engine.startswith("mistral")) or (engine.startswith("Mistral")):
-        #     engine = "mistralai/" + engine
-        # elif engine.startswith("mpt"):
-        #     engine = "mosaicml/" + engine
-        # elif engine.startswith("vicuna"):
-        #     engine = "lmsys/" + engine
-        # elif engine.startswith("koala"):
-        #     engine = 'TheBloke/' + engine
-        # elif ('longlora' in engine) or ('Alpaca' in engine):
-        #     engine = 'Yukang/' + engine
-        # elif 'CodeLlama' in engine:
-        #     engine = 'codellama/' + engine + '-hf'
-        # elif engine.startswith('llama-2'):
-        
+            engine = engine.split("hf_")[1]  # remove the "hf_" part
+        padtokenId = 50256  # Falcon needs that to avoid some annoying warning
+
         hf_model_map = {
             "falcon": "tiiuae/",
             "Yi": "01-ai/",
@@ -45,7 +31,7 @@ class HF_API_LLM(LLM):
             "vicuna": "lmsys/",
             "koala": "TheBloke/",
         }
-            #Change llama-2-* to meta-llama/Llama-2-*b-hf
+        # Change llama-2-* to meta-llama/Llama-2-*b-hf
         for key, prefix in hf_model_map.items():
             if engine.startswith(key):
                 engine = prefix + engine
@@ -56,18 +42,20 @@ class HF_API_LLM(LLM):
             engine = 'codellama/' + engine + '-hf'
         elif engine.startswith('llama-2'):
             if 'chat' in engine:
-                engine = 'meta-llama/L' + engine[1:].replace('-chat', '') + 'b-chat-hf'
+                engine = 'meta-llama/L' + \
+                    engine[1:].replace('-chat', '') + 'b-chat-hf'
             else:
                 engine = 'meta-llama/L' + engine[1:] + 'b-hf'
         else:
             raise NotImplementedError(f"Unknown HF model: {engine}")
 
-        engine=os.getenv('HF_HOME')+engine
-        print(engine)
-        
+        # Build absolute path
+        engine_path = os.path.join(hf_home, engine)
+        print(f"[HF_API_LLM] Loading model from: {engine_path}")
+
         print(f"Loading model: {engine}")
         try:
-            tokenizer = AutoTokenizer.from_pretrained(engine)
+            tokenizer = AutoTokenizer.from_pretrained(engine_path)
         except Exception as e:
             print(f"Tokenizer error: {e}")
             tokenizer = None  # Some models might not require tokenizers
@@ -75,7 +63,7 @@ class HF_API_LLM(LLM):
         try:
             self.pipe = pipeline(
                 "text-generation",
-                model=engine,
+                model=engine_path,
                 tokenizer=tokenizer,
                 torch_dtype=torch.bfloat16,
                 trust_remote_code=True,
@@ -100,5 +88,5 @@ class HF_API_LLM(LLM):
 
         # Batch process multiple inputs instead of sequentially
         responses = self.pipe(texts, batch_size=len(texts))
-        
+
         return [resp['generated_text'][len(text):] for text, resp in zip(texts, responses)]
