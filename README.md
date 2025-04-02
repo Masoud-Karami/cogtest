@@ -122,7 +122,7 @@ python3 full_run.py --engine random --compare_with gpt-4 claude-1
   `unset TRANSFORMERS_CACHE`
   ```export HF_HOME=~/scratch/huggingface/```
 
-  ```export PYTHONPATH=$(pwd)```
+  when in Home/cogtest, ```export PYTHONPATH=$(pwd)```
 
   ### Clone my repository (check the commits)
   ``c``d ~/scratch```
