@@ -12,8 +12,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(
     os.path.abspath(__file__))))))  # allows to import CogBench as a package
 # allows importing CogBench as a package
 
-print("PYTHONPATH set to:", os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "../../..")))
+# print("PYTHONPATH set to:", os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..")))
 
 
 class SerialMemoryTaskExpForLLM(Experiment):
