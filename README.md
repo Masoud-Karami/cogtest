@@ -1,4 +1,7 @@
 # Replicating CogBench: a large language model walks into a psychology lab
+# wisellm: a large language model walks into a psychology lab
+
+This repository contains the code for wisellm, a cognitive psychology benchmark. The project is structured into three main folders: `Experiments`, `llm_utils`, and `Analysis`.
 
 <!---!
 [Overview Figure](./overview_figure.png)
@@ -16,17 +19,17 @@ ssh -i ~/.ssh/your_private_key username@narval.alliancecan.ca
 1. add the following to `~/.ssh/config` on your local machine
 
 - ```Host narval beluga graham cedar
-   User username
+   User <username>
    HostName %h.alliancecan.ca
    IdentityFile ~/.ssh/your_private_key```
 
 - `[name@yourLaptop ~] ssh narval`
 
-2. Then Transferring data would be easier
+2. Then transferring data would be easier
 
 - `[name@yourLaptop ~] scp local_file narval:work/`
 
-3. you need to install your `public SSH key` on each cluster separately
+3. You need to install your `public SSH key` on each cluster separately
 
 
 ```bash
@@ -36,29 +39,6 @@ python3 full_run.py --engine claude-1 --only_analysis
 ```bash
 python3 full_run.py --engine random --compare_with gpt-4 claude-1
 ```
-
-## Contributing
-`.csv`
-
-## Reference
-
-[ ](https:/).
-
-# wisellm: a large language model walks into a psychology lab
-
-This repository contains the code for wisellm, a cognitive psychology benchmark. The project is structured into three main folders: `Experiments`, `llm_utils`, and `Analysis`.
-
-## Experimentsexport HF_HOME=/blabla/cache/
-
-The `Experiments` folder contains different experiments that you can run. Each subfolder corresponds to a different cognitive psychology experiment. The folder contains a README.md file with instructions on how to run experiments and compute the behavioral metrics.
-
-## LLM Utils
-
-The `llm_utils` folder contains scripts for different LLMs. If you want to add your own LLM, you should create a new script in this folder. Please refer to the `llm_utils` folder README.md for more details on how to do this.
-
-## Analysis
-
-The `Analysis` folder contains scripts that merge information from the LLMs and the Experiments scores. You are encouraged to add your own analysis scripts to this folder.
 
 ## Requirements
 
@@ -70,13 +50,16 @@ To run the entire benchmark for a chosen LLM, you can use the `full_run.py` scri
 
 Before running the script, make sure that your LLM is recognized in `llm_utils`. If it's not, you'll need to add it there first.
 
-Please note that the fitting of scores is generally fast for all experiments, except for the InstrumentalLearning experiment which can be very slow. Please be patient when running this experiment's fitting.
+Please note that the fitting of scores is generally fast for all experiments, except for the InstrumentalLearning experiment, which can be very slow. Please be patient when running this experiment's fitting.
 
 Here's how you can use the script with the `random` agent as an example:
 
 ```bash
 python3 full_run.py --engine random
-```(error)
+```
+(error)
+
+
 You can use the `--only_analysis` flag if you only want to run the analysis and skip the experiment running and storing steps. This can be useful if you have already run the experiments and just want to see the analysis results or if you want to just run the analysis for the LLMs that have already been run (for which the data is already stored). Here is how you can use the script with the agent (here claude-1 as example) and the --only_analysis flag:
 ```bash
 python3 full_run.py --engine claude-1 --only_analysis
@@ -133,7 +116,7 @@ python3 full_run.py --engine random --compare_with gpt-4 claude-1
   ### Move to a compute note (this allocation is temporary and just for tests)
   ```srun --pty --cpus-per-task=8 --mem=16G --gres=gpu:1 --time=03:00:00 bash```
 
-  ### When you're in the compute node, load python, virtualenv and install the necessary libaries
+  ### When you're in the compute node, load Python, virtualenv, and install the necessary libraries
   ```cd ~/scratch/CogBench```
   
   ```module load python/3.11.5```
