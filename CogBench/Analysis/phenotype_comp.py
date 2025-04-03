@@ -56,6 +56,10 @@ def filter_models(dp, models):
 def plot_data(dp, filename, metrics_names, behav=False, store_id='0'):
     models = dp['Model'].unique()
     n_models = len(models)
+    print(f"Models in DataFrame for plotting: {dp['Model'].unique().tolist()}")
+    if n_models == 0:
+        print("[ERROR] No models to plot. Check if scores_data.csv has any results for the specified models.")
+        return  # or exit the function gracefully
     fig, axs = plt.subplots(1, n_models, figsize=(10.5, 3.5))
 
     if behav:
@@ -177,6 +181,13 @@ def run(models=None, interest=None, store_id=None):
     # Create a dataframe with the metrics
     df = pd.DataFrame(metrics).T
     df_cis = pd.DataFrame(metrics_cis).T
+    # Sanity check
+    if df.shape[1] != len(metrics_names):
+        print(
+            f"[WARNING] Mismatch: Got {df.shape[1]} scores, but expected {len(metrics_names)} named metrics.")
+        metrics_names = [f"metric_{i}" for i in range(
+            df.shape[1])]  # Fallback to generic names
+
     df.columns = metrics_names
     df_cis.columns = metrics_names
     df = df.reset_index().rename(columns={'index': 'Agent'})
