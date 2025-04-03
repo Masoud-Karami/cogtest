@@ -90,7 +90,7 @@ if __name__ == "__main__":
     parser.add_argument('--engine', type=str, required=True,
                         help='The LLM to run the benchmark on.')
     parser.add_argument('--compare_with', type=str, nargs='+',
-                        help='The models to compare against.')  # default=['gpt-4', 'claude-2'], help='The models to compare against.')
+                        default=['gpt-4', 'claude-2'], help='The models to compare against.')
 
     parser.add_argument('--only_analysis', action='store_true',
                         help='If set, only run the analysis and skip the experiment running and storing steps.')
