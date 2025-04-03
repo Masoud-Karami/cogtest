@@ -653,7 +653,7 @@ def merge_all_metrics_and_features(experiments, excluding_agents, llm_df):
         # Loop over the score names
         for score_name in scores_names:
             # Loop over the engines
-            for engine in metrics.keys():
+            for engine in list(metrics.keys()):
                 if engine not in df['engine'].values:
                     print(
                         f"Skipping engine {engine} as it does not exist in scores for experiment {experiment}")
