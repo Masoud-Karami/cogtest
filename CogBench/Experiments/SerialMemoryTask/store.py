@@ -25,8 +25,8 @@ class StoringSerialMemoryScores(StoringScores):
             'behaviour_score3', 'behaviour_score3_name',
             'behaviour_score4', 'behaviour_score4_name'
         ])
-        self.parser.add_argument(
-            '--engines', nargs='+', default=['all'], help='List of engines to evaluate')
+        # self.parser.add_argument(
+        #     '--engines', nargs='+', default=['all'], help='List of engines to evaluate')
         self.parser.add_argument(
             '--version_number', type=str, default='1', help='Version number of the dataset')
 

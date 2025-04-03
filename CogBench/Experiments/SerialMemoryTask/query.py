@@ -39,6 +39,8 @@ class SerialMemoryTaskExpForLLM(Experiment):
                                  default=[70, 130, 160], help='Max trials per list length.')
         self.parser.add_argument('--num_runs', type=int, default=1,
                                  help='Number of independent runs of the full task.')
+        self.parser.add_argument('--version_number', type=str, default='1',
+                                 help='Version number for compatibility across tasks')
 
         parser = self.parser.parse_args()
         self.list_lengths = parser.list_lengths
@@ -47,11 +49,12 @@ class SerialMemoryTaskExpForLLM(Experiment):
         self.num_sessions = parser.num_sessions
         self.max_trials_dict = {l: t for l, t in zip(
             self.list_lengths, parser.max_trials)}
-        self.engine = self.llm.engine_name if hasattr(
-            self.llm, 'engine_name') else 'unknown'
-        self.run_id = self.run_id if hasattr(self, 'run_id') else 0
+        self.engine = 'unknown'
+        self.run_id = 0
 
     def run_single_experiment(self, llm):
+        self.engine = llm.engine_name if hasattr(
+            llm, 'engine_name') else 'unknown'
         Q_, A_ = llm.Q_A
         word_pool = self.get_word_pool()
         results = []

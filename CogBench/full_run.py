@@ -95,5 +95,7 @@ if __name__ == "__main__":
     parser.add_argument('--only_analysis', action='store_true',
                         help='If set, only run the analysis and skip the experiment running and storing steps.')
     args = parser.parse_args()
+    if args.compare_with is None:
+        args.compare_with = []
 
     run_benchmark(args.engine)
