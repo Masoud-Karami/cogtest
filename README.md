@@ -18,10 +18,10 @@ ssh -i ~/.ssh/your_private_key username@narval.alliancecan.ca
 
 1. add the following to `~/.ssh/config` on your local machine
 
-- ```Host narval beluga graham cedar
-     User <username>
+- ` Host narval beluga graham cedar
+      User <username>
       HostName %h.alliancecan.ca
-      IdentityFile ~/.ssh/your_private_key```
+      IdentityFile ~/.ssh/your_private_key`
 
 - `[name@yourLaptop ~] ssh narval`
 
