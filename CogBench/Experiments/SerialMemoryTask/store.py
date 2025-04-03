@@ -25,10 +25,9 @@ class StoringSerialMemoryScores(StoringScores):
             'behaviour_score3', 'behaviour_score3_name',
             'behaviour_score4', 'behaviour_score4_name'
         ])
-        # self.parser.add_argument(
-        #     '--engines', nargs='+', default=['all'], help='List of engines to evaluate')
-        self.parser.add_argument(
-            '--version_number', type=str, default='1', help='Version number of the dataset')
+        # if '--version_number' not in sys.argv:
+        #     self.parser.add_argument(
+        #         '--version_number', type=str, default='1', help='Version number of the dataset')
 
     def get_all_scores(self):
         args = self.parser.parse_args()
@@ -91,7 +90,12 @@ class StoringSerialMemoryScores(StoringScores):
 
         for _, row in df.iterrows():
             study = row['study_list'].split(',')
-            recall = row['recalled_list'].split(',')
+            recalled_raw = row['recalled_list']
+            # [['a', 'b', 'c', 'd', 'e', 'f', 'g'], [], ['a', 'b', 'c', 'd', 'e', 'x', 'g']]
+            if not isinstance(recalled_raw, str) or pd.isna(recalled_raw):
+                recall = []
+            else:
+                recall = recalled_raw.split(',')
 
             if len(study) < 4 or len(recall) != len(study):
                 continue

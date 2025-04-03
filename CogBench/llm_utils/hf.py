@@ -69,7 +69,8 @@ class HF_API_LLM(LLM):
                 trust_remote_code=True,
                 device_map="auto",
                 pad_token_id=padtokenId,
-                max_new_tokens=max_tokens
+                max_new_tokens=max_tokens,
+                batch_size=1
             )
         except Exception as e:
             print(f"Pipeline initialization error: {e}")
