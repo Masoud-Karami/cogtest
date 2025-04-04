@@ -653,13 +653,8 @@ def merge_all_metrics_and_features(experiments, excluding_agents, llm_df):
         # Loop over the score names
         for score_name in scores_names:
             # Loop over the engines
-            for engine in list(metrics.keys()):
-                if engine not in df['engine'].values:
-                    print(
-                        f"Skipping engine {engine} as it does not exist in scores for experiment {experiment}")
-                    metrics.pop(engine, None)
-                    metrics_cis.pop(engine, None)
-                    continue
+            for engine in metrics.keys():
+                # Get the scores for the engine
                 engine_scores = df[df['engine'] == engine][score_name]
 
                 # Handle special case for the BART experiment and the human engine

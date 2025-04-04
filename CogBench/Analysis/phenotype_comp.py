@@ -173,6 +173,11 @@ def run(models=None, interest=None, store_id=None):
     metrics, metrics_cis = merge_all_metrics_and_features(
         experiments, exclude_agents(), pd.read_csv('./data/llm_features.csv'))
 
+   # Filter to selected models only (e.g., to exclude gpt-4 if not in args.models and only include Llama-2)
+    metrics = {k: v for k, v in metrics.items() if k in models + ['random']}
+    metrics_cis = {k: v for k, v in metrics_cis.items()
+                   if k in models + ['random']}
+
     # Filter to selected models only (e.g., to exclude gpt-4 if not in args.models and only include Llama-2)
     metrics = {k: v for k, v in metrics.items() if k in models + ['random']}
     metrics_cis = {k: v for k, v in metrics_cis.items()
@@ -181,13 +186,6 @@ def run(models=None, interest=None, store_id=None):
     # Create a dataframe with the metrics
     df = pd.DataFrame(metrics).T
     df_cis = pd.DataFrame(metrics_cis).T
-    # Sanity check
-    if df.shape[1] != len(metrics_names):
-        print(
-            f"[WARNING] Mismatch: Got {df.shape[1]} scores, but expected {len(metrics_names)} named metrics.")
-        metrics_names = [f"metric_{i}" for i in range(
-            df.shape[1])]  # Fallback to generic names
-
     df.columns = metrics_names
     df_cis.columns = metrics_names
     df = df.reset_index().rename(columns={'index': 'Agent'})

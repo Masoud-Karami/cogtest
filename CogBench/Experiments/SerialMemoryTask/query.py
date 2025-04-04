@@ -36,11 +36,6 @@ class SerialMemoryTaskExpForLLM(Experiment):
             '--num_sessions', type=int, default=3, help='Number of test sessions.')
         self.parser.add_argument('--max_trials', nargs='+', type=int,
                                  default=[70, 130, 160], help='Max trials per list length.')
-        self.parser.add_argument('--num_runs', type=int, default=1,
-                                 help='Number of independent runs of the full task.')
-        self.parser.add_argument('--version_number', type=str, default='1',
-                                 help='Version number for compatibility across tasks')
-
         parser = self.parser.parse_args()
         self.list_lengths = parser.list_lengths
         self.starting_conditions = parser.starting_conditions
