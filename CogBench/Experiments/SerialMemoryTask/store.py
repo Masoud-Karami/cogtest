@@ -134,7 +134,8 @@ class StoringSerialMemoryScores(StoringScores):
                            'behaviour_score4_name'] = 'recency effect'
         else:
             storing_df.loc[len(storing_df)] = [
-                engine, run,
+                engine, 'engine',
+                run, 'run',
                 accuracy, 'serial memory accuracy',
                 ttc_mean, 'mean TTC',
                 initiation_error_rate, 'initiation error rate',
