@@ -37,6 +37,10 @@ class SerialMemoryTaskExpForLLM(Experiment):
             '--num_sessions', type=int, default=3, help='Number of test sessions.')
         self.parser.add_argument('--max_trials', nargs='+', type=int,
                                  default=[70, 130, 160], help='Max trials per list length.')
+        self.parser.add_argument('--num_runs', type=int, default=1,
+                                 help='Number of independent runs of the full task.')
+        self.parser.add_argument('--version_number', type=str, default='1',
+                             help='Version number for compatibility across tasks')
         parser = self.parser.parse_args()
         self.list_lengths = parser.list_lengths
         self.starting_conditions = parser.starting_conditions
@@ -44,8 +48,12 @@ class SerialMemoryTaskExpForLLM(Experiment):
         self.num_sessions = parser.num_sessions
         self.max_trials_dict = {l: t for l, t in zip(
             self.list_lengths, parser.max_trials)}
+        self.engine = 'unknown'
+        self.run_id = 0
 
     def run_single_experiment(self, llm):
+        self.engine = llm.engine_name if hasattr(
+            llm, 'engine_name') else 'unknown'
         Q_, A_ = llm.Q_A
         word_pool = self.get_word_pool()
         results = []
@@ -84,6 +92,11 @@ class SerialMemoryTaskExpForLLM(Experiment):
                                 prev_recall, recalled_list)
                             prev_recall = recalled_list
 
+                            # Break if list is perfectly recalled
+                            correct_recall = sum(
+                                [s == r for s, r in zip(study_list, recalled_list)])
+                            ttc_achieved = relative_correct == list_length - 1 and first_item_correct
+
                             results.append({
                                 'session': session,
                                 'condition': condition,
@@ -95,7 +108,11 @@ class SerialMemoryTaskExpForLLM(Experiment):
                                 'rel_correct': relative_correct,
                                 'init_correct': first_item_correct,
                                 'last_correct': last_item_correct,
-                                'forget_rate': forgetting_rate
+                                'forget_rate': forgetting_rate,
+                                'ttc_achieved': ttc_achieved,
+                                'correct_recall': correct_recall,
+                                'engine': self.engine,
+                                'run': self.run_id
                             })
 
                             if relative_correct == list_length - 1 and first_item_correct:
@@ -169,4 +186,7 @@ class SerialMemoryTaskExpForLLM(Experiment):
 
 if __name__ == '__main__':
     experiment = SerialMemoryTaskExpForLLM(get_llm)
-    experiment.run()
+    args = experiment.parser.parse_args()
+    for run_id in range(args.num_runs):
+        experiment.run_id = run_id
+        experiment.run()

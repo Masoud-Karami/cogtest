@@ -65,11 +65,12 @@ class HF_API_LLM(LLM):
                 "text-generation",
                 model=engine_path,
                 tokenizer=tokenizer,
-                torch_dtype=torch.bfloat16,
+                torch_dtype=torch.float16,
                 trust_remote_code=True,
                 device_map="auto",
                 pad_token_id=padtokenId,
-                max_new_tokens=max_tokens
+                max_new_tokens=max_tokens,
+		batch_size=1
             )
         except Exception as e:
             print(f"Pipeline initialization error: {e}")
@@ -82,11 +83,12 @@ class HF_API_LLM(LLM):
         if not self.pipe:
             raise RuntimeError("Pipeline is not initialized.")
 
-        # If `texts` is a single string, convert to list
-        if isinstance(texts, str):
+        is_single_input = isinstance(texts, str)
+        if is_single_input:
             texts = [texts]
 
-        # Batch process multiple inputs instead of sequentially
         responses = self.pipe(texts, batch_size=len(texts))
+        results = [resp[0]['generated_text']
+                   [len(text):] for text, resp in zip(texts, responses)]
 
-        return [resp['generated_text'][len(text):] for text, resp in zip(texts, responses)]
+        return results[0] if is_single_input else results
