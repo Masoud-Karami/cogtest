@@ -7,6 +7,7 @@ from tqdm import tqdm
 import sys
 import os
 import random
+import re
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(
     os.path.abspath(__file__))))))  # allows to import CogBench as a package
@@ -89,7 +90,7 @@ class SerialMemoryTaskExpForLLM(Experiment):
 
                             # Break if list is perfectly recalled
                             correct_recall = sum(
-                                [s == r for s, r in zip(study_list, recalled_list)])
+                                [s == r.lower() for s, r in zip(study_list, recalled_list)])
                             ttc_achieved = relative_correct == list_length - 1 and first_item_correct
 
                             results.append({
@@ -106,6 +107,7 @@ class SerialMemoryTaskExpForLLM(Experiment):
                                 'forget_rate': forgetting_rate,
                                 'ttc_achieved': ttc_achieved,
                                 'correct_recall': correct_recall,
+                                'errors': sum([r != s.lower() for r, s in zip(recalled_list, study_list)]),
                                 'engine': self.engine,
                                 'run': self.run_id
                             })
@@ -117,42 +119,75 @@ class SerialMemoryTaskExpForLLM(Experiment):
 
     def construct_prompt(self, Q_, study_list, condition):
         if condition == "constant":
-            instruction = ("You are participating in an experiment where you are repeatedly provided with a lists of words.\n"
-                           "Lists always beginning with the same word on every trial.\n"
-                           "Your goal is to learn and recall the complete list in the correct order over multiple study-test trials.\n"
-                           "Focus on remembering the position of each word in the list.\n\n"
-                           )
+            instruction = (
+                "You are participating in a memory experiment that involves learning a sequence of words.\n"
+                "On each trial, you will study a list of words presented in a fixed order.\n"
+                "Each list always starts with the same word across trials, but your goal is to learn the **entire sequence** in the correct order.\n"
+                "Over multiple study-test trials, try to memorize the exact position of each word.\n\n"
+                "This task tests your ability to recall learned sequences and maintain order information across repeated exposure.\n\n"
+            )
         elif condition == "spin":
-            instruction = ("You are participating in an experiment where you are repeatedly provided with a lists of words.\n"
-                           "In this task, you will be repeatedly shown the same list of words.\n"
-                           "However, on each trial, the list will begin at a different starting point (a 'spin'), wrapping around to include all words.\n"
-                           "Your goal is to recall the presented list **in the exact order it appeared** during this trial.\n"
-                           "This task assesses your ability to adapt to varying positional cues.\n\n"
-                           )
+            instruction = (
+                "You are participating in a memory experiment that involves recalling word sequences.\n"
+                "On each trial, you will study a list of words. The list contains the same words each time, but the **starting point changes on every trial** (like a rotation).\n"
+                "Your task is to **recall the sequence exactly as it was presented** on the current trial.\n"
+                "This task tests your ability to track sequences even when the starting point shifts.\n\n"
+            )
         else:
             raise ValueError(
-                f"Unknown condition: {condition}. The condition should be either 'spin' or 'constant'")
+                f"Unknown condition: {condition}. Should be 'spin' or 'constant'")
 
-        # In the original experiments, words were presented sequentially with controlled inter-stimulus intervals (e.g., 1 word/sec), to mirror real-time episodic encoding. The timing is crucial for humans to model working memory load, temporal encoding, and rehearsal effects. LLMs receive the entire prompt as a static input and do not perceive time or sequence delays as humans do. See Bommasani et al., 2021 (Foundation Models): "Unlike humans, LMs do not learn from temporally spaced tokens; sequence timing is absent from attention." Min et al., 2022: LLM performance is prompt-sensitive, not time-sensitive. Kojima et al., 2022: Encourage explicit ordering in prompt tokens, not timing. So simulating word-by-word presentation using a for loop or time delay does not impact the LLM’s behavior, because the full prompt is still sent as a complete token sequence.
-
-        # Simulate sequential presentation using ordered list format
         sequential_list = '\n'.join(
-            [f"{i+1}. {word}" for i, word in enumerate(study_list)])
+            [f"{i+1}. {word}" for i, word in enumerate(study_list)]
+        )
 
-        return (
+        prompt = (
             f"{Q_}\n"
             f"{instruction}"
             "Study phase:\n"
             f"{sequential_list}\n\n"
-            "Now recall the words in the **exact order** presented above. Separate them with spaces.\n"
+            "Recall phase:\n"
+            "Please type all the words **in the exact order** they were shown, separated by spaces.\n"
+            "Do not skip or rearrange any words.\n"
             "Your response:"
         )
 
         return prompt
 
-    def extract_recalled_list(self, llm_answer, list_length):
-        words = llm_answer.replace('\n', ' ').replace(',', ' ').split()
-        return words[:list_length]
+    # def extract_recalled_list(self, llm_answer, list_length):
+    #     words = llm_answer.replace('\n', ' ').replace(',', ' ').split()
+    #     return words[:list_length]
+
+    def extract_recalled_list(self, llm_answer, list_length, study_list=None):
+        """
+        Parses the LLM's response and extracts a cleaned list of recalled words not hallucinated or partial.
+        - Filters tokens by length, alphanumeric content.
+        - Optionally ensures words are part of the original study list.
+        """
+        answer = llm_answer.lower().replace('\n', ' ').replace(',', ' ')
+        tokens = answer.split()
+
+        # Lowercase study list for matching
+        valid_set = set(w.lower() for w in study_list)
+
+        # Remove duplicates and hallucinated words
+        recalled = []
+        for token in tokens:
+            # Keep alphanumeric and hyphen
+            word = re.sub(r'[^\w\-]', '', token)
+            if word in valid_set:
+                recalled.append(word)
+            else:
+                recalled.append(word)
+
+            if len(recalled) == list_length:
+                break
+
+        # Pad if too short (to preserve alignment with list_length)
+        while len(recalled) < list_length:
+            recalled.append("")  # represents omission
+
+        return recalled
 
     def relative_order_scoring(self, recalled_list, study_list):
         correct_count = 0
