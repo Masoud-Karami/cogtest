@@ -117,13 +117,13 @@ class SerialMemoryTaskExpForLLM(Experiment):
 
     def construct_prompt(self, Q_, study_list, condition):
         if condition == "constant":
-            instruction = ("You are participating in a positional cues in serial learning experiment.\n"
-                           "In this task, you will be repeatedly shown lists of words, always beginning with the same word on every trial.\n"
+            instruction = ("You are participating in an experiment where you are repeatedly provided with a lists of words.\n"
+                           "Lists always beginning with the same word on every trial.\n"
                            "Your goal is to learn and recall the complete list in the correct order over multiple study-test trials.\n"
                            "Focus on remembering the position of each word in the list.\n\n"
                            )
         elif condition == "spin":
-            instruction = ("You are participating in a positional cues in serial learning experiment.\n"
+            instruction = ("You are participating in an experiment where you are repeatedly provided with a lists of words.\n"
                            "In this task, you will be repeatedly shown the same list of words.\n"
                            "However, on each trial, the list will begin at a different starting point (a 'spin'), wrapping around to include all words.\n"
                            "Your goal is to recall the presented list **in the exact order it appeared** during this trial.\n"
