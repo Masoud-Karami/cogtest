@@ -104,17 +104,18 @@ python3 full_run.py --engine random --compare_with gpt-4 claude-1
   If TRANSFORMERS_CACHE still exists (`echo $TRANSFORMERS_CACHE` or 
 `echo $HF_HOME`), unset it:
   `unset TRANSFORMERS_CACHE`
-  ```export HF_HOME=~/scratch/huggingface/```
+  ```export HF_HOME=~/scratch/huggingface/```git remote set-url origin git@github.com:Masoud-Karami/cogtest.git
+
 
   when in Home/cogtest, ```export PYTHONPATH=$(pwd)```
 ## GIT
 
 ```bash 
-git remote set-url origin git@github.com:Masoud-Karami/cogtest.git
-git remote -v
-git checkout newtask-serialmemory
-git pull --rebase origin newtask-serialmemory
-git push origin newtask-serialmemory
+git remote set-url origin git@github.com:Masoud-Karami/cogtest.git 
+git remote -v 
+git checkout newtask-serialmemory 
+git pull --rebase origin newtask-serialmemory 
+git push origin newtask-serialmemory 
 ```
 
 
