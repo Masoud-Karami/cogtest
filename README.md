@@ -114,7 +114,8 @@ git remote set-url origin git@github.com:Masoud-Karami/cogtest.git
 git remote -v
 git checkout newtask-serialmemory
 git pull --rebase origin newtask-serialmemory
-git push origin newtask-serialmemory```
+git push origin newtask-serialmemory
+```
 
 
   ### Clone my repository (check the commits)
