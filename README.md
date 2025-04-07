@@ -109,12 +109,13 @@ python3 full_run.py --engine random --compare_with gpt-4 claude-1
   when in Home/cogtest, ```export PYTHONPATH=$(pwd)```
 ## GIT
 
-```console 
-        git remote set-url origin git@github.com:Masoud-Karami/cogtest.git
-        git remote -v
-        git checkout newtask-serialmemory
-        git pull --rebase origin newtask-serialmemory
-        git push origin newtask-serialmemory```
+```bash 
+git remote set-url origin git@github.com:Masoud-Karami/cogtest.git
+git remote -v
+git checkout newtask-serialmemory
+git pull --rebase origin newtask-serialmemory
+git push origin newtask-serialmemory```
+
 
   ### Clone my repository (check the commits)
   ``c``d ~/scratch```
