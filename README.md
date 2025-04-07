@@ -16,7 +16,7 @@ Markdown Cheat Sheet Basic (https://www.markdownguide.org/cheat-sheet/)
 
 ssh -i ~/.ssh/your_private_key username@narval.alliancecan.ca
 
-1. add the following to `~/.ssh/config` on your local machine
+1. Add the following to `~/.ssh/config` on your local machine
 
 - ```console
         Host narval beluga graham cedar
@@ -107,6 +107,14 @@ python3 full_run.py --engine random --compare_with gpt-4 claude-1
   ```export HF_HOME=~/scratch/huggingface/```
 
   when in Home/cogtest, ```export PYTHONPATH=$(pwd)```
+## GIT
+
+```console 
+        git remote set-url origin git@github.com:Masoud-Karami/cogtest.git
+        git remote -v
+        git checkout newtask-serialmemory
+        git pull --rebase origin newtask-serialmemory
+        git push origin newtask-serialmemory```
 
   ### Clone my repository (check the commits)
   ``c``d ~/scratch```
