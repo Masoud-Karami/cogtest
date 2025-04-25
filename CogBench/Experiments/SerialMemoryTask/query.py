@@ -28,15 +28,15 @@ class SerialMemoryTaskExpForLLM(Experiment):
 
     def add_arguments_(self):
         self.parser.add_argument('--list_lengths', nargs='+', type=int,
-                                 default=[7, 13, 19], help='List lengths to be tested.')
+                                 default=[7], help='List lengths to be tested.')  # default=[7, 13, 19]
         self.parser.add_argument('--starting_conditions', nargs='+', default=[
-                                 'constant', 'spin'], help='Starting position conditions.')
+                                 'constant'], help='Starting position conditions.')  # default=['constant', 'spin']
         self.parser.add_argument('--num_lists_per_condition', type=int,
-                                 default=3, help='Number of lists per length per condition.')
+                                 default=1, help='Number of lists per length per condition.')  # default=3
         self.parser.add_argument(
-            '--num_sessions', type=int, default=3, help='Number of test sessions.')
+            '--num_sessions', type=int, default=1, help='Number of test sessions.')  # default=3
         self.parser.add_argument('--max_trials', nargs='+', type=int,
-                                 default=[70, 130, 160], help='Max trials per list length.')
+                                 default=[2], help='Max trials per list length.')  # default=[10, 70, 130, 160]
         parser = self.parser.parse_args()
         self.list_lengths = parser.list_lengths
         self.starting_conditions = parser.starting_conditions
@@ -46,6 +46,10 @@ class SerialMemoryTaskExpForLLM(Experiment):
             self.list_lengths, parser.max_trials)}
         self.engine = 'unknown'
         self.run_id = 0
+
+        if len(parser.max_trials) != len(parser.list_lengths):
+            raise ValueError(
+                "Each list length must have a corresponding max_trials value.")
 
     def run_single_experiment(self, llm):
         self.engine = llm.engine_name if hasattr(
@@ -72,9 +76,17 @@ class SerialMemoryTaskExpForLLM(Experiment):
                             else:
                                 study_list = word_list
 
+                            print(f"Trial {trial}: {study_list}")
                             prompt = self.construct_prompt(
                                 Q_, study_list, condition)
+                            print("\n===================")
+                            print("Prompt sent to GPT-3:")
+                            print(prompt)
+                            print("===================\n")
                             llm_answer = llm.generate(prompt)
+                            print("LLM Response:")
+                            print(llm_answer)
+                            print("===================\n")
                             recalled_list = self.extract_recalled_list(
                                 llm_answer, list_length)
 
@@ -121,7 +133,7 @@ class SerialMemoryTaskExpForLLM(Experiment):
         if condition == "constant":
             instruction = (
                 "You are participating in a memory experiment that involves learning a sequence of words.\n"
-                "On each trial, you will study a list of words presented in a fixed order.\n"
+                "On each trial, you will study a list of words presented one word at a time, and in a fixed order.\n"
                 "Each list always starts with the same word across trials, but your goal is to learn the **entire sequence** in the correct order.\n"
                 "Over multiple study-test trials, try to memorize the exact position of each word.\n\n"
                 "This task tests your ability to recall learned sequences and maintain order information across repeated exposure.\n\n"

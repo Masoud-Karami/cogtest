@@ -97,8 +97,15 @@ class StoringSerialMemoryScores(StoringScores):
             else:
                 recall = recalled_raw.split(',')
 
-            if len(study) < 4 or len(recall) != len(study):
-                continue
+            # if len(study) < 4 or len(recall) != len(study):
+            #     continue
+
+            # Remove strict length filter — keep all trials, even imperfect ones
+            # Align lengths for scoring (e.g., primacy/recency)
+            while len(recall) < len(study):
+                recall.append("")  # pad missing with empty
+            if len(recall) > len(study):
+                recall = recall[:len(study)]
 
             primacy_correct += int(recall[0] == study[0]) + \
                 int(recall[1] == study[1])
@@ -133,9 +140,18 @@ class StoringSerialMemoryScores(StoringScores):
             storing_df.loc[existing,
                            'behaviour_score4_name'] = 'recency effect'
         else:
+            # storing_df.loc[len(storing_df)] = [
+            #     engine, 'engine',
+            #     run, 'run',
+            #     accuracy, 'serial memory accuracy',
+            #     ttc_mean, 'mean TTC',
+            #     initiation_error_rate, 'initiation error rate',
+            #     forgetting_rate, 'intertrial forgetting',
+            #     primacy_effect, 'primacy effect',
+            #     recency_effect, 'recency effect'
+            # ]
             storing_df.loc[len(storing_df)] = [
-                engine, 'engine',
-                run, 'run',
+                engine, run,
                 accuracy, 'serial memory accuracy',
                 ttc_mean, 'mean TTC',
                 initiation_error_rate, 'initiation error rate',
@@ -143,6 +159,31 @@ class StoringSerialMemoryScores(StoringScores):
                 primacy_effect, 'primacy effect',
                 recency_effect, 'recency effect'
             ]
+            # Debugging information: remove the above block and uncomment the block before taht to see the DataFrame structure
+            # print("\n--- DEBUG INFO ---")
+            # print("DataFrame columns:", storing_df.columns.tolist())
+            # print("Length of columns:", len(storing_df.columns))
+            # row_data = [
+            #     engine, 'engine',
+            #     run, 'run',
+            #     accuracy, 'serial memory accuracy',
+            #     ttc_mean, 'mean TTC',
+            #     initiation_error_rate, 'initiation error rate',
+            #     forgetting_rate, 'intertrial forgetting',
+            #     primacy_effect, 'primacy effect',
+            #     recency_effect, 'recency effect'
+            # ]
+            # print("Row to insert:", row_data)
+            # print("Length of row_data:", len(row_data))
+            # storing_df.loc[len(storing_df)] = row_data
+
+        # --- Print Behavioral Metrics to Shell --- for test experiments without saving with gpt-3
+        print(f"\n--- Behavioral Metrics for engine: {engine}, run: {run} ---")
+        print(f"  Initiation Error Rate:     {initiation_error_rate:.3f}")
+        print(f"  Intertrial Forgetting:     {forgetting_rate:.3f}")
+        print(f"  Primacy Effect:            {primacy_effect:.3f}")
+        print(f"  Recency Effect:            {recency_effect:.3f}")
+        print("------------------------------------------------------\n")
 
         return storing_df
 
