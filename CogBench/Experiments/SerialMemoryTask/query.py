@@ -149,6 +149,8 @@ class SerialMemoryTaskExpForLLM(Experiment):
 
         return pd.DataFrame(results)
 
+    TODO:  # Add noisy related prompt instruction
+
     def construct_prompt(self, Q_, study_list, condition):
         if condition == "constant":  # tests your ability to recall learned sequences and maintain order information across repeated exposure
             instruction = (
