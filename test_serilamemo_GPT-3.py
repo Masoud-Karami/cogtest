@@ -1,11 +1,18 @@
 import os
 import sys
 import pandas as pd
+import argparse
 from tqdm import tqdm
 from dotenv import load_dotenv
 import openai
 from CogBench.Experiments.SerialMemoryTask.query import SerialMemoryTaskExpForLLM
 from CogBench.Experiments.SerialMemoryTask.store import StoringSerialMemoryScores
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--add_noise', action='store_true',
+                    help="Add noise to the word list.")
+args = parser.parse_args()
 
 # Setup OpenAI key
 load_dotenv("CogBench/.env")
@@ -13,11 +20,24 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 
 # Construct prompt using the original logic from query.py
 experiment = SerialMemoryTaskExpForLLM(None)
+experiment.add_noise = args.add_noise
+
 study_list = [
     "Battig", "Bickley", "DOI", "Hermann", "Intersample", "Joelson", "Kucera", "Landauer", "Lorge", "Madigan",
     "Paivio", "Streeter", "Tarka", "Thorndike", "Yuille", "al", "asymptote", "bigram", "emotionality",
     "et", "etal", "pickList", "preprint", "pronunciability", "yorku"
 ]
+# prompt = experiment.construct_prompt(
+#     "Recall the words you studied.", study_list, condition="constant")
+
+if experiment.add_noise:
+    study_list = experiment.add_noise_to_list(study_list)
+    print("\n=== DEBUG: Noisy study list ===")
+    print(study_list)
+else:
+    print("\n=== DEBUG: Clean study list ===")
+    print(study_list)
+
 prompt = experiment.construct_prompt(
     "Recall the words you studied.", study_list, condition="constant"
 )
