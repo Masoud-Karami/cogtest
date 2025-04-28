@@ -81,7 +81,7 @@ class SerialMemoryTaskExpForLLM(Experiment):
                             # Add noise to the study list if specified
                             # --- Add noise if requested ---
                             if self.add_noise:
-                                noisy_study_list = self.add_noise_to_list(
+                                noisy_study_list = self.add_distractors_between_words(
                                     study_list)
                                 # Insert debug output here
                                 print("\n--- NOISE DEBUG INFO ---")
@@ -95,7 +95,7 @@ class SerialMemoryTaskExpForLLM(Experiment):
 
                             print(f"Trial {trial}: {study_list}")
                             prompt = self.construct_prompt(
-                                Q_, study_list, condition)
+                                Q_, noisy_study_list, condition, noise=self.add_noise)
                             print("\n===================")
                             print("Prompt sent to GPT-3:")
                             print(prompt)

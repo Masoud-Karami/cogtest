@@ -11,7 +11,7 @@ from CogBench.Experiments.SerialMemoryTask.store import StoringSerialMemoryScore
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--add_noise', action='store_true',
-                    help="Add noise to the word list.")
+                    help="Add distractors (noise) between study words.")
 args = parser.parse_args()
 
 # Setup OpenAI key
@@ -31,9 +31,10 @@ study_list = [
 #     "Recall the words you studied.", study_list, condition="constant")
 
 if experiment.add_noise:
-    study_list = experiment.add_noise_to_list(study_list)
+    study_list_with_noise = experiment.add_distractors_between_words(
+        study_list)
     print("\n=== DEBUG: Noisy study list ===")
-    print(study_list)
+    print(study_list_with_noise)
 else:
     print("\n=== DEBUG: Clean study list ===")
     print(study_list)
