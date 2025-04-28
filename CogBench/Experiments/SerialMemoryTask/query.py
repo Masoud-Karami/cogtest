@@ -14,6 +14,10 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(
 # allows importing CogBench as a package
 
 # print("PYTHONPATH set to:", os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..")))
+# Define a distractor pool
+DISTRACTOR_POOL = ["Xyzon", "Nope", "Blur", "Obscure",
+                   "Fuzz", "Synthet", "Distracto", "Foobar", "Nebula"]
+DISTRACTOR_SYMBOLS = list("#$%&*@^~")
 
 
 class SerialMemoryTaskExpForLLM(Experiment):
@@ -39,6 +43,9 @@ class SerialMemoryTaskExpForLLM(Experiment):
                                  default=[2], help='Max trials per list length.')  # default=[10, 70, 130, 160]
         self.parser.add_argument('--add_noise', action='store_true',
                                  help='If set, adds noise to the study list during study phase.')
+        self.parser.add_argument(
+            '--num_runs', type=int, default=1, help='Number of experiment runs.')
+
         parser = self.parser.parse_args()
         self.list_lengths = parser.list_lengths
         self.starting_conditions = parser.starting_conditions
@@ -89,7 +96,8 @@ class SerialMemoryTaskExpForLLM(Experiment):
                                     if original != noisy:
                                         print(
                                             f"Original: {original:<15} --> Noisy: {noisy}")
-                                    print("--- END OF NOISE DEBUG ---\n")
+
+                                print("--- END OF NOISE DEBUG ---\n")
                             else:
                                 noisy_study_list = study_list
 
@@ -319,51 +327,48 @@ class SerialMemoryTaskExpForLLM(Experiment):
     #     random.shuffle(noisy_word)
     #     return ''.join(noisy_word)
 
+    def add_distractors_between_words(self, study_list):
+        """
+        Adds labeled distractors randomly between real study words.
+        - Real words are preserved and not modified.
+        - Distractors are inserted in between, labeled as [DISTRACTOR] word.
+        """
 
-def add_distractors_between_words(self, study_list):
-    """
-    Adds labeled distractors randomly between real study words.
-    - Real words are preserved and not modified.
-    - Distractors are inserted in between, labeled as [DISTRACTOR] word.
-    """
-    # Define a distractor pool
-    distractor_pool = ["Xyzon", "Nope", "Blur", "Obscure",
-                       "Fuzz", "Synthet", "Distracto", "Foobar", "Nebula"]
-    distractor_symbols = list("#$%&*@^~")
+        distractor_pool = DISTRACTOR_POOL
+        distractor_symbols = DISTRACTOR_SYMBOLS
+        # Filter out distractors that accidentally match real words
+        study_words_lower = {w.lower() for w in study_list}
+        filtered_distractors = [
+            w for w in distractor_pool if w.lower() not in study_words_lower]
 
-    # Filter out distractors that accidentally match real words
-    study_words_lower = {w.lower() for w in study_list}
-    filtered_distractors = [
-        w for w in distractor_pool if w.lower() not in study_words_lower]
+        if not filtered_distractors:
+            raise ValueError(
+                "Distractor pool is empty after filtering real study words!")
 
-    if not filtered_distractors:
-        raise ValueError(
-            "Distractor pool is empty after filtering real study words!")
+        noisy_list = []
 
-    noisy_list = []
+        for word in study_list:
+            # Always add the real word
+            noisy_list.append(word)
 
-    for word in study_list:
-        # Always add the real word
-        noisy_list.append(word)
+            # Random chance to insert a distractor after this word
+            if random.random() < 0.5:  # 50% chance to insert distractor after each real word
+                distractor_word = random.choice(filtered_distractors)
 
-        # Random chance to insert a distractor after this word
-        if random.random() < 0.5:  # 50% chance to insert distractor after each real word
-            distractor_word = random.choice(filtered_distractors)
+                # Small chance to add noise symbols before/after the distractor
+                if random.random() < 0.5:
+                    add_at_start = random.choice([True, False])
+                    noise = ''.join(random.choices(
+                        distractor_symbols, k=random.randint(1, 3)))
+                    if add_at_start:
+                        distractor_word = noise + distractor_word
+                    else:
+                        distractor_word = distractor_word + noise
 
-            # Small chance to add noise symbols before/after the distractor
-            if random.random() < 0.5:
-                add_at_start = random.choice([True, False])
-                noise = ''.join(random.choices(
-                    distractor_symbols, k=random.randint(1, 3)))
-                if add_at_start:
-                    distractor_word = noise + distractor_word
-                else:
-                    distractor_word = distractor_word + noise
+                # Label the distractor
+                noisy_list.append(f"[DISTRACTOR] {distractor_word}")
 
-            # Label the distractor
-            noisy_list.append(f"[DISTRACTOR] {distractor_word}")
-
-    return noisy_list
+        return noisy_list
 
     def extract_recalled_list(self, llm_answer, list_length, study_list=None):
         """
@@ -373,6 +378,10 @@ def add_distractors_between_words(self, study_list):
         """
         answer = llm_answer.lower().replace('\n', ' ').replace(',', ' ')
         tokens = answer.split()
+
+        if study_list is None:
+            study_list = []
+            print("Warning: No study list provided!")
 
         # Lowercase study list for matching
         valid_set = set(w.lower() for w in study_list)
