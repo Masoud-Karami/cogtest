@@ -22,6 +22,9 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 experiment = SerialMemoryTaskExpForLLM(None)
 experiment.add_noise = args.add_noise
 
+# Short lists (e.g., 7–25 items) may not sufficiently challenge LLMs, as they can often recall such sequences accurately due to their extensive training on large corpora.​
+
+Recommendation: Expand the list lengths to 50–100 items. This increase can better test the limits of LLMs' memory and sequence recall capabilities.
 study_list = [
     "Battig", "Bickley", "DOI", "Hermann", "Intersample", "Joelson", "Kucera", "Landauer", "Lorge", "Madigan",
     "Paivio", "Streeter", "Tarka", "Thorndike", "Yuille", "al", "asymptote", "bigram", "emotionality",
@@ -67,7 +70,8 @@ print(output)
 print("\n------------------ STUDY vs RECALL -------------------")
 correct = 0
 for i, (target, guess) in enumerate(zip(study_list, words)):
-    mark = "TRUE Recalled!" if target == guess else "FALSE Recalled!------"
+    mark = "TRUE Recalled!" if target.lower(
+    ) == guess.lower() else "FALSE Recalled!------"
     if mark == "TRUE Recalled!":
         correct += 1
     print(f"{i+1:02d}. {target:<15} | {guess:<15} {mark}")
@@ -99,11 +103,11 @@ df_results = pd.DataFrame([{
     'study_list': ','.join(study_list),
     'recalled_list': ','.join(words),
     'rel_correct': 0,  # Optional: use experiment.relative_order_scoring()
-    'init_correct': int(words[0] == study_list[0]),
-    'last_correct': int(words[-1] == study_list[-1]),
+    'init_correct': int(words[0].lower() == study_list[0].lower()),
+    'last_correct': int(words[-1].lower() == study_list[-1].lower()),
     'forget_rate': None,
     'ttc_achieved': False,
-    'correct_recall': sum([w1 == w2 for w1, w2 in zip(study_list, words)]),
+    'correct_recall': sum(w1.lower() == w2.lower() for w1, w2 in zip(study_list, words)),
     'engine': 'gpt-3.5',
     'run': 0
 }])

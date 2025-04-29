@@ -43,8 +43,8 @@ class SerialMemoryTaskExpForLLM(Experiment):
                                  default=[2], help='Max trials per list length.')  # default=[10, 70, 130, 160]
         self.parser.add_argument('--add_noise', action='store_true',
                                  help='If set, adds noise to the study list during study phase.')
-        self.parser.add_argument(
-            '--num_runs', type=int, default=1, help='Number of experiment runs.')
+        # self.parser.add_argument(
+        #     '--num_runs', type=int, default=1, help='Number of experiment runs.')
 
         parser = self.parser.parse_args()
         self.list_lengths = parser.list_lengths
@@ -157,43 +157,6 @@ class SerialMemoryTaskExpForLLM(Experiment):
 
         return pd.DataFrame(results)
 
-    # TODO: Add noisy related prompt instruction!
-
-    # def construct_prompt(self, Q_, study_list, condition):
-    #     if condition == "constant":  # tests your ability to recall learned sequences and maintain order information across repeated exposure
-    #         instruction = (
-    #             "You are participating in a memory experiment that involves learning a sequence of words.\n"
-    #             "On each trial, you will study a list of words presented one word at a time, and in a fixed order.\n"
-    #             "Each list always starts with the same word across trials, but your goal is to learn the **entire sequence** in the correct order.\n"
-    #             "Over multiple study-test trials, try to memorize the exact position of each word.\n\n")
-    #     elif condition == "spin":
-    #         instruction = (
-    #             "You are participating in a memory experiment that involves recalling word sequences.\n"
-    #             "On each trial, you will study a list of words. The list contains the same words each time, but the **starting point changes on every trial** (like a rotation).\n"
-    #             "Your task is to **recall the sequence exactly as it was presented** on the current trial.\n"
-    #             "This task tests your ability to track sequences even when the starting point shifts.\n\n"
-    #         )
-    #     else:
-    #         raise ValueError(
-    #             f"Unknown condition: {condition}. Should be 'spin' or 'constant'")
-
-    #     sequential_list = '\n'.join(
-    #         [f"{i+1}. {word}" for i, word in enumerate(study_list)]
-    #     )
-
-    #     prompt = (
-    #         f"{Q_}\n"
-    #         f"{instruction}"
-    #         "Study phase:\n"
-    #         f"{sequential_list}\n\n"
-    #         "Recall phase:\n"
-    #         "Please type all the words **in the exact order** they were shown, separated by spaces.\n"
-    #         "Do not skip or rearrange any words.\n"
-    #         "Your response:"
-    #     )
-
-    #     return prompt
-
     def construct_prompt(self, Q_, study_list, condition, noise=False):
         """
         Constructs a prompt for the Serial Memory Task, incorporating advanced prompting techniques.
@@ -225,8 +188,9 @@ class SerialMemoryTaskExpForLLM(Experiment):
         # Add distractor instruction if noise is present
         if noise:
             instruction += (
-                " Note: Some words will be labeled as [DISTRACTOR]. "
-                "Ignore these distractor words and focus only on the main study words."
+                "Note: Some words will be labeled as [DISTRACTOR] — ignore these completely.\n"
+                "Also, some study words may contain extra symbols (like #, $, %, &, *, @, ^, and ~) at the beginning or end.\n"
+                "These symbols are not part of the actual words. Try to mentally remove them and recall the clean word forms in the original order."
             )
 
         # Format the study list with numbering
@@ -247,100 +211,19 @@ class SerialMemoryTaskExpForLLM(Experiment):
 
         return prompt
 
-    # def extract_recalled_list(self, llm_answer, list_length):
-    #     words = llm_answer.replace('\n', ' ').replace(',', ' ').split()
-    #     return words[:list_length]
-
-    # def add_noise_to_list(self, study_list):
-    #     noisy_list = []
-    #     noise_pool = ["Xyzon", "Nope", "Blur",
-    #                   "Obscure", "Fuzz", "Synthet", "Noise"]
-    #     for word in study_list:
-    #         r = random.random()
-    #         if r < 0.2:
-    #             # Replace with random noise word
-    #             noisy_list.append(random.choice(noise_pool))
-    #         elif r < 0.4:
-    #             # Add special character noise
-    #             noisy_word = self.add_noise_to_stimulus(word)
-    #             noisy_list.append(noisy_word)
-    #         elif r < 0.5:
-    #             # Masked word
-    #             noisy_list.append("_" * len(word))
-    #         else:
-    #             noisy_list.append(word)
-    #     return noisy_list
-
-    # def add_noise_to_list(self, study_list):
-    #     """
-    #     Adds distractors or mild noise around study words.
-    #     Noise types:
-    #     - Inject random noise words (not part of the study set).
-    #     - Add symbols at the beginning or end (but not inside words).
-    #     - Mask some words with underscores.
-
-    #     Returns:
-    #         list: Noisy study list.
-    #     """
-    #     noisy_list = []
-    #     noise_pool = ["Xyzon", "Nope", "Blur",
-    #                   "Obscure", "Fuzz", "Synthet", "Noise"]
-    #     study_set = set(w.lower() for w in study_list)
-
-    #     for word in study_list:
-    #         r = random.random()
-
-    #         if r < 0.2:
-    #             # Insert a random distractor (not in original list)
-    #             distractor = random.choice(noise_pool)
-    #             noisy_list.append(f"[DISTRACTOR] {distractor}")
-
-    #         elif r < 0.4:
-    #             # Add special characters at beginning or end only
-    #             special_symbols = random.choice(
-    #                 ["#", "$", "%", "&", "*", "@", "^", "~"])
-    #             if random.random() < 0.5:
-    #                 noisy_word = f"{special_symbols}{word}"
-    #             else:
-    #                 noisy_word = f"{word}{special_symbols}"
-    #             noisy_list.append(noisy_word)
-
-    #         elif r < 0.5:
-    #             # Mask the word fully with underscores
-    #             masked_word = "_" * len(word)
-    #             noisy_list.append(masked_word)
-
-    #         else:
-    #             # Keep original word untouched
-    #             noisy_list.append(word)
-
-    #     return noisy_list
-
-    # def add_noise_to_stimulus(self, stimulus):
-    #     """
-    #     Adds small noise to a word by injecting random special characters.
-    #     """
-    #     noise_symbols = list("#$%&*@^~")
-    #     noise_length = random.randint(1, 3)  # add 1-3 symbols
-    #     noise = ''.join(random.choices(noise_symbols, k=noise_length))
-    #     noisy_word = list(stimulus + noise)
-    #     random.shuffle(noisy_word)
-    #     return ''.join(noisy_word)
-
     def add_distractors_between_words(self, study_list):
         """
-        Adds labeled distractors randomly between real study words.
-        - Real words are preserved and not modified.
-        - Distractors are inserted in between, labeled as [DISTRACTOR] word.
+        Adds distractor *words* and optional symbol-only noise to *study* words.
+        - Inserts 0–4 full distractors between each real word.
+        - Each real word may also be visually modified with random symbols before/after (not labeled).
         """
-
         distractor_pool = DISTRACTOR_POOL
         distractor_symbols = DISTRACTOR_SYMBOLS
-        # Filter out distractors that accidentally match real words
+
         study_words_lower = {w.lower() for w in study_list}
         filtered_distractors = [
-            w for w in distractor_pool if w.lower() not in study_words_lower]
-
+            w for w in distractor_pool if w.lower() not in study_words_lower
+        ]
         if not filtered_distractors:
             raise ValueError(
                 "Distractor pool is empty after filtering real study words!")
@@ -348,25 +231,31 @@ class SerialMemoryTaskExpForLLM(Experiment):
         noisy_list = []
 
         for word in study_list:
-            # Always add the real word
-            noisy_list.append(word)
+            # --- Add noise to actual study word ---
+            add_prefix = random.choice([True, False])
+            add_suffix = random.choice([True, False])
 
-            # Random chance to insert a distractor after this word
-            if random.random() < 0.5:  # 50% chance to insert distractor after each real word
-                distractor_word = random.choice(filtered_distractors)
+            prefix_noise = ''.join(random.choices(
+                distractor_symbols, k=random.randint(1, 3))) if add_prefix else ""
+            suffix_noise = ''.join(random.choices(
+                distractor_symbols, k=random.randint(1, 3))) if add_suffix else ""
 
-                # Small chance to add noise symbols before/after the distractor
-                if random.random() < 0.5:
-                    add_at_start = random.choice([True, False])
-                    noise = ''.join(random.choices(
-                        distractor_symbols, k=random.randint(1, 3)))
-                    if add_at_start:
-                        distractor_word = noise + distractor_word
-                    else:
-                        distractor_word = distractor_word + noise
+            noisy_word = f"{prefix_noise}{word}{suffix_noise}"
 
-                # Label the distractor
-                noisy_list.append(f"[DISTRACTOR] {distractor_word}")
+            noisy_list.append(noisy_word)
+
+            # --- Add 0–4 full distractors after each study word ---
+            num_distractors = random.randint(0, 4)
+            for _ in range(num_distractors):
+                distractor = random.choice(filtered_distractors)
+
+                d_prefix = ''.join(random.choices(distractor_symbols, k=random.randint(
+                    1, 3))) if random.choice([True, False]) else ""
+                d_suffix = ''.join(random.choices(distractor_symbols, k=random.randint(
+                    1, 3))) if random.choice([True, False]) else ""
+
+                noisy_distractor = f"[DISTRACTOR] {d_prefix}{distractor}{d_suffix}"
+                noisy_list.append(noisy_distractor)
 
         return noisy_list
 
