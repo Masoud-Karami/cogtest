@@ -24,12 +24,24 @@ experiment.add_noise = args.add_noise
 
 # Short lists (e.g., 7–25 items) may not sufficiently challenge LLMs, as they can often recall such sequences accurately due to their extensive training on large corpora.​
 
-Recommendation: Expand the list lengths to 50–100 items. This increase can better test the limits of LLMs' memory and sequence recall capabilities.
-study_list = [
-    "Battig", "Bickley", "DOI", "Hermann", "Intersample", "Joelson", "Kucera", "Landauer", "Lorge", "Madigan",
-    "Paivio", "Streeter", "Tarka", "Thorndike", "Yuille", "al", "asymptote", "bigram", "emotionality",
-    "et", "etal", "pickList", "preprint", "pronunciability", "yorku"
-]
+# Recommendation: Expand the list lengths to 50–100 items. This increase can better test the limits of LLMs' memory and sequence recall capabilities.
+
+# study_list = [
+#     "Battig", "Bickley", "DOI", "Hermann", "Intersample", "Joelson", "Kucera", "Landauer", "Lorge", "Madigan",
+#     "Paivio", "Streeter", "Tarka", "Thorndike", "Yuille", "al", "asymptote", "bigram", "emotionality",
+#     "et", "etal", "pickList", "preprint", "pronunciability", "yorku"
+# ]
+
+# Define the absolute path to the CSV
+CSV_PATH = "CogBench/Experiments/SerialMemoryTask/Dataset/selected_100_words.csv"
+
+# Load the CSV
+df = pd.read_csv(CSV_PATH)
+
+# Extract the 'word' column into a list
+Wiki100_list = df['word'].tolist()
+study_list = Wiki100_list[:50]  # Use the first 50 words
+
 # prompt = experiment.construct_prompt(
 #     "Recall the words you studied.", study_list, condition="constant")
 
