@@ -1,5 +1,7 @@
 from CogBench.llm_utils.llms import get_llm
 from CogBench.base_classes import Experiment
+from nltk.corpus import wordnet as wn
+import nltk
 import argparse
 import numpy as np
 import pandas as pd
@@ -7,6 +9,9 @@ from tqdm import tqdm
 import sys
 import os
 import random
+import pandas as pd
+# import ace_tools as tools
+import json
 import re
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(
@@ -61,44 +66,77 @@ class SerialMemoryTaskExpForLLM(Experiment):
             raise ValueError(
                 "Each list length must have a corresponding max_trials value.")
 
-        def generate_positionally_tagged_study_list(study_list):
-            """
-            Generates a naturalistic, semi-variable positionally tagged list for spin-list trials.
-            """
-            ordinal_variants = [
-                "The first starting point is",
-                "The second word is",
-                "The third, just after the second, is",
-                "The fourth word is",
-                "Fifth in line is",
-                "Then comes the sixth word",
-                "Seventh word presented is",
-                "In the eighth position you saw",
-                "Ninth in the list is",
-                "And finally, the tenth is"
-            ]
+    # Try to build a synonym dictionary for the study words using WordNet
+    def build_synonym_dict(words):
+        synonym_dict = {}
+        for word in words:
+            synsets = wn.synsets(word)
+            # Gather synonyms excluding the original word
+            synonyms = set()
+            for syn in synsets:
+                for lemma in syn.lemmas():
+                    lemma_name = lemma.name().replace('_', ' ')
+                    if lemma_name.lower() != word.lower():
+                        synonyms.add(lemma_name)
+            if synonyms:
+                synonym_dict[word] = random.choice(list(synonyms))
+            else:
+                synonym_dict[word] = None
+        return synonym_dict
 
-            default_template = "The {pos} word is"
+    # Provided target list (same as before)
+    target_words = [
+        "Army", "as", "World", "War", "II", "intensified", "He", "first", "went", "for",
+        "basic", "training", "to", "Abilene", "Texas", "and", "then", "to", "Brooks", "General",
+        "Hospital", "in", "San", "Antonio", "After", "a", "stint", "with", "the", "short",
+        "lived", "Army", "Service", "Training", "Program", "Groza", "was", "sent", "with", "the",
+        "96th", "Infantry", "Division", "to", "serve", "as", "a", "surgical", "technician", "in"
+    ]
 
-            ordinal_numbers = [
-                "first", "second", "third", "fourth", "fifth", "sixth", "seventh",
-                "eighth", "ninth", "tenth", "eleventh", "twelfth", "thirteenth",
-                "fourteenth", "fifteenth", "sixteenth", "seventeenth", "eighteenth",
-                "nineteenth", "twentieth", "twenty-first", "twenty-second",
-                "twenty-third", "twenty-fourth", "twenty-fifth", "twenty-sixth",
-                "twenty-seventh", "twenty-eighth", "twenty-ninth", "thirtieth"
-            ]
+    # Generate the synonym dictionary
+    synonym_dict = build_synonym_dict(target_words)
 
-            tagged_lines = []
-            for i, word in enumerate(study_list):
-                if i < len(ordinal_variants):
-                    prefix = ordinal_variants[i]
-                else:
-                    # fallback to a generic form for long lists
-                    prefix = default_template.format(pos=ordinal_numbers[i])
-                tagged_lines.append(f"{prefix}: {word}")
+    df = pd.DataFrame(list(synonym_dict.items()), columns=[
+                      "Target Word", "Random Synonym"])
+    df.head()
 
-            return "The following list is presented:\n" + "\n".join(tagged_lines)
+    def generate_positionally_tagged_study_list(self, study_list):
+        """
+        Generates a positionally tagged list with optional synonym-based cues
+        loaded from synonyms.json.
+        """
+
+        # Load precomputed synonym dictionary from disk
+        synonym_path = os.path.join(
+            os.path.dirname(__file__), "synonyms.json"
+        )
+        if os.path.exists(synonym_path):
+            with open(synonym_path, "r") as f:
+                synonym_dict = json.load(f)
+        else:
+            print("⚠️ Warning: synonym dictionary not found.")
+            synonym_dict = {}
+
+        def ordinal_suffix(n):
+            if 11 <= n % 100 <= 13:
+                return f"{n}th"
+            suffixes = {1: 'st', 2: 'nd', 3: 'rd'}
+            return f"{n}{suffixes.get(n % 10, 'th')}"
+
+        lines = []
+        for i, word in enumerate(study_list):
+            related = synonym_dict.get(word, None)
+
+            if related and i == 0:
+                line = f"The first starting point, which is related to the {related}, is: {word}"
+            elif related:
+                line = f"The {ordinal_suffix(i+1)} word is like '{related}' but slightly different — it's: {word}"
+            else:
+                line = f"The {ordinal_suffix(i+1)} word is: {word}"
+
+            lines.append(line)
+
+        return "The following list is presented:\n" + "\n".join(lines)
 
     def run_single_experiment(self, llm):
         self.engine = llm.engine_name if hasattr(
@@ -200,60 +238,6 @@ class SerialMemoryTaskExpForLLM(Experiment):
 
         return pd.DataFrame(results)
 
-    # def construct_prompt(self, Q_, study_list, condition, noise=False):
-    #     """
-    #     Constructs a prompt for the Serial Memory Task, incorporating advanced prompting techniques.
-
-    #     Args:
-    #         Q_ (str): Base query or instruction.
-    #         study_list (list of str): List of study words, possibly including distractors.
-    #         condition (str): 'constant' or 'spin' to indicate list presentation condition.
-    #         noise (bool): Flag indicating presence of distractor words.
-
-    #     Returns:
-    #         str: Formatted prompt string.
-    #     """
-    #     # Base instruction based on condition
-    #     if condition == "constant":
-    #         instruction = (
-    #             "You will study a list of words presented one at the time and in a fixed order.\n"
-    #             "Your task is to memorize and recall the words in the exact order presented.\n"
-    #         )
-    #     elif condition == "spin":
-    #         instruction = (
-    #             "You will study a list of words where the starting point may vary each time, "
-    #             "but the internal order remains consistent. \n"
-    #             "Your task is to memorize and recall the words in the order they are presented.\n"
-    #         )
-    #     else:
-    #         raise ValueError("Invalid condition. Choose 'constant' or 'spin'.")
-
-    #     # Add distractor instruction if noise is present
-    #     if noise:
-    #         instruction += (
-    #             "Note: Some words will be labeled as [DISTRACTOR] — ignore these completely.\n"
-    #             "Also, some study words may contain extra symbols (like #, $, %, &, *, @, ^, and ~) at the beginning or end.\n"
-    #             "These symbols are not part of the actual words. Try to mentally remove them and recall the clean word forms in the original order."
-    #         )
-
-    #     # Format the study list with numbering
-    #     study_phase = "\n".join(
-    #         f"{idx + 1}. {word}" for idx, word in enumerate(study_list))
-
-    #     # Construct the full prompt
-    #     prompt = (
-    #         f"{Q_}\n\n"
-    #         f"{instruction}\n\n"
-    #         "Study Phase:\n"
-    #         f"{study_phase}\n\n"
-    #         "Recall Phase:\n"
-    #         "Please list the study words in the order presented, separated by spaces. "
-    #         "Do not include any distractor words in your response.\n"
-    #         "Your answer:"
-    #     )
-
-    #     return prompt
-
     def construct_prompt(self, Q_, study_list, condition, noise=False):
         """
         Constructs a prompt aligned with the spin-list and serial position encoding principles.
@@ -261,13 +245,11 @@ class SerialMemoryTaskExpForLLM(Experiment):
         if condition == "constant":
             instruction = (
                 "You were shown a list of words, presented one at a time, starting from the same position each time.\n"
-                "Your task is to recall the words in the **same order** they appeared."
             )
         elif condition == "spin":
             instruction = (
                 "You were shown a list of words, presented one at a time."
                 "The starting point may have varied across trials, but the order within the list remained consistent.\n"
-                "Your task is to recall the words in the **same order** as they were shown."
             )
         else:
             raise ValueError("Invalid condition. Choose 'constant' or 'spin'.")
@@ -275,19 +257,19 @@ class SerialMemoryTaskExpForLLM(Experiment):
         if noise:
             instruction += (
                 "\nNote: Some words may include extra symbols (e.g., #, $, %, &, *, @, ^, ~) at the beginning or end.\n"
-                "These symbols are not part of the actual word. Try to mentally remove them and recall only the core word."
+                "These symbols are not part of the actual word. Try to remove them and recall only the core word."
             )
 
         return (
             f"{Q_}\n\n"
             f"{instruction}\n\n"
-            "Recall Phase:\n"
-            "Please recall the words in the same order as you read them.\n"
+            "Your task is to recall the words in the **same order** they appeared."
             "If you do not remember a word at a certain position, leave that slot empty using \"\".\n\n"
-            "Respond in the following JSON format:\n"
+            "Please respond in the following JSON format:\n"
             "{\n"
             '    "recalled_words": ["", "", "", ...]  // one item per position\n'
             "}"
+            "Recall Phase:\n"
         )
 
     def add_distractors_between_words(self, study_list):
@@ -333,8 +315,8 @@ class SerialMemoryTaskExpForLLM(Experiment):
                 d_suffix = ''.join(random.choices(distractor_symbols, k=random.randint(
                     1, 3))) if random.choice([True, False]) else ""
 
-                noisy_distractor = f"[DISTRACTOR] {d_prefix}{distractor}{d_suffix}"
-                noisy_list.append(noisy_distractor)
+                # noisy_distractor = f"[DISTRACTOR] {d_prefix}{distractor}{d_suffix}"
+                # noisy_list.append(noisy_distractor)
 
         return noisy_list
 
