@@ -138,9 +138,15 @@ class SerialMemoryTaskExpForLLM(Experiment):
 
         return "The following list is presented:\n" + "\n".join(lines)
 
+    # verify if same ID: reused or different ID: new instance so reinitialized
+
+    def log_llm_instance(self, llm):
+        print(f"LLM instance ID: {id(llm)} | Type: {type(llm).__name__}")
+
     def run_single_experiment(self, llm):
         self.engine = llm.engine_name if hasattr(
             llm, 'engine_name') else 'unknown'
+        self.log_llm_instance(llm)
         Q_, A_ = llm.Q_A
         word_pool = self.get_word_pool()
         results = []
@@ -272,53 +278,53 @@ class SerialMemoryTaskExpForLLM(Experiment):
             "Recall Phase:\n"
         )
 
-    def add_distractors_between_words(self, study_list):
-        """
-        Adds distractor *words* and optional symbol-only noise to *study* words.
-        - Inserts 0–4 full distractors between each real word.
-        - Each real word may also be visually modified with random symbols before/after (not labeled).
-        """
-        distractor_pool = DISTRACTOR_POOL
-        distractor_symbols = DISTRACTOR_SYMBOLS
+    # def add_distractors_between_words(self, study_list):
+    #     """
+    #     Adds distractor *words* and optional symbol-only noise to *study* words.
+    #     - Inserts 0–4 full distractors between each real word.
+    #     - Each real word may also be visually modified with random symbols before/after (not labeled).
+    #     """
+    #     distractor_pool = DISTRACTOR_POOL
+    #     distractor_symbols = DISTRACTOR_SYMBOLS
 
-        study_words_lower = {w.lower() for w in study_list}
-        filtered_distractors = [
-            w for w in distractor_pool if w.lower() not in study_words_lower
-        ]
-        if not filtered_distractors:
-            raise ValueError(
-                "Distractor pool is empty after filtering real study words!")
+    #     study_words_lower = {w.lower() for w in study_list}
+    #     filtered_distractors = [
+    #         w for w in distractor_pool if w.lower() not in study_words_lower
+    #     ]
+    #     if not filtered_distractors:
+    #         raise ValueError(
+    #             "Distractor pool is empty after filtering real study words!")
 
-        noisy_list = []
+    #     noisy_list = []
 
-        for word in study_list:
-            # --- Add noise to actual study word ---
-            add_prefix = random.choice([True, False])
-            add_suffix = random.choice([True, False])
+    #     for word in study_list:
+    #         # --- Add noise to actual study word ---
+    #         add_prefix = random.choice([True, False])
+    #         add_suffix = random.choice([True, False])
 
-            prefix_noise = ''.join(random.choices(
-                distractor_symbols, k=random.randint(1, 3))) if add_prefix else ""
-            suffix_noise = ''.join(random.choices(
-                distractor_symbols, k=random.randint(1, 3))) if add_suffix else ""
+    #         prefix_noise = ''.join(random.choices(
+    #             distractor_symbols, k=random.randint(1, 3))) if add_prefix else ""
+    #         suffix_noise = ''.join(random.choices(
+    #             distractor_symbols, k=random.randint(1, 3))) if add_suffix else ""
 
-            noisy_word = f"{prefix_noise}{word}{suffix_noise}"
+    #         noisy_word = f"{prefix_noise}{word}{suffix_noise}"
 
-            noisy_list.append(noisy_word)
+    #         noisy_list.append(noisy_word)
 
-            # --- Add 0–4 full distractors after each study word ---
-            num_distractors = random.randint(0, 4)
-            for _ in range(num_distractors):
-                distractor = random.choice(filtered_distractors)
+    #         # --- Add 0–4 full distractors after each study word ---
+    #         num_distractors = random.randint(0, 4)
+    #         for _ in range(num_distractors):
+    #             distractor = random.choice(filtered_distractors)
 
-                d_prefix = ''.join(random.choices(distractor_symbols, k=random.randint(
-                    1, 3))) if random.choice([True, False]) else ""
-                d_suffix = ''.join(random.choices(distractor_symbols, k=random.randint(
-                    1, 3))) if random.choice([True, False]) else ""
+    #             d_prefix = ''.join(random.choices(distractor_symbols, k=random.randint(
+    #                 1, 3))) if random.choice([True, False]) else ""
+    #             d_suffix = ''.join(random.choices(distractor_symbols, k=random.randint(
+    #                 1, 3))) if random.choice([True, False]) else ""
 
-                # noisy_distractor = f"[DISTRACTOR] {d_prefix}{distractor}{d_suffix}"
-                # noisy_list.append(noisy_distractor)
+    #             noisy_distractor = f"[DISTRACTOR] {d_prefix}{distractor}{d_suffix}"
+    #             noisy_list.append(noisy_distractor)
 
-        return noisy_list
+    #     return noisy_list
 
     def extract_recalled_list(self, llm_answer, list_length, study_list=None):
         """
@@ -372,12 +378,12 @@ class SerialMemoryTaskExpForLLM(Experiment):
             prev_recall, current_recall) if w1 == w2])
         return 1 - (correctly_retained / len(prev_recall))
 
-    def get_word_pool(self):
-        return [
-            "Battig", "Bickley", "DOI", "Hermann", "Intersample", "Joelson", "Kucera", "Landauer", "Lorge", "Madigan",
-            "Paivio", "Streeter", "Tarka", "Thorndike", "Yuille", "al", "asymptote", "bigram", "emotionality",
-            "et", "etal", "pickList", "preprint", "pronunciability", "yorku"
-        ]
+    # def get_word_pool(self):
+    #     return [
+    #         "Battig", "Bickley", "DOI", "Hermann", "Intersample", "Joelson", "Kucera", "Landauer", "Lorge", "Madigan",
+    #         "Paivio", "Streeter", "Tarka", "Thorndike", "Yuille", "al", "asymptote", "bigram", "emotionality",
+    #         "et", "etal", "pickList", "preprint", "pronunciability", "yorku"
+    #     ]
 
 
 if __name__ == '__main__':
