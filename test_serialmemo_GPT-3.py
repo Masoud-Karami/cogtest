@@ -12,10 +12,6 @@ import openai
 from CogBench.Experiments.SerialMemoryTask.query import SerialMemoryTaskExpForLLM
 from CogBench.Experiments.SerialMemoryTask.store import StoringSerialMemoryScores
 
-parser = argparse.ArgumentParser()
-parser.add_argument('--add_noise', action='store_true',
-                    help="Add distractors (noise) between study words.")
-args = parser.parse_args()
 
 # Setup OpenAI key
 load_dotenv("CogBench/.env")
@@ -23,7 +19,6 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 
 # Initialize experiment
 experiment = SerialMemoryTaskExpForLLM(None)
-experiment.add_noise = args.add_noise
 
 # Load JSON instead of CSV
 JSON_PATH = "CogBench/Experiments/SerialMemoryTask/Dataset/WikiText100_w_with_fallbacks.json"
@@ -40,7 +35,7 @@ if experiment.add_noise:
         study_list)
     print("=== DEBUG: Noisy study list ===")
     for i, word in enumerate(study_list_with_noise):
-        print(f"{i+1:03d}. {word}")
+        print(f'{i+1:03d}. "{word}"')
 else:
     study_list_with_noise = study_list
 
@@ -58,7 +53,7 @@ prompt = experiment.construct_prompt(
 # Send prompt to OpenAI
 client = openai.OpenAI()
 response = client.completions.create(
-    model="gpt-3.5-turbo-instruct",
+    model="gpt-3.5-turbo",
     prompt=prompt,
     temperature=0,
     max_tokens=300,
@@ -67,16 +62,6 @@ output = response.choices[0].text.strip()
 # Parse model output
 output = response.choices[0].text.strip()
 print(f"Raw output: {output}")
-
-# try:
-#     parsed = json.loads(output)
-#     words = parsed.get("recalled_words", [])
-# except json.JSONDecodeError:
-#     print("Warning: Failed to parse JSON. Falling back to token splitting.")
-#     words = output.replace('\n', ' ').replace(',', ' ').split()
-
-# words = words[:len(study_list)]  # align to expected length
-# print(f"Truncated words: {words}")
 
 try:
     parsed = json.loads(output)

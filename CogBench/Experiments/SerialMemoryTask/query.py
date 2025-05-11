@@ -48,6 +48,8 @@ class SerialMemoryTaskExpForLLM(Experiment):
                                  default=[2], help='Max trials per list length.')  # default=[10, 70, 130, 160]
         self.parser.add_argument('--add_noise', action='store_true',
                                  help='If set, adds noise to the study list during study phase.')
+        self.parser.add_argument('--add_distr', action='store_true',
+                                 help='If set, adds extra explanation distracions to the memory cue.')
         # self.parser.add_argument(
         #     '--num_runs', type=int, default=1, help='Number of experiment runs.')
 
@@ -59,6 +61,8 @@ class SerialMemoryTaskExpForLLM(Experiment):
         self.max_trials_dict = {l: t for l, t in zip(
             self.list_lengths, parser.max_trials)}
         self.add_noise = parser.add_noise if parser.add_noise else False
+        self.add_distr = parser.add_distr if parser.add_distr else False
+
         self.engine = 'unknown'
         self.run_id = 0
 
@@ -84,38 +88,11 @@ class SerialMemoryTaskExpForLLM(Experiment):
                 synonym_dict[word] = None
         return synonym_dict
 
-    # Provided target list (same as before)
-    target_words = [
-        "Army", "as", "World", "War", "II", "intensified", "He", "first", "went", "for",
-        "basic", "training", "to", "Abilene", "Texas", "and", "then", "to", "Brooks", "General",
-        "Hospital", "in", "San", "Antonio", "After", "a", "stint", "with", "the", "short",
-        "lived", "Army", "Service", "Training", "Program", "Groza", "was", "sent", "with", "the",
-        "96th", "Infantry", "Division", "to", "serve", "as", "a", "surgical", "technician", "in"
-    ]
-
-    # Generate the synonym dictionary
-    synonym_dict = build_synonym_dict(target_words)
-
-    df = pd.DataFrame(list(synonym_dict.items()), columns=[
-                      "Target Word", "Random Synonym"])
-    df.head()
-
     def generate_positionally_tagged_study_list(self, study_list):
         """
         Generates a positionally tagged list with optional synonym-based cues
         loaded from synonyms.json.
         """
-
-        # Load precomputed synonym dictionary from disk
-        synonym_path = os.path.join(
-            os.path.dirname(__file__), "synonyms.json"
-        )
-        if os.path.exists(synonym_path):
-            with open(synonym_path, "r") as f:
-                synonym_dict = json.load(f)
-        else:
-            print("⚠️ Warning: synonym dictionary not found.")
-            synonym_dict = {}
 
         def ordinal_suffix(n):
             if 11 <= n % 100 <= 13:
@@ -127,12 +104,15 @@ class SerialMemoryTaskExpForLLM(Experiment):
         for i, word in enumerate(study_list):
             related = synonym_dict.get(word, None)
 
-            if related and i == 0:
-                line = f"The first starting point, which is related to the {related}, is: {word}"
-            elif related:
-                line = f"The {ordinal_suffix(i+1)} word is like '{related}' but slightly different — it's: {word}"
+            if self.add_distr:
+                if related and i == 0:
+                    line = f'The first starting point, which is related to the "{related}", is: "{word}"'
+                elif related and related != word:
+                    line = f'The {ordinal_suffix(i+1)} word is like "{related}" but slightly different — it\'s: "{word}"'
+                else:
+                    line = f'The {ordinal_suffix(i+1)} word is: "{word}"'
             else:
-                line = f"The {ordinal_suffix(i+1)} word is: {word}"
+                line = f'The {ordinal_suffix(i+1)} word is: "{word}"'
 
             lines.append(line)
 
@@ -186,7 +166,7 @@ class SerialMemoryTaskExpForLLM(Experiment):
 
                             print(f"Trial {trial}: {study_list}")
 
-                            memory_seed = generate_positionally_tagged_study_list(
+                            memory_seed = self.generate_positionally_tagged_study_list(
                                 noisy_study_list)
                             prompt = self.construct_prompt(
                                 memory_seed, noisy_study_list, condition, noise=self.add_noise)
@@ -294,53 +274,53 @@ class SerialMemoryTaskExpForLLM(Experiment):
             "Recall Phase:\n"
         )
 
-    # def add_distractors_between_words(self, study_list):
-    #     """
-    #     Adds distractor *words* and optional symbol-only noise to *study* words.
-    #     - Inserts 0–4 full distractors between each real word.
-    #     - Each real word may also be visually modified with random symbols before/after (not labeled).
-    #     """
-    #     distractor_pool = DISTRACTOR_POOL
-    #     distractor_symbols = DISTRACTOR_SYMBOLS
+    def add_distractors_between_words(self, study_list):
+        """
+        Adds distractor *words* and optional symbol-only noise to *study* words.
+        - Inserts 0–4 full distractors between each real word.
+        - Each real word may also be visually modified with random symbols before/after (not labeled).
+        """
+        distractor_pool = DISTRACTOR_POOL
+        distractor_symbols = DISTRACTOR_SYMBOLS
 
-    #     study_words_lower = {w.lower() for w in study_list}
-    #     filtered_distractors = [
-    #         w for w in distractor_pool if w.lower() not in study_words_lower
-    #     ]
-    #     if not filtered_distractors:
-    #         raise ValueError(
-    #             "Distractor pool is empty after filtering real study words!")
+        study_words_lower = {w.lower() for w in study_list}
+        filtered_distractors = [
+            w for w in distractor_pool if w.lower() not in study_words_lower
+        ]
+        if not filtered_distractors:
+            raise ValueError(
+                "Distractor pool is empty after filtering real study words!")
 
-    #     noisy_list = []
+        noisy_list = []
 
-    #     for word in study_list:
-    #         # --- Add noise to actual study word ---
-    #         add_prefix = random.choice([True, False])
-    #         add_suffix = random.choice([True, False])
+        for word in study_list:
+            # --- Add noise to actual study word ---
+            add_prefix = random.choice([True, False])
+            add_suffix = random.choice([True, False])
 
-    #         prefix_noise = ''.join(random.choices(
-    #             distractor_symbols, k=random.randint(1, 3))) if add_prefix else ""
-    #         suffix_noise = ''.join(random.choices(
-    #             distractor_symbols, k=random.randint(1, 3))) if add_suffix else ""
+            prefix_noise = ''.join(random.choices(
+                distractor_symbols, k=random.randint(1, 3))) if add_prefix else ""
+            suffix_noise = ''.join(random.choices(
+                distractor_symbols, k=random.randint(1, 3))) if add_suffix else ""
 
-    #         noisy_word = f"{prefix_noise}{word}{suffix_noise}"
+            noisy_word = f"{prefix_noise}{word}{suffix_noise}"
 
-    #         noisy_list.append(noisy_word)
+            noisy_list.append(noisy_word)
 
-    #         # --- Add 0–4 full distractors after each study word ---
-    #         num_distractors = random.randint(0, 4)
-    #         for _ in range(num_distractors):
-    #             distractor = random.choice(filtered_distractors)
+            # --- Add 0–4 full distractors after each study word ---
+            num_distractors = random.randint(0, 4)
+            for _ in range(num_distractors):
+                distractor = random.choice(filtered_distractors)
 
-    #             d_prefix = ''.join(random.choices(distractor_symbols, k=random.randint(
-    #                 1, 3))) if random.choice([True, False]) else ""
-    #             d_suffix = ''.join(random.choices(distractor_symbols, k=random.randint(
-    #                 1, 3))) if random.choice([True, False]) else ""
+                d_prefix = ''.join(random.choices(distractor_symbols, k=random.randint(
+                    1, 3))) if random.choice([True, False]) else ""
+                d_suffix = ''.join(random.choices(distractor_symbols, k=random.randint(
+                    1, 3))) if random.choice([True, False]) else ""
 
-    #             noisy_distractor = f"[DISTRACTOR] {d_prefix}{distractor}{d_suffix}"
-    #             noisy_list.append(noisy_distractor)
+                noisy_distractor = f"[DISTRACTOR] {d_prefix}{distractor}{d_suffix}"
+                noisy_list.append(noisy_distractor)
 
-    #     return noisy_list
+        return noisy_list
 
     def extract_recalled_list(self, llm_answer, list_length, study_list=None):
         """
