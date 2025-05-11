@@ -1,10 +1,11 @@
+# run: python 100wordpool.py --num_words 150
 
-# Modified version of 100wordpool.py to save 100 sampled words and their synonyms to JSON
 import os
 import difflib
 import re
 import random
 import json
+import argparse
 from datasets import load_dataset
 from nltk.corpus import wordnet as wn
 import nltk
@@ -15,11 +16,11 @@ OUTPUT_JSON = os.path.join(DATASET_DIR, "WikiText100_w_with_syns.json")
 FALLBACK_JSON = os.path.join(DATASET_DIR, "WikiText100_w_with_fallbacks.json")
 
 
-def get_random_100_rows_from_wikitext():
+def get_random_rows_from_wikitext(n_rows):
     dataset = load_dataset("wikitext", "wikitext-103-raw-v1", split="train")
     total_rows = len(dataset)
-    start_idx = random.randint(0, total_rows - 100)
-    selected_rows = dataset.select(range(start_idx, start_idx + 100))
+    start_idx = random.randint(0, total_rows - n_rows)
+    selected_rows = dataset.select(range(start_idx, start_idx + n_rows))
     return selected_rows['text']
 
 
@@ -30,11 +31,12 @@ def clean_and_tokenize(text_blocks):
     return cleaned.split()
 
 
-def sample_100_consecutive_words(word_list):
-    if len(word_list) < 100:
-        raise ValueError("Not enough words to sample 100 consecutive ones.")
-    start_idx = random.randint(0, len(word_list) - 100)
-    return word_list[start_idx: start_idx + 100]
+def sample_consecutive_words(word_list, sample_size):
+    if len(word_list) < sample_size:
+        raise ValueError(
+            f"Not enough words to sample {sample_size} consecutive ones.")
+    start_idx = random.randint(0, len(word_list) - sample_size)
+    return word_list[start_idx: start_idx + sample_size]
 
 
 def find_synonym(word):
@@ -52,7 +54,7 @@ def save_words_to_json(words):
     word_map = {word: find_synonym(word) for word in words}
     with open(OUTPUT_JSON, 'w') as f:
         json.dump(word_map, f, indent=2)
-    print(f"Saved 100 words with synonyms to {OUTPUT_JSON}")
+    print(f"Saved {len(words)} words with synonyms to {OUTPUT_JSON}")
     return word_map
 
 
@@ -75,14 +77,20 @@ def nulltodiffer():
 
 
 def main():
-    print("Sampling 100 rows from WikiText-103...")
-    rows = get_random_100_rows_from_wikitext()
+    parser = argparse.ArgumentParser(
+        description="Sample word list with synonyms from WikiText")
+    parser.add_argument("--num_words", type=int, default=100,
+                        help="Number of consecutive words to sample")
+    args = parser.parse_args()
+
+    print(f"Sampling {args.num_words} rows from WikiText-103...")
+    rows = get_random_rows_from_wikitext(args.num_words)
 
     print("Cleaning and tokenizing...")
     tokens = clean_and_tokenize(rows)
 
-    print("Selecting 100 consecutive words...")
-    word_list = sample_100_consecutive_words(tokens)
+    print(f"Selecting {args.num_words} consecutive words...")
+    word_list = sample_consecutive_words(tokens, args.num_words)
 
     print("Saving to JSON...")
     word_map = save_words_to_json(word_list)
