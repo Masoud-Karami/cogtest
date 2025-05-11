@@ -246,35 +246,51 @@ class SerialMemoryTaskExpForLLM(Experiment):
 
     def construct_prompt(self, Q_, study_list, condition, noise=False):
         """
-        Constructs a prompt aligned with the spin-list and serial position encoding principles.
+        Constructs a prompt aligned with the serial memory task design.
+        Incorporates trial/session structure, serial position encoding, noise handling, and response control.
         """
+
+        # Encode condition-specific instructions
         if condition == "constant":
             instruction = (
-                "You were shown a list of words, presented one at a time, starting from the same position each time.\n"
+                "In each trial of this memory test, you are shown a list of words, one at a time, "
+                "always starting from the **same fixed word**. "
+                "Each word is labeled by its position in the list (e.g., [Item 1], [Item 2], ...).\n"
             )
         elif condition == "spin":
             instruction = (
-                "You were shown a list of words, presented one at a time."
-                "The starting point may have varied across trials, but the order within the list remained consistent.\n"
+                "In each trial of this memory test, you are shown a list of words, one at a time. "
+                "The **starting point of the list may vary** across trials, but the internal order remains consistent. "
+                "Each word is labeled by its position (e.g., [Item 1], [Item 2], ...).\n"
             )
         else:
             raise ValueError("Invalid condition. Choose 'constant' or 'spin'.")
 
+        # Add noise/distractor instructions if applicable
         if noise:
             instruction += (
-                "\nNote: Some words may include extra symbols (e.g., #, $, %, &, *, @, ^, ~) at the beginning or end.\n"
-                "These symbols are not part of the actual word. Try to remove them and recall only the core word."
+                "\nSome words may contain extra non-alphabetic symbols (e.g., #, $, %, &, *, @, ^, ~) "
+                "at the beginning or end. These symbols are **not part of the core word** and should be ignored during recall.\n"
+                "You may also encounter entries labeled as [Distractor]; these are **not part of the word list** and should be excluded from recall.\n"
             )
 
+        # Combine prompt
         return (
             f"{Q_}\n\n"
-            f"{instruction}\n\n"
-            "Your task is to recall the words in the **same order** they appeared."
-            "If you do not remember a word at a certain position, leave that slot empty using \"\".\n\n"
-            "Please respond in the following JSON format:\n"
+            "You are now taking part in a structured memory test composed of multiple **sessions**, "
+            "each containing several **trials**.\n\n"
+            f"{instruction}"
+            "\nThere is a strict rule you must follow during this test: "
+            "**FROM NOW ON**, you must not respond or generate any output *EXCEPT* when you are sent:\n"
+            "`<<The list is ended!>>`\n"
+            "Do not respond in any way during the study phase — not even with acknowledgments like \"Understood\".\n\n"
+            "Once you receive `<<The list is ended!>>`, your task is to recall the **core targeted words** "
+            "in the **exact order** they were presented.\n"
+            "If you do not remember a word at a specific position, leave that slot empty using \"\".\n\n"
+            "Please respond using the following JSON format:\n"
             "{\n"
-            '    "recalled_words": ["", "", "", ...]  // one item per position\n'
-            "}"
+            '    "recalled_words": ["", "", "", ...]  // one word per position\n'
+            "}\n"
             "Recall Phase:\n"
         )
 

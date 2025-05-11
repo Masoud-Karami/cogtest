@@ -1,63 +1,102 @@
 import os
 import re
-
+import numpy as np
+from dotenv import load_dotenv
 from langchain_openai import ChatOpenAI
 from langchain.prompts import PromptTemplate
-import numpy as np
-# https://github.com/NirDiamant/Prompt_Engineering/blob/main/all_prompt_engineering_techniques/prompt-optimization-techniques.ipynb
 
-# Define prompt variations
-prompt_a = PromptTemplate(
-    input_variables=["topic"],
-    template="Explain {topic} in simple terms."
-)
+# Load environment variables from CogBench/.env
+load_dotenv(dotenv_path="CogBench/.env")
 
-prompt_b = PromptTemplate(
-    input_variables=["topic"],
-    template="Provide a beginner-friendly explanation of {topic}, including key concepts and an example."
-)
+# Initialize GPT-4 model
+llm = ChatOpenAI(model="gpt-4", temperature=0)
 
-# Updated function to evaluate response quality
+# Prompts: your original + 10 LLM-generated variants
+test_prompts = [
+    # Your original version
+    """You are now taking part in a structured memory test composed of multiple sessions, each containing several trials.
+In each trial, you will be presented with a list of words, one at a time, in a fixed temporal order.
+Each list always starts with the same word across all trials.
+Each word will be labeled with its serial position, for example: [Item 1]: restrictive
+
+Some items may include non-alphabetic symbols (e.g., #, %, @, *) at the beginning or end. These symbols are irrelevant and should be ignored.
+You may also encounter entries marked with [Distractor], such as: [Distractor]: going. These are not part of the core list.
+
+Strict Rule: FROM NOW ON, do not respond or generate any output until you are sent <<The list is ended!>>
+
+After this signal, recall only the core targeted words in the exact order shown. If you forget a word, use an empty string \"\" in its place.
+
+Respond using this format:
+{
+    "recalled_words": ["", "", "", ...]
+}""",
+
+    # Prompt 1: Baseline Instruction
+    "You will be presented with a list of words, one at a time, each labeled with its position (e.g., [Item 1], [Item 2], ...). Your task is to memorize the words in the order presented. After the list ends, recall the words in the same order.",
+
+    # Prompt 2: Emphasizing Primacy and Recency
+    "Studies have shown that items at the beginning and end of a list are more easily remembered. Keep this in mind as you are presented with the list of words, one at a time, each labeled with its position. After the list ends, recall the words in the same order.",
+
+    # Prompt 3: Introducing Distractors
+    "You will be shown a list of words, one at a time, each labeled with its position. Some items may be labeled as [Distractor]; these are not part of the core list and should be ignored. After the list ends, recall only the core words in the order presented.",
+
+    # Prompt 4: Spin-list
+    "In each trial, the list of words will start from a different position, but the internal order remains consistent. Each word is labeled with its position. Your task is to memorize the words in the order presented and recall them in the same order after the list ends.",
+
+    # Prompt 5: Emphasizing Working Memory Constraints
+    "Human working memory has limitations. You will be presented with a list of words, one at a time, each labeled with its position. Focus on memorizing as many words as you can in the order presented. After the list ends, recall the words in the same order.",
+
+    # Prompt 6: Semantic Categories
+    "You will be shown a list of words, one at a time, each labeled with its position. The words belong to different semantic categories. Pay attention to these categories as they may aid in memorization. After the list ends, recall the words in the same order.",
+
+    # Prompt 7: Serial Position Awareness
+    "Be aware that items presented at different positions in a list may be remembered differently. As you are shown the list of words, one at a time, each labeled with its position, try to focus equally on all items. After the list ends, recall the words in the same order.",
+
+    # Prompt 8: Visualization Strategy
+    "As you are presented with a list of words, one at a time, each labeled with its position, try to create a mental image for each word. Visualization can aid in memorization. After the list ends, recall the words in the same order.",
+
+    # Prompt 9: Repetition Handling
+    "Some words in the list may repeat. You will be shown the list of words, one at a time, each labeled with its position. Pay attention to repeated items as they may affect recall. After the list ends, recall the words in the same order.",
+
+    # Prompt 10: Time Constraint
+    "You will be presented with a list of words, one at a time, each labeled with its position. Each word will be displayed for a limited time. Focus on memorizing the words quickly. After the list ends, recall the words in the same order."
+]
+
+# Scoring criteria
+criteria = [
+    "Encoding Transparency (Clarity + Structure), including separation of study and recall phase, and temporal ordering",
+    "Informativeness",
+    "Engagement"
+]
 
 
-def evaluate_response(response, criteria):
-    """Evaluate the quality of a response based on given criteria.
+def generate_response(prompt_text):
+    """Send prompt to GPT-4 for evaluation."""
+    return llm.invoke(prompt_text).content
 
-    Args:
-        response (str): The generated response.
-        criteria (list): List of criteria to evaluate.
 
-    Returns:
-        float: The average score across all criteria.
-    """
+def evaluate_response(response_text, criteria):
+    """Rate prompt quality using GPT-4 based on multiple criteria."""
     scores = []
     for criterion in criteria:
-        print(f"Evaluating response based on {criterion}...")
-        prompt = f"On a scale of 1-10, rate the following response on {criterion}. Start your response with the numeric score:\n\n{response}"
-        response = generate_response(prompt)
-        # show 50 characters of the response
-        # Use regex to find the first number in the response
-        score_match = re.search(r'\d+', response)
-        if score_match:
-            score = int(score_match.group())
-            # Ensure score is not greater than 10
-            scores.append(min(score, 10))
-        else:
-            print(
-                f"Warning: Could not extract numeric score for {criterion}. Using default score of 5.")
-            scores.append(5)  # Default score if no number is found
+        eval_prompt = f"On a scale of 1 to 10, rate the following prompt on '{criterion}'. Start your response with the numeric score only:\n\n{response_text}"
+        rating = generate_response(eval_prompt)
+        score_match = re.search(r'\d+', rating)
+        score = int(score_match.group()) if score_match else 5
+        scores.append(min(score, 10))
     return np.mean(scores)
 
 
-# Perform A/B test
-topic = "machine learning"
-response_a = generate_response(prompt_a.format(topic=topic))
-response_b = generate_response(prompt_b.format(topic=topic))
+# Evaluate all prompts
+results = []
+for i, prompt in enumerate(test_prompts):
+    print(f"Evaluating Prompt {i}...")
+    score = evaluate_response(prompt, criteria)
+    results.append((i, score))
+    print(f"Score: {score:.2f}")
 
-criteria = ["Encoding Transparency (Clarity + Structure) includig Clearly separates the study phase from the recall phase, and Reflects temporally ordered input (e.g., “First item is…”).", "informativeness", "engagement"]
-score_a = evaluate_response(response_a, criteria)
-score_b = evaluate_response(response_b, criteria)
-
-print(f"Prompt A score: {score_a:.2f}")
-print(f"Prompt B score: {score_b:.2f}")
-print(f"Winning prompt: {'A' if score_a > score_b else 'B'}")
+# Rank and print
+results.sort(key=lambda x: x[1], reverse=True)
+print("\nPrompt Ranking:")
+for rank, (i, score) in enumerate(results, 1):
+    print(f"{rank}. Prompt {i} — Score: {score:.2f}")
