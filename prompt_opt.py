@@ -9,7 +9,8 @@ from langchain.prompts import PromptTemplate
 load_dotenv(dotenv_path="CogBench/.env")
 
 # Initialize GPT-4 model
-llm = ChatOpenAI(model="gpt-4", temperature=0)
+llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0)
+print(llm.invoke("Which GPT model are you?"))
 
 # Prompts: your original + 10 LLM-generated variants
 test_prompts = [
