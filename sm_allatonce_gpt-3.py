@@ -60,7 +60,7 @@ response = client.chat.completions.create(
         {"role": "user", "content": prompt}
     ],
     temperature=0,
-    max_tokens=512
+    max_tokens=2500
 )
 
 output = response.choices[0].message.content.strip()
@@ -70,8 +70,12 @@ try:
     parsed = json.loads(output)
     words = parsed.get("recalled_words", [])
 except json.JSONDecodeError:
-    print("Warning: Failed to parse JSON. Falling back to token splitting.")
-    words = output.replace('\n', ' ').replace(',', ' ').split()
+    print("Warning: Failed to parse JSON. Trying partial fix.")
+    match = re.findall(r'"recalled_words"\s*:\s*\[(.*?)\]', output, re.DOTALL)
+    if match:
+        words = re.findall(r'"(.*?)"', match[0])
+    else:
+        words = []
 
 # Compare and visualize
 print("\n---------------------- PROMPT ------------------------\n")

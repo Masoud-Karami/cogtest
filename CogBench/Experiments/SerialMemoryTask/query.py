@@ -82,8 +82,9 @@ class SerialMemoryTaskExpForLLM(Experiment):
 
             if self.add_distr:
                 related = synonym_dict.get(word)
-                if related:
-                    lines.append(f"(Similar to: {related})")
+                if related != word.lower():
+                    lines.append(
+                        f"word [{i+1}]: \"{word}\" (Similar to: {related})")
 
             if self.add_noise:
                 noise = ''.join(random.choices(
@@ -118,6 +119,54 @@ class SerialMemoryTaskExpForLLM(Experiment):
             "You must respond strictly in the following JSON format:\n"
             "{\n    \"recalled_words\": [\"\", \"\", ..., \"\"]\n}"
         )
+
+    def add_distractors_between_words(self, study_list):
+        """
+        Adds distractor *words* and optional symbol-only noise to *study* words.
+        - Inserts 0–4 full distractors between each real word.
+        - Each real word may also be visually modified with random symbols before/after (not labeled).
+        """
+        distractor_pool = DISTRACTOR_POOL
+        distractor_symbols = DISTRACTOR_SYMBOLS
+
+        study_words_lower = {w.lower() for w in study_list}
+        filtered_distractors = [
+            w for w in distractor_pool if w.lower() not in study_words_lower
+        ]
+        if not filtered_distractors:
+            raise ValueError(
+                "Distractor pool is empty after filtering real study words!")
+
+        noisy_list = []
+
+        for word in study_list:
+            # --- Add noise to actual study word ---
+            add_prefix = random.choice([True, False])
+            add_suffix = random.choice([True, False])
+
+            prefix_noise = ''.join(random.choices(
+                distractor_symbols, k=random.randint(1, 3))) if add_prefix else ""
+            suffix_noise = ''.join(random.choices(
+                distractor_symbols, k=random.randint(1, 3))) if add_suffix else ""
+
+            noisy_word = f"{prefix_noise}{word}{suffix_noise}"
+
+            noisy_list.append(noisy_word)
+
+            # --- Add 0–4 full distractors after each study word ---
+            num_distractors = random.randint(0, 4)
+            for _ in range(num_distractors):
+                distractor = random.choice(filtered_distractors)
+
+                d_prefix = ''.join(random.choices(distractor_symbols, k=random.randint(
+                    1, 3))) if random.choice([True, False]) else ""
+                d_suffix = ''.join(random.choices(distractor_symbols, k=random.randint(
+                    1, 3))) if random.choice([True, False]) else ""
+
+                noisy_distractor = f"[DISTRACTOR] {d_prefix}{distractor}{d_suffix}"
+                noisy_list.append(noisy_distractor)
+
+        return noisy_list
 
     def extract_recalled_list(self, llm_answer, list_length, study_list=None):
         tokens = re.findall(r'\b\w+\b', llm_answer.lower())
