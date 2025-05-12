@@ -1,6 +1,7 @@
 from CogBench.llm_utils.llms import get_llm
 from CogBench.base_classes import Experiment
 from nltk.corpus import wordnet as wn
+from dotenv import load_dotenv
 import argparse
 import numpy as np
 import pandas as pd
@@ -36,6 +37,8 @@ class SerialMemoryTaskExpForLLM(Experiment):
             '--max_trials', nargs='+', type=int, default=[2])
         self.parser.add_argument('--add_noise', action='store_true')
         self.parser.add_argument('--add_distr', action='store_true')
+        # self.parser.add_argument(
+        #     '--engines', nargs='+', default=['gpt-3.5-turbo'])
 
         parser = self.parser.parse_args()
         self.list_lengths = parser.list_lengths
@@ -44,6 +47,7 @@ class SerialMemoryTaskExpForLLM(Experiment):
         self.num_sessions = parser.num_sessions
         self.max_trials_dict = {l: t for l, t in zip(
             self.list_lengths, parser.max_trials)}
+        self.engine = parser.engines[0] if parser.engines else 'unknown'
         self.add_noise = parser.add_noise
         self.add_distr = parser.add_distr
         self.engine = 'unknown'
@@ -70,26 +74,22 @@ class SerialMemoryTaskExpForLLM(Experiment):
 
         lines = [
             "You will now be presented with a list of words to memorize.",
-            "Each word is shown one at a time, followed by a simulated delay.",
-            "Some words may be followed by distractors or visual noise.",
-            "Focus only on the target words and ignore distractors.",
-            "Do not respond until the end of the list is marked."
+            # "Each word is shown one at a time, followed by a simulated delay.",
+            # "Some words may be followed by distractors or visual noise.",
+            # "Focus only on the target words and ignore distractors.",
+            # "Do not respond until the end of the list is marked."
         ]
 
         for i, word in enumerate(study_list):
-            base = f"word [{i+1}]: \"{word}\""
-            lines.append(base)
-
-            if self.add_distr:
-                related = synonym_dict.get(word)
-                if related != word.lower():
-                    lines.append(
-                        f"word [{i+1}]: \"{word}\" (Similar to: {related})")
-
+            # If noise is enabled, output the word and then noise-related lines
             if self.add_noise:
+                base = f"word [{i+1}]: \"{word}\""
+                lines.append(base)
+
                 noise = ''.join(random.choices(
                     distractor_symbols, k=random.randint(1, 3)))
                 lines.append(f"Noise: {noise}")
+
                 if random.random() > 0.5:
                     distractor = random.choice(distractor_pool)
                     d_noise = ''.join(random.choices(
@@ -97,9 +97,24 @@ class SerialMemoryTaskExpForLLM(Experiment):
                     lines.append(
                         f"[DISTRACTOR] {d_noise}{distractor}{d_noise}")
 
+            # If distractors are enabled (independent of noise), append the synonym hint only
+            elif self.add_distr:
+                related = synonym_dict.get(word)
+                if related:
+                    lines.append(
+                        f"word [{i+1}]: \"{word}\" (Similar to: {related})")
+                else:
+                    lines.append(f"word [{i+1}]: \"{word}\"")
+
+            # Fallback: no noise or distractors
+            else:
+                base = f"word [{i+1}]: \"{word}\""
+                lines.append(base)
+
             # lines.append("[1 second later]\n")
 
         lines.append("<<The list is ended!>>")
+        # print("\n".join(lines))
         return "\n".join(lines)
 
     def construct_prompt(self, Q_, study_list, condition, noise=False):
@@ -195,6 +210,7 @@ class SerialMemoryTaskExpForLLM(Experiment):
 
 
 if __name__ == '__main__':
+    load_dotenv("CogBench/.env")
     experiment = SerialMemoryTaskExpForLLM(get_llm)
     args = experiment.parser.parse_args()
     for run_id in range(args.num_sessions):

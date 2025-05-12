@@ -1,0 +1,856 @@
+/usagers2/makarf/cogvenv/bin/python /usagers2/makarf/Documents/cogtest/sm_allatonce_gpt-3.py --add_noise
+=== DEBUG: Noisy study list ===
+ 01. "*Menacer#$^"
+ 02. "[DISTRACTOR] ~%Xyzon"
+ 03. "%^is@"
+ 04. "[DISTRACTOR] Blur"
+ 05. "[DISTRACTOR] $@*Distracto~~"
+ 06. "his%#"
+ 07. "[DISTRACTOR] ^&$Blur~"
+ 08. "[DISTRACTOR] %&Nope@~"
+ 09. "[DISTRACTOR] Nebula"
+ 10. "*$$favorite"
+ 11. "[DISTRACTOR] Blur$"
+ 12. "[DISTRACTOR] ~#Blur$&"
+ 13. "piece"
+ 14. "[DISTRACTOR] ^%Foobar%$*"
+ 15. "[DISTRACTOR] Nebula%~$"
+ 16. "#~in"
+ 17. "[DISTRACTOR] %~Distracto%"
+ 18. "[DISTRACTOR] $*&Synthet#*"
+ 19. "the"
+ 20. "[DISTRACTOR] #@Foobar"
+ 21. "[DISTRACTOR] Distracto"
+ 22. "[DISTRACTOR] Distracto"
+ 23. "*$$collection#$#"
+ 24. "when%&#"
+ 25. "[DISTRACTOR] ~Xyzon*"
+ 26. "[DISTRACTOR] $~$Xyzon"
+ 27. "[DISTRACTOR] #^Foobar"
+ 28. "used*%"
+ 29. "[DISTRACTOR] *Nebula"
+ 30. "~with*"
+ 31. "[DISTRACTOR] Foobar"
+ 32. "[DISTRACTOR] Fuzz"
+ 33. "[DISTRACTOR] %%~Blur"
+ 34. "[DISTRACTOR] $Blur"
+ 35. "@*^Aura"
+ 36. "[DISTRACTOR] *Distracto$"
+ 37. "[DISTRACTOR] @*Nebula"
+ 38. "[DISTRACTOR] Nebula"
+ 39. "Interactor&&"
+ 40. "[DISTRACTOR] &Fuzz"
+ 41. "[DISTRACTOR] #Distracto~^^"
+ 42. "[DISTRACTOR] Nebula"
+ 43. "haptic$~"
+ 44. "[DISTRACTOR] *Foobar*~"
+ 45. "suit"
+ 46. "[DISTRACTOR] Xyzon@&"
+ 47. "[DISTRACTOR] Fuzz"
+ 48. "Medieval"
+ 49. "[DISTRACTOR] ^Obscure"
+ 50. "[DISTRACTOR] @$Obscure%%"
+ 51. "^#^Total@^^"
+ 52. "[DISTRACTOR] %~Xyzon&^"
+ 53. "[DISTRACTOR] &Synthet"
+ 54. "War~@"
+ 55. "[DISTRACTOR] #%#Distracto"
+ 56. "[DISTRACTOR] %@~Distracto"
+ 57. "[DISTRACTOR] **$Blur~%"
+ 58. "a*"
+ 59. "&turn@"
+ 60. "[DISTRACTOR] ~%Distracto$@"
+ 61. "based"
+ 62. "[DISTRACTOR] Obscure"
+ 63. "[DISTRACTOR] ^Fuzz"
+ 64. "[DISTRACTOR] Distracto"
+ 65. "strategy~^*"
+ 66. "[DISTRACTOR] Foobar"
+ 67. "[DISTRACTOR] Distracto&~$"
+ 68. "[DISTRACTOR] ~Xyzon"
+ 69. "*%and"
+ 70. "real"
+ 71. "[DISTRACTOR] ~Nebula"
+ 72. "*^&time@*@"
+ 73. "[DISTRACTOR] ~~%Xyzon&@"
+ 74. "[DISTRACTOR] Nope$^@"
+ 75. "[DISTRACTOR] %Nebula~&%"
+ 76. "[DISTRACTOR] Synthet~"
+ 77. "@#tactics"
+ 78. "[DISTRACTOR] Distracto"
+ 79. "[DISTRACTOR] Distracto"
+ 80. "~computer~$$"
+ 81. "@#%game"
+ 82. "[DISTRACTOR] &&Distracto"
+ 83. "[DISTRACTOR] Blur&%"
+ 84. "[DISTRACTOR] #Synthet"
+ 85. "[DISTRACTOR] Blur@"
+ 86. "developed"
+ 87. "[DISTRACTOR] Nebula"
+ 88. "[DISTRACTOR] $$Fuzz"
+ 89. "[DISTRACTOR] Nebula"
+ 90. "by~%$"
+ 91. "The*"
+ 92. "[DISTRACTOR] Xyzon&*%"
+ 93. "[DISTRACTOR] Nope"
+ 94. "[DISTRACTOR] Synthet&#"
+ 95. "[DISTRACTOR] ^%#Nope"
+ 96. "^@~Creative#^"
+ 97. "[DISTRACTOR] $&&Xyzon"
+ 98. "[DISTRACTOR] Nope*"
+ 99. "Assembly*&"
+ 100. "[DISTRACTOR] &~Nope"
+ 101. "[DISTRACTOR] Nope"
+ 102. "[DISTRACTOR] Nope#"
+ 103. "[DISTRACTOR] Nebula"
+ 104. "published"
+ 105. "[DISTRACTOR] *$*Nope"
+ 106. "[DISTRACTOR] Foobar"
+ 107. "^*Activision^"
+ 108. "[DISTRACTOR] Synthet%"
+ 109. "[DISTRACTOR] Fuzz$&"
+ 110. "[DISTRACTOR] %*Fuzz"
+ 111. "[DISTRACTOR] Distracto"
+ 112. "#@Set*%@"
+ 113. "&*Middle***"
+ 114. "[DISTRACTOR] Distracto$$"
+ 115. "[DISTRACTOR] Blur"
+ 116. "[DISTRACTOR] %#Blur*#"
+ 117. "[DISTRACTOR] $@&Obscure##"
+ 118. "*Ages~~"
+ 119. "[DISTRACTOR] $@~Xyzon*&"
+ 120. "[DISTRACTOR] Foobar"
+ 121. "%~it"
+ 122. "[DISTRACTOR] Nope"
+ 123. "[DISTRACTOR] Xyzon*^&"
+ 124. "&@second"
+ 125. "[DISTRACTOR] Fuzz"
+ 126. "series*$"
+ 127. "*&*following"
+ 128. "[DISTRACTOR] Foobar^~*"
+ 129. "[DISTRACTOR] Foobar"
+ 130. "[DISTRACTOR] $~$Foobar"
+ 131. "[DISTRACTOR] Fuzz*"
+ 132. "on"
+ 133. "[DISTRACTOR] Distracto"
+ 134. "[DISTRACTOR] Obscure"
+ 135. "@from~~&"
+ 136. "2000$"
+ 137. "[DISTRACTOR] ~Nebula@"
+ 138. "[DISTRACTOR] Distracto"
+ 139. "[DISTRACTOR] ~Blur%"
+ 140. "[DISTRACTOR] ~$~Nebula**"
+ 141. "title@^"
+ 142. "[DISTRACTOR] &##Fuzz"
+ 143. "%Shogun^"
+ 144. "[DISTRACTOR] ^#@Distracto"
+ 145. "[DISTRACTOR] Blur@$$"
+ 146. "[DISTRACTOR] Foobar"
+ 147. "[DISTRACTOR] $%Nope~@$"
+ 148. "Originally"
+ 149. "[DISTRACTOR] Fuzz"
+ 150. "[DISTRACTOR] ~^&Xyzon%$^"
+ 151. "[DISTRACTOR] @$#Obscure"
+ 152. "^#announced"
+ 153. "[DISTRACTOR] Obscure%"
+ 154. "[DISTRACTOR] Obscure@"
+ 155. "[DISTRACTOR] %$Foobar&"
+ 156. "[DISTRACTOR] Fuzz"
+ 157. "August"
+ 158. "^*2001$&"
+ 159. "[DISTRACTOR] ~Obscure"
+ 160. "[DISTRACTOR] Nope#%"
+ 161. "[DISTRACTOR] Blur~*"
+ 162. "[DISTRACTOR] Nope"
+ 163. "~$was~#^"
+ 164. "released"
+ 165. "[DISTRACTOR] Nope~*#"
+ 166. "[DISTRACTOR] *%*Fuzz"
+ 167. "North@#"
+ 168. "[DISTRACTOR] Distracto"
+ 169. "[DISTRACTOR] *Nope"
+ 170. "^America&#"
+ 171. "[DISTRACTOR] Fuzz"
+ 172. "[DISTRACTOR] ~$^Obscure"
+ 173. "19^^"
+ 174. "[DISTRACTOR] Obscure%^%"
+ 175. "[DISTRACTOR] *~Nebula"
+ 176. "[DISTRACTOR] ^Foobar&~"
+ 177. "[DISTRACTOR] $@^Fuzz&##"
+ 178. "@$@2002"
+ 179. "[DISTRACTOR] Foobar@"
+ 180. "[DISTRACTOR] Nebula"
+ 181. "[DISTRACTOR] Fuzz"
+ 182. "[DISTRACTOR] $~Nebula"
+ 183. "*&Europe"
+ 184. "[DISTRACTOR] Nebula&%@"
+ 185. "[DISTRACTOR] Xyzon@"
+ 186. "[DISTRACTOR] Foobar@&&"
+ 187. "^30%&*"
+ 188. "for"
+ 189. "[DISTRACTOR] Distracto^"
+ 190. "[DISTRACTOR] Blur%&"
+ 191. "#Microsoft"
+ 192. "[DISTRACTOR] &@Fuzz"
+ 193. "[DISTRACTOR] ^$~Nebula%&"
+ 194. "[DISTRACTOR] Nebula"
+ 195. "*~Windows#$"
+ 196. "#*Following$"
+ 197. "[DISTRACTOR] Xyzon"
+ 198. "[DISTRACTOR] ~Distracto"
+ 199. "[DISTRACTOR] Fuzz"
+ 200. "[DISTRACTOR] Nebula"
+ 201. "^similar&&$"
+ 202. "[DISTRACTOR] ~Foobar&%@"
+ 203. "[DISTRACTOR] Synthet"
+ 204. "[DISTRACTOR] %@Blur$%*"
+ 205. "form$"
+ 206. "[DISTRACTOR] Fuzz"
+ 207. "of^*"
+ 208. "[DISTRACTOR] Xyzon&%"
+ 209. "play^~#"
+ 210. "[DISTRACTOR] Xyzon~"
+ 211. "[DISTRACTOR] *Distracto^~"
+ 212. "[DISTRACTOR] Fuzz"
+ 213. "%%%to*"
+ 214. "[DISTRACTOR] $Synthet&@#"
+ 215. "[DISTRACTOR] ~#$Nope&$"
+ 216. "^~#player"
+ 217. "[DISTRACTOR] ^#%Blur"
+ 218. "[DISTRACTOR] Nebula"
+ 219. "[DISTRACTOR] Xyzon@&&"
+ 220. "[DISTRACTOR] Xyzon%%"
+ 221. "&#~builds%*"
+ 222. "[DISTRACTOR] #Synthet~%$"
+ 223. "[DISTRACTOR] Blur"
+ 224. "[DISTRACTOR] Xyzon"
+ 225. "dynastic~"
+ 226. "[DISTRACTOR] Xyzon%$"
+ 227. "empire&##"
+ 228. "[DISTRACTOR] $Nope%"
+ 229. "[DISTRACTOR] %$@Xyzon$*#"
+ 230. "[DISTRACTOR] ^~~Xyzon~"
+ 231. "Africa"
+ 232. "[DISTRACTOR] #Foobar%**"
+ 233. "East%~@"
+ 234. "[DISTRACTOR] Nebula"
+ 235. "[DISTRACTOR] &$Nebula*"
+ 236. "[DISTRACTOR] $Foobar^&*"
+ 237. "[DISTRACTOR] *%Nebula"
+ 238. "spanning"
+ 239. "[DISTRACTOR] &$Fuzz%$"
+ 240. "[DISTRACTOR] ~Nebula#"
+ 241. "[DISTRACTOR] Distracto*"
+ 242. "period*~"
+ 243. "[DISTRACTOR] Fuzz"
+ 244. "[DISTRACTOR] Foobar%%"
+ 245. "[DISTRACTOR] Blur&%"
+ 246. "%1087"
+ 247. "[DISTRACTOR] Nebula*~@"
+ 248. "1453^"
+ 249. "[DISTRACTOR] %#%Foobar%@@"
+ 250. "[DISTRACTOR] Nebula^%%"
+ 251. "~Gameplay"
+ 252. "[DISTRACTOR] &&&Blur"
+ 253. "[DISTRACTOR] Fuzz%&^"
+ 254. "both"
+ 255. "[DISTRACTOR] Nebula"
+ 256. "[DISTRACTOR] ~$#Blur^$"
+ 257. "$%strategic@$@"
+ 258. "[DISTRACTOR] Blur"
+ 259. "tactical%*~"
+ 260. "[DISTRACTOR] Fuzz*@#"
+ 261. "[DISTRACTOR] Xyzon"
+ 262. "*played"
+ 263. "[DISTRACTOR] Synthet&"
+ 264. "[DISTRACTOR] Foobar@"
+ 265. "out"
+ 266. "[DISTRACTOR] Distracto~^"
+ 267. "fashion#"
+ 268. "[DISTRACTOR] Fuzz#&"
+ 269. "[DISTRACTOR] ^Distracto"
+ 270. "~@province%@"
+ 271. "[DISTRACTOR] @$Foobar"
+ 272. "[DISTRACTOR] Nebula"
+ 273. "[DISTRACTOR] Nebula@$@"
+ 274. "level%"
+ 275. "[DISTRACTOR] Xyzon^$"
+ 276. "[DISTRACTOR] Xyzon#&"
+ 277. "[DISTRACTOR] Distracto&#%"
+ 278. "[DISTRACTOR] Distracto"
+ 279. "while"
+ 280. "[DISTRACTOR] $^Blur%^@"
+ 281. "[DISTRACTOR] Blur"
+ 282. "[DISTRACTOR] #$~Obscure"
+ 283. "[DISTRACTOR] Nope"
+ 284. "military"
+ 285. "[DISTRACTOR] Foobar@#"
+ 286. "[DISTRACTOR] Synthet*#*"
+ 287. "~#*units^$"
+ 288. "%varying"
+ 289. "^~#types"
+ 290. "[DISTRACTOR] Distracto"
+ 291. "[DISTRACTOR] Nope"
+ 292. "&$$capabilities~$~"
+ 293. "[DISTRACTOR] Foobar^"
+ 294. "[DISTRACTOR] $Synthet@"
+ 295. "[DISTRACTOR] @~#Obscure"
+ 296. "[DISTRACTOR] #~Obscure"
+ 297. "fight^#%"
+ 298. "[DISTRACTOR] ##*Obscure"
+ 299. "[DISTRACTOR] $Fuzz^*#"
+ 300. "[DISTRACTOR] Distracto*@"
+ 301. "[DISTRACTOR] ~$@Synthet~$%"
+ 302. "%~against"
+ 303. "[DISTRACTOR] *#$Foobar"
+ 304. "each#^@"
+ 305. "[DISTRACTOR] Obscure"
+ 306. "[DISTRACTOR] ^~&Fuzz~%"
+ 307. "[DISTRACTOR] &Obscure"
+ 308. "[DISTRACTOR] Nope"
+ 309. "other"
+ 310. "[DISTRACTOR] @@Distracto"
+ 311. "~3D"
+ 312. "battlefield@"
+ 313. "[DISTRACTOR] Synthet~~^"
+ 314. "[DISTRACTOR] @^@Nope"
+ 315. "[DISTRACTOR] Blur^#@"
+ 316. "*$#received^%#"
+ 317. "[DISTRACTOR] Nope"
+You will now be presented with a list of words to memorize.
+word [1]: "Menacer"
+Noise: ~$
+word [2]: "is"
+Noise: #@
+word [3]: "his"
+Noise: #@
+[DISTRACTOR] ~^&Xyzon~^&
+word [4]: "favorite"
+Noise: **^
+word [5]: "piece"
+Noise: *$@
+[DISTRACTOR] $&%Synthet$&%
+word [6]: "in"
+Noise: %%#
+word [7]: "the"
+Noise: ^
+word [8]: "collection"
+Noise: #
+[DISTRACTOR] #Blur#
+word [9]: "when"
+Noise: ^*@
+[DISTRACTOR] $Xyzon$
+word [10]: "used"
+Noise: ^
+[DISTRACTOR] %Distracto%
+word [11]: "with"
+Noise: ^^$
+word [12]: "Aura"
+Noise: ^
+[DISTRACTOR] *&Nebula*&
+word [13]: "Interactor"
+Noise: ~%
+word [14]: "haptic"
+Noise: *
+[DISTRACTOR] &%Distracto&%
+word [15]: "suit"
+Noise: ~^$
+word [16]: "Medieval"
+Noise: #%
+word [17]: "Total"
+Noise: ^$
+[DISTRACTOR] $@Distracto$@
+word [18]: "War"
+Noise: $
+[DISTRACTOR] ~Distracto~
+word [19]: "a"
+Noise: @&~
+word [20]: "turn"
+Noise: %
+[DISTRACTOR] ^Blur^
+word [21]: "based"
+Noise: $#%
+[DISTRACTOR] ^Xyzon^
+word [22]: "strategy"
+Noise: $#*
+word [23]: "and"
+Noise: $
+word [24]: "real"
+Noise: *@&
+[DISTRACTOR] *&Distracto*&
+word [25]: "time"
+Noise: #
+[DISTRACTOR] $$#Distracto$$#
+word [26]: "tactics"
+Noise: %^
+word [27]: "computer"
+Noise: ~
+[DISTRACTOR] @&~Xyzon@&~
+word [28]: "game"
+Noise: $#@
+[DISTRACTOR] ##Nebula##
+word [29]: "developed"
+Noise: *%
+word [30]: "by"
+Noise: ^^%
+word [31]: "The"
+Noise: ^
+[DISTRACTOR] &*&Nebula&*&
+word [32]: "Creative"
+Noise: ##
+[DISTRACTOR] &^Distracto&^
+word [33]: "Assembly"
+Noise: $%*
+[DISTRACTOR] %$^Xyzon%$^
+word [34]: "published"
+Noise: %
+word [35]: "Activision"
+Noise: &
+word [36]: "Set"
+Noise: ~
+word [37]: "Middle"
+Noise: &#%
+[DISTRACTOR] $^Nebula$^
+word [38]: "Ages"
+Noise: %$%
+[DISTRACTOR] @#Synthet@#
+word [39]: "it"
+Noise: $#$
+[DISTRACTOR] @@#Nebula@@#
+word [40]: "second"
+Noise: $#
+word [41]: "series"
+Noise: #~
+[DISTRACTOR] ~&$Obscure~&$
+word [42]: "following"
+Noise: @&
+word [43]: "on"
+Noise: ~&
+word [44]: "from"
+Noise: *
+word [45]: "2000"
+Noise: ^
+word [46]: "title"
+Noise: *%#
+[DISTRACTOR] $^Synthet$^
+word [47]: "Shogun"
+Noise: **@
+[DISTRACTOR] ^~~Fuzz^~~
+word [48]: "Originally"
+Noise: $
+[DISTRACTOR] *Nope*
+word [49]: "announced"
+Noise: ~&$
+word [50]: "August"
+Noise: &~*
+[DISTRACTOR] %%Nebula%%
+word [51]: "2001"
+Noise: ~
+[DISTRACTOR] &#*Blur&#*
+word [52]: "was"
+Noise: ^~
+word [53]: "released"
+Noise: ~$^
+[DISTRACTOR] ~&Nope~&
+word [54]: "North"
+Noise: ~#$
+[DISTRACTOR] #&*Fuzz#&*
+word [55]: "America"
+Noise: $%
+word [56]: "19"
+Noise: %
+word [57]: "2002"
+Noise: @#
+word [58]: "Europe"
+Noise: $&
+word [59]: "30"
+Noise: ~
+word [60]: "for"
+Noise: ~*
+word [61]: "Microsoft"
+Noise: #%
+word [62]: "Windows"
+Noise: @^
+[DISTRACTOR] %#Xyzon%#
+word [63]: "Following"
+Noise: %%@
+[DISTRACTOR] **%Foobar**%
+word [64]: "similar"
+Noise: @$&
+[DISTRACTOR] &*Blur&*
+word [65]: "form"
+Noise: &
+[DISTRACTOR] *Xyzon*
+word [66]: "of"
+Noise: %
+word [67]: "play"
+Noise: ~
+[DISTRACTOR] &$Fuzz&$
+word [68]: "to"
+Noise: %$*
+[DISTRACTOR] %&Distracto%&
+word [69]: "player"
+Noise: #
+word [70]: "builds"
+Noise: @
+[DISTRACTOR] @~Obscure@~
+word [71]: "dynastic"
+Noise: ~#~
+word [72]: "empire"
+Noise: ^%$
+[DISTRACTOR] &%*Nebula&%*
+word [73]: "Africa"
+Noise: ~@
+[DISTRACTOR] ^#$Nebula^#$
+word [74]: "East"
+Noise: &&$
+[DISTRACTOR] ^Blur^
+word [75]: "spanning"
+Noise: ^
+[DISTRACTOR] *Fuzz*
+word [76]: "period"
+Noise: &&
+[DISTRACTOR] &%Distracto&%
+word [77]: "1087"
+Noise: $%
+[DISTRACTOR] &Obscure&
+word [78]: "1453"
+Noise: #$
+word [79]: "Gameplay"
+Noise: @#&
+word [80]: "both"
+Noise: ^~
+word [81]: "strategic"
+Noise: $~
+[DISTRACTOR] %%&Obscure%%&
+word [82]: "tactical"
+Noise: ^@
+word [83]: "played"
+Noise: @$
+word [84]: "out"
+Noise: $
+word [85]: "fashion"
+Noise: &$$
+word [86]: "province"
+Noise: &%@
+[DISTRACTOR] %Foobar%
+word [87]: "level"
+Noise: ^
+[DISTRACTOR] @&Distracto@&
+word [88]: "while"
+Noise: *
+[DISTRACTOR] %Nope%
+word [89]: "military"
+Noise: %*
+[DISTRACTOR] @&Obscure@&
+word [90]: "units"
+Noise: ^~
+word [91]: "varying"
+Noise: %@
+word [92]: "types"
+Noise: %#
+word [93]: "capabilities"
+Noise: %
+word [94]: "fight"
+Noise: $@*
+[DISTRACTOR] %^^Xyzon%^^
+word [95]: "against"
+Noise: &
+[DISTRACTOR] &*&Foobar&*&
+word [96]: "each"
+Noise: &&
+[DISTRACTOR] ^Fuzz^
+word [97]: "other"
+Noise: #%*
+[DISTRACTOR] %*Obscure%*
+word [98]: "3D"
+Noise: &%
+[DISTRACTOR] $@^Obscure$@^
+word [99]: "battlefield"
+Noise: $^
+word [100]: "received"
+Noise: @&
+<<The list is ended!>>
+Raw output: Understood! Please wait until the list is completed before recalling the words.
+Warning: Failed to parse JSON. Trying partial fix.
+
+---------------------- PROMPT ------------------------
+
+You will now be presented with a list of words to memorize.
+word [1]: "Menacer"
+Noise: ~$
+word [2]: "is"
+Noise: #@
+word [3]: "his"
+Noise: #@
+[DISTRACTOR] ~^&Xyzon~^&
+word [4]: "favorite"
+Noise: **^
+word [5]: "piece"
+Noise: *$@
+[DISTRACTOR] $&%Synthet$&%
+word [6]: "in"
+Noise: %%#
+word [7]: "the"
+Noise: ^
+word [8]: "collection"
+Noise: #
+[DISTRACTOR] #Blur#
+word [9]: "when"
+Noise: ^*@
+[DISTRACTOR] $Xyzon$
+word [10]: "used"
+Noise: ^
+[DISTRACTOR] %Distracto%
+word [11]: "with"
+Noise: ^^$
+word [12]: "Aura"
+Noise: ^
+[DISTRACTOR] *&Nebula*&
+word [13]: "Interactor"
+Noise: ~%
+word [14]: "haptic"
+Noise: *
+[DISTRACTOR] &%Distracto&%
+word [15]: "suit"
+Noise: ~^$
+word [16]: "Medieval"
+Noise: #%
+word [17]: "Total"
+Noise: ^$
+[DISTRACTOR] $@Distracto$@
+word [18]: "War"
+Noise: $
+[DISTRACTOR] ~Distracto~
+word [19]: "a"
+Noise: @&~
+word [20]: "turn"
+Noise: %
+[DISTRACTOR] ^Blur^
+word [21]: "based"
+Noise: $#%
+[DISTRACTOR] ^Xyzon^
+word [22]: "strategy"
+Noise: $#*
+word [23]: "and"
+Noise: $
+word [24]: "real"
+Noise: *@&
+[DISTRACTOR] *&Distracto*&
+word [25]: "time"
+Noise: #
+[DISTRACTOR] $$#Distracto$$#
+word [26]: "tactics"
+Noise: %^
+word [27]: "computer"
+Noise: ~
+[DISTRACTOR] @&~Xyzon@&~
+word [28]: "game"
+Noise: $#@
+[DISTRACTOR] ##Nebula##
+word [29]: "developed"
+Noise: *%
+word [30]: "by"
+Noise: ^^%
+word [31]: "The"
+Noise: ^
+[DISTRACTOR] &*&Nebula&*&
+word [32]: "Creative"
+Noise: ##
+[DISTRACTOR] &^Distracto&^
+word [33]: "Assembly"
+Noise: $%*
+[DISTRACTOR] %$^Xyzon%$^
+word [34]: "published"
+Noise: %
+word [35]: "Activision"
+Noise: &
+word [36]: "Set"
+Noise: ~
+word [37]: "Middle"
+Noise: &#%
+[DISTRACTOR] $^Nebula$^
+word [38]: "Ages"
+Noise: %$%
+[DISTRACTOR] @#Synthet@#
+word [39]: "it"
+Noise: $#$
+[DISTRACTOR] @@#Nebula@@#
+word [40]: "second"
+Noise: $#
+word [41]: "series"
+Noise: #~
+[DISTRACTOR] ~&$Obscure~&$
+word [42]: "following"
+Noise: @&
+word [43]: "on"
+Noise: ~&
+word [44]: "from"
+Noise: *
+word [45]: "2000"
+Noise: ^
+word [46]: "title"
+Noise: *%#
+[DISTRACTOR] $^Synthet$^
+word [47]: "Shogun"
+Noise: **@
+[DISTRACTOR] ^~~Fuzz^~~
+word [48]: "Originally"
+Noise: $
+[DISTRACTOR] *Nope*
+word [49]: "announced"
+Noise: ~&$
+word [50]: "August"
+Noise: &~*
+[DISTRACTOR] %%Nebula%%
+word [51]: "2001"
+Noise: ~
+[DISTRACTOR] &#*Blur&#*
+word [52]: "was"
+Noise: ^~
+word [53]: "released"
+Noise: ~$^
+[DISTRACTOR] ~&Nope~&
+word [54]: "North"
+Noise: ~#$
+[DISTRACTOR] #&*Fuzz#&*
+word [55]: "America"
+Noise: $%
+word [56]: "19"
+Noise: %
+word [57]: "2002"
+Noise: @#
+word [58]: "Europe"
+Noise: $&
+word [59]: "30"
+Noise: ~
+word [60]: "for"
+Noise: ~*
+word [61]: "Microsoft"
+Noise: #%
+word [62]: "Windows"
+Noise: @^
+[DISTRACTOR] %#Xyzon%#
+word [63]: "Following"
+Noise: %%@
+[DISTRACTOR] **%Foobar**%
+word [64]: "similar"
+Noise: @$&
+[DISTRACTOR] &*Blur&*
+word [65]: "form"
+Noise: &
+[DISTRACTOR] *Xyzon*
+word [66]: "of"
+Noise: %
+word [67]: "play"
+Noise: ~
+[DISTRACTOR] &$Fuzz&$
+word [68]: "to"
+Noise: %$*
+[DISTRACTOR] %&Distracto%&
+word [69]: "player"
+Noise: #
+word [70]: "builds"
+Noise: @
+[DISTRACTOR] @~Obscure@~
+word [71]: "dynastic"
+Noise: ~#~
+word [72]: "empire"
+Noise: ^%$
+[DISTRACTOR] &%*Nebula&%*
+word [73]: "Africa"
+Noise: ~@
+[DISTRACTOR] ^#$Nebula^#$
+word [74]: "East"
+Noise: &&$
+[DISTRACTOR] ^Blur^
+word [75]: "spanning"
+Noise: ^
+[DISTRACTOR] *Fuzz*
+word [76]: "period"
+Noise: &&
+[DISTRACTOR] &%Distracto&%
+word [77]: "1087"
+Noise: $%
+[DISTRACTOR] &Obscure&
+word [78]: "1453"
+Noise: #$
+word [79]: "Gameplay"
+Noise: @#&
+word [80]: "both"
+Noise: ^~
+word [81]: "strategic"
+Noise: $~
+[DISTRACTOR] %%&Obscure%%&
+word [82]: "tactical"
+Noise: ^@
+word [83]: "played"
+Noise: @$
+word [84]: "out"
+Noise: $
+word [85]: "fashion"
+Noise: &$$
+word [86]: "province"
+Noise: &%@
+[DISTRACTOR] %Foobar%
+word [87]: "level"
+Noise: ^
+[DISTRACTOR] @&Distracto@&
+word [88]: "while"
+Noise: *
+[DISTRACTOR] %Nope%
+word [89]: "military"
+Noise: %*
+[DISTRACTOR] @&Obscure@&
+word [90]: "units"
+Noise: ^~
+word [91]: "varying"
+Noise: %@
+word [92]: "types"
+Noise: %#
+word [93]: "capabilities"
+Noise: %
+word [94]: "fight"
+Noise: $@*
+[DISTRACTOR] %^^Xyzon%^^
+word [95]: "against"
+Noise: &
+[DISTRACTOR] &*&Foobar&*&
+word [96]: "each"
+Noise: &&
+[DISTRACTOR] ^Fuzz^
+word [97]: "other"
+Noise: #%*
+[DISTRACTOR] %*Obscure%*
+word [98]: "3D"
+Noise: &%
+[DISTRACTOR] $@^Obscure$@^
+word [99]: "battlefield"
+Noise: $^
+word [100]: "received"
+Noise: @&
+<<The list is ended!>>
+
+This is a serial memory test for evaluating your ability to remember ordered information.
+Each trial starts from the same word.
+Some words may include symbols or distractors. Ignore these during recall.
+Do not respond until the list is marked as completed using `<<The list is ended!>>`.
+Once that appears, recall the exact order of original study words.
+You must respond strictly in the following JSON format:
+{
+    "recalled_words": ["", "", ..., ""]
+}
+
+---------------- GPT RESPONSE ------------------------
+
+Understood! Please wait until the list is completed before recalling the words.
+
+------------------ STUDY vs RECALL -------------------
+
+Total Correct: 0/100
+usage: sm_allatonce_gpt-3.py [-h] [--engines ENGINES [ENGINES ...]]
+                             [--no_perf_score NO_PERF_SCORE [NO_PERF_SCORE ...]]
+                             [--version_number VERSION_NUMBER] [--columns COLUMNS [COLUMNS ...]]
+sm_allatonce_gpt-3.py: error: unrecognized arguments: --add_noise
+
+############################################################################################################################################################################################################################################
