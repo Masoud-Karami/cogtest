@@ -120,3 +120,8 @@ new_task = "The study tested the hypothesis that serial learning relies on posit
 result = in_context_learning(task_description, examples, new_task)
 print(f"\n=== Task: {new_task} ===")
 print(f"\nGenerated Prompt:\n{result}")
+
+
+# outout example
+
+# You are participating in a study on serial learning using spin lists. In this study, you will be presented with word lists of varying lengths (7, 13, or 19 words) drawn randomly from a pool of nouns. Your task is to learn these lists over four sessions until you can recall each list without error. There are two conditions in this study: Constant condition and Spin condition. In the Constant condition, each study trial begins with the same word and presents the list in a fixed order. In the Spin condition, the list order remains fixed, but each study trial begins from a randomly selected starting word and wraps around cyclically. No word is used more than once as the start word. During the study, words will be shown at a rate of 1 word per second. You will have up to 1 minute for recall, indicating <<done>> when you have completed recalling the list. Trials will continue until you achieve perfect recall or reach a maximum trial cap (7, 13, or 16 trials depending on the list length). Your goal is to recall the words in the order presented on the most recent trial. The study consists of one practice session with six lists (one per length per condition) and three test sessions with nine lists each (three per length, from either constant or spin condition). The order of spin/control conditions will be counterbalanced across participants. Now begins the study.

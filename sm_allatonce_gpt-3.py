@@ -49,19 +49,20 @@ print(f"Raw output: {output}")
 # Try parsing JSON output
 try:
     parsed = json.loads(output)
-    words = parsed.get("recalled_words", [])
+    asitis_recalled = parsed.get("recalled_words", [])
 except json.JSONDecodeError:
     print("Warning: Failed to parse JSON. Trying partial fix.")
-    match = re.findall(r'"recalled_words"\s*:\s*\[(.*?)\]', output, re.DOTALL)
+    match = re.findall(
+        r'"asitis recalled words"\s*:\s*\[(.*?)\]', output, re.DOTALL)
     if match:
-        words = re.findall(r'"(.*?)"', match[0])
+        asitis_recalled = re.findall(r'"(.*?)"', match[0])
     else:
-        words = []
+        asitis_recalled = []
 
 # Compare recall with target study list
 print("\n------------------ STUDY vs RECALL -------------------")
 correct = 0
-for i, (target, guess) in enumerate(zip(clean_study_list, words)):
+for i, (target, guess) in enumerate(zip(clean_study_list, asitis_recalled)):
     mark = "TRUE Recalled!" if target.lower(
     ) == guess.lower() else "FALSE Recalled!------"
     if mark == "TRUE Recalled!":

@@ -20,6 +20,9 @@ DISTRACTOR_POOL = ["Xyzon", "Nope", "Blur", "Obscure",
                    "Fuzz", "Synthet", "Distracto", "Foobar", "Nebula"]
 DISTRACTOR_SYMBOLS = list("#$%&*@^~")
 
+# Randomly select a starting position for the study list
+starting_position = random.randint(0, 10)
+
 
 class SerialMemoryTaskExpForLLM(Experiment):
     def __init__(self, get_llm):
@@ -87,16 +90,16 @@ class SerialMemoryTaskExpForLLM(Experiment):
                 if related:
                     trial_lines.append(f"(Similar to: {related})")
 
-            if self.add_noise:
-                noise = ''.join(random.choices(
-                    distractor_symbols, k=random.randint(1, 3)))
-                trial_lines.append(f"Noise: {noise}")
-                if random.random() > 0.5:
-                    distractor = random.choice(distractor_pool)
-                    d_noise = ''.join(random.choices(
-                        distractor_symbols, k=random.randint(1, 3)))
-                    trial_lines.append(
-                        f"[DISTRACTOR] {d_noise}{distractor}{d_noise}")
+            # if self.add_noise:
+            #     noise = ''.join(random.choices(
+            #         distractor_symbols, k=1))
+            #     trial_lines.append(f"Noise: {noise}")
+            #     if random.random() > 0.2:
+            #         distractor = random.choice(distractor_pool)
+            #         d_noise = ''.join(random.choices(
+            #             distractor_symbols, k=random.randint(1, 3)))
+            #         trial_lines.append(
+            #             f"[DISTRACTOR] {d_noise}{distractor}{d_noise}")
 
             # Add instruction for silence after each input
             # trial_lines.append("Do not respond. Wait for the next word.")
@@ -114,19 +117,18 @@ class SerialMemoryTaskExpForLLM(Experiment):
         noise_instr = "\nSome words may include symbols or distractors. Ignore these during recall." if noise else ""
 
         prompt_init = (
-            "You are participating in an experiment involving word lists of 7, 13, or 19 nouns. Your task is to learn and accurately recall each list.\n"
-            "Study and test trials alternate across two conditions: constant and spin starting positions.\n"
+            "You are participating in a user study designed to assess your ability to recall ordered word lists. Your task is to learn and accurately recall each list.\n"
+            "The study follows a within-subjects design with alternating **study** and **test** trials across two conditions:\n"
             f"{condition_instr}\n"
             "Recall the list in the order presented during the most recent study trial.\n"
-            "The experiment uses a within-subjects design with three list lengths and both starting conditions.\n"
-            "You will complete four sessions (practice and test), alternating between the two starting conditions.\n"
-            "You have up to 1 minute per test to recall the words and must indicate completion by saying \"done.\"\n"
-            "Your goal is to recall the entire list in order within a limited number of trials.\n"
-            "\n"
-            "You will now be presented with a list of words to memorize.\n"
-            "Each word appears one at a time, possibly followed by noise or a distractor.\n"
-            "Focus on study words only. Ignore all other content.\n"
-            "Do not respond until the list ends with <<The list is ended!>>.\n"
+            "You will complete four total sessions (one practice and three test sessions), alternating between these two conditions.\n"
+            "Each word list is studied and tested until it is recalled perfectly or a maximum number of trials is reached.\n"
+            "During each test, you will have up to 1 minute to recall the list and must indicate when you are finished by saying “done”.\n"
+            "You will be presented with a list of words to memorize.\n"
+            "**Each word will be shown one at a time**, possibly containing noisy symbols or followed by a `[DISTRACTOR]` word.\n"
+            "Your task is to **focus only on the clean study word** presented in each step. Ignore any distractors or symbol-based noise.\n"
+            "If a position originally contained a distractor, you must **output nothing** in that position—use the special marker <<silent>>:\n"
+            "Do not respond or start recalling until the list ends with <<The list is ended!>>.\n"
             "After that, recall the words in exact order.\n"
             "Respond strictly in this JSON format:\n"
             "{\n    \"recalled_words\": [\"\", \"\", ..., \"\"]\n}"
@@ -212,7 +214,8 @@ def generate_serial_memory_prompt(experiment, json_path):
     with open(json_path, "r") as f:
         word_dict = json.load(f)
 
-    study_list = list(word_dict.keys())[20:list_lengths+20]
+    study_list = list(word_dict.keys())[
+        starting_position:list_lengths+starting_position]
     study_list_with_noise = experiment.add_distractors_between_words(
         study_list) if experiment.add_noise else study_list
 
