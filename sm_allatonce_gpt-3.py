@@ -28,16 +28,15 @@ JSON_PATH = "CogBench/Experiments/SerialMemoryTask/Dataset/WikiText100_w_with_fa
 list_lengths = experiment.list_lengths[0]
 # Generate full memory task prompt
 # prompt = generate_serial_memory_prompt(experiment, JSON_PATH, list_size)
-prompt, study_list = generate_serial_memory_prompt(
-    experiment, JSON_PATH, list_lengths)
+prompt, study_list_with_noise, clean_study_list = generate_serial_memory_prompt(
+    experiment, JSON_PATH)
 
 # Send prompt to OpenAI
 client = OpenAI()
 response = client.chat.completions.create(
     model="gpt-3.5-turbo",
     messages=[
-        {"role": "system", "content": experiment.construct_prompt()},
-        {"role": "user", "content": prompt}
+        {"role": "system", "content": prompt}
     ],
     temperature=0,
     max_tokens=2500
@@ -62,14 +61,14 @@ except json.JSONDecodeError:
 # Compare recall with target study list
 print("\n------------------ STUDY vs RECALL -------------------")
 correct = 0
-for i, (target, guess) in enumerate(zip(study_list, words)):
+for i, (target, guess) in enumerate(zip(clean_study_list, words)):
     mark = "TRUE Recalled!" if target.lower(
     ) == guess.lower() else "FALSE Recalled!------"
     if mark == "TRUE Recalled!":
         correct += 1
     print(f"{i+1:02d}. {target:<{list_lengths}} | {guess:<{list_lengths}} {mark}")
 
-print(f"\nTotal Correct: {correct}/{len(study_list)}")
+print(f"\nTotal Correct: {correct}/{len(clean_study_list)}")
 
 
 # # Prepare scoring

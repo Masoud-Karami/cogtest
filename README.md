@@ -149,3 +149,30 @@ python3 full_run.py --engine random --compare_with gpt-4 claude-1
   ### Run the experiments with llama2-7b
   ```python3 full_run.py --engine llama-2-7```
 
+the code is in a way to satisfy the following example strictly.
+Consider the noisy list introduced one line as a separate prompt to the model. 
+001. "#job"
+002. "@$in"
+003. "[DISTRACTOR] Distracto%%"
+004. "[DISTRACTOR] Xyzon@$@"
+005. "[DISTRACTOR] ##&Xyzon*"
+006. "tailor"
+007. "[DISTRACTOR] Distracto&*"
+008. "*#'s**"
+009. "[DISTRACTOR] ^*$Obscure~$$"
+010. "[DISTRACTOR] ##Fuzz"
+In the test model is free to recall the word by its knowledge. We shouldn't change or modify its responses. So for example consider the following responses
+001. "#job"                                                               #job
+002. "@$in"                                                              in
+003. "[DISTRACTOR] Distracto%%"                       Distracto                                      
+004. "[DISTRACTOR] Xyzon@$@"                          [the model is silent here as output indicated by <<SILENT>>]                                    
+005. "[DISTRACTOR] ##&Xyzon*"                        [the model is silent here as output indicated by <<SILENT>>]                                       
+006. "tailor"                                                             tailor 
+007. "[DISTRACTOR] Distracto&*"                       Distracto                                       
+008. "*#'s**"                                                            #'s  
+009. "[DISTRACTOR] ^*$Obscure~$$"               [the model is silent here as output indicated by <<SILENT>>]                                                
+010. "[DISTRACTOR] ##Fuzz"                              [the model is silent here as output indicated by <<SILENT>>] 
+
+Then the code matches the exact original output with the clean input. 
+- In case the output  <<SILENT>> is matched with [DISTRACTOR] labeled, TRUE RECALLED, 
+- in case the original output (e.g #'s)  doesn't match the clean targetted word, FALSE RECALL

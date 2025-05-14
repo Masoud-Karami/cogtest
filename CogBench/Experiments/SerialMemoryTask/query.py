@@ -196,7 +196,7 @@ class SerialMemoryTaskExpForLLM(Experiment):
         return recalled
 
 
-def generate_serial_memory_prompt(experiment, json_path, .list_lengths):
+def generate_serial_memory_prompt(experiment, json_path):
     """
     Generates a full serial memory prompt for a given experiment instance.
 
@@ -208,10 +208,11 @@ def generate_serial_memory_prompt(experiment, json_path, .list_lengths):
     Returns:
         A formatted prompt string.
     """
+    list_lengths = experiment.list_lengths[0]
     with open(json_path, "r") as f:
         word_dict = json.load(f)
 
-    study_list = list(word_dict.keys())[:list_size]
+    study_list = list(word_dict.keys())[20:list_lengths+20]
     study_list_with_noise = experiment.add_distractors_between_words(
         study_list) if experiment.add_noise else study_list
 
@@ -231,7 +232,7 @@ def generate_serial_memory_prompt(experiment, json_path, .list_lengths):
     )
 
     prompt = f"{instructions}\n\n{study_section}"
-    return prompt, study_list_with_noise
+    return prompt, study_list_with_noise, study_list
 
 
 if __name__ == '__main__':
