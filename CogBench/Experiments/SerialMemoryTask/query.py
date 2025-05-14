@@ -89,20 +89,6 @@ class SerialMemoryTaskExpForLLM(Experiment):
                 related = synonym_dict.get(word)
                 if related:
                     trial_lines.append(f"(Similar to: {related})")
-
-            # if self.add_noise:
-            #     noise = ''.join(random.choices(
-            #         distractor_symbols, k=1))
-            #     trial_lines.append(f"Noise: {noise}")
-            #     if random.random() > 0.2:
-            #         distractor = random.choice(distractor_pool)
-            #         d_noise = ''.join(random.choices(
-            #             distractor_symbols, k=random.randint(1, 3)))
-            #         trial_lines.append(
-            #             f"[DISTRACTOR] {d_noise}{distractor}{d_noise}")
-
-            # Add instruction for silence after each input
-            # trial_lines.append("Do not respond. Wait for the next word.")
             lines.append("\n".join(trial_lines))
 
         lines.append("<<The list is ended!>>")
@@ -127,7 +113,7 @@ class SerialMemoryTaskExpForLLM(Experiment):
             "You will be presented with a list of words to memorize.\n"
             "**Each word will be shown one at a time**, possibly containing noisy symbols or followed by a `[DISTRACTOR]` word.\n"
             "Your task is to **focus only on the clean study word** presented in each step. Ignore any distractors or symbol-based noise.\n"
-            "If a position originally contained a distractor, you must **output nothing** in that position—use the special marker <<silent>>:\n"
+            "If any input word begins with [DISTRACTOR], it is not part of the actual list. You must output <<silent>> during recall for such entries.\n"
             "Do not respond or start recalling until the list ends with <<The list is ended!>>.\n"
             "After that, recall the words in exact order.\n"
             "Respond strictly in this JSON format:\n"
@@ -150,26 +136,17 @@ class SerialMemoryTaskExpForLLM(Experiment):
         noisy_list = []
 
         for word in study_list:
-            add_prefix = random.choice([True, False])
-            add_suffix = random.choice([True, False])
+            prefix_noise = random.choice(
+                distractor_symbols) if random.random() < 0.5 else ""
+            suffix_noise = random.choice(
+                distractor_symbols) if random.random() < 0.5 else ""
+            noisy_list.append(f"{prefix_noise}{word}{suffix_noise}")
 
-            prefix_noise = ''.join(random.choices(
-                distractor_symbols, k=random.randint(1, 3))) if add_prefix else ""
-            suffix_noise = ''.join(random.choices(
-                distractor_symbols, k=random.randint(1, 3))) if add_suffix else ""
-
-            noisy_word = f"{prefix_noise}{word}{suffix_noise}"
-            noisy_list.append(noisy_word)
-
-            num_distractors = random.randint(0, 4)
-            for _ in range(num_distractors):
+            if random.random() < 0.3:
                 distractor = random.choice(filtered_distractors)
-                d_prefix = ''.join(random.choices(distractor_symbols, k=random.randint(
-                    1, 3))) if random.choice([True, False]) else ""
-                d_suffix = ''.join(random.choices(distractor_symbols, k=random.randint(
-                    1, 3))) if random.choice([True, False]) else ""
-                noisy_distractor = f"[DISTRACTOR] {d_prefix}{distractor}{d_suffix}"
-                noisy_list.append(noisy_distractor)
+                prefix = random.choice(distractor_symbols)
+                suffix = random.choice(distractor_symbols)
+                noisy_list.append(f"[DISTRACTOR] {prefix}{distractor}{suffix}")
 
         return noisy_list
 
@@ -198,44 +175,47 @@ class SerialMemoryTaskExpForLLM(Experiment):
         return recalled
 
 
-def generate_serial_memory_prompt(experiment, json_path):
-    """
-    Generates a full serial memory prompt for a given experiment instance.
-
-    Args:
-        experiment: Instance of SerialMemoryTaskExpForLLM.
-        json_path: Path to the JSON file containing the word pool.
-        list_size: Number of study words to use.
-
-    Returns:
-        A formatted prompt string.
-    """
-    list_lengths = experiment.list_lengths[0]
+def run_serial_memory_trial(experiment, json_path):
+    list_length = experiment.list_lengths[0]
     with open(json_path, "r") as f:
         word_dict = json.load(f)
 
-    study_list = list(word_dict.keys())[
-        starting_position:list_lengths+starting_position]
-    study_list_with_noise = experiment.add_distractors_between_words(
-        study_list) if experiment.add_noise else study_list
+    clean_list = list(word_dict.keys())[
+        starting_position:starting_position + list_length]
+    noisy_list = experiment.add_distractors_between_words(
+        clean_list) if experiment.add_noise else clean_list
 
-    print("=== DEBUG: Noisy study list ===")
-    for i, word in enumerate(study_list_with_noise):
-        print(f'{i+1:03d}. "{word}"')
+    messages = [
+        {"role": "system", "content": experiment.construct_prompt(
+            Q_="", study_list=noisy_list, condition="constant", noise=experiment.add_noise)}
+    ]
+    for word in noisy_list:
+        messages.append({"role": "user", "content": word})
+    messages.append({"role": "user", "content": "<<The list is ended!>>"})
 
-    # Note: This was previously incorrectly using the clean version regardless of noise
-    study_section = experiment.generate_positionally_tagged_study_list(
-        study_list_with_noise)
-
-    instructions = experiment.construct_prompt(
-        Q_="",
-        study_list=study_list_with_noise,
-        condition="constant",
-        noise=experiment.add_noise
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=messages,
+        temperature=0,
+        max_tokens=1500
     )
 
-    prompt = f"{instructions}\n\n{study_section}"
-    return prompt, study_list_with_noise, study_list
+    raw_output = response.choices[0].message.content.strip()
+    recalled = experiment.extract_recalled_list(raw_output, list_length)
+
+    print("\n================== RAW OUTPUT ==================\n")
+    print(raw_output)
+
+    print("\n------------------ STUDY vs RECALL -------------------")
+    correct = 0
+    for i, (target, guess) in enumerate(zip(clean_list, recalled)):
+        mark = "TRUE Recalled!" if target.lower(
+        ) == guess.lower() else "FALSE Recalled!------"
+        if mark == "TRUE Recalled!":
+            correct += 1
+        print(f"{i+1:02d}. {target:<15} | {guess:<15} {mark}")
+
+    print(f"\nTotal Correct: {correct}/{len(clean_list)}")
 
 
 if __name__ == '__main__':
@@ -244,8 +224,66 @@ if __name__ == '__main__':
 
     experiment = SerialMemoryTaskExpForLLM(get_llm)
     JSON_PATH = "CogBench/Experiments/SerialMemoryTask/Dataset/WikiText100_w_with_fallbacks.json"
+    run_serial_memory_trial(experiment, JSON_PATH)
 
-    final_prompt, stlwn = generate_serial_memory_prompt(
-        experiment, JSON_PATH)
-    print("\n================ FINAL PROMPT ================\n")
-    print(final_prompt)
+
+# def generate_serial_memory_prompt(experiment, json_path):
+#     """
+#     Generates a full serial memory prompt for a given experiment instance.
+
+#     Args:
+#         experiment: Instance of SerialMemoryTaskExpForLLM.
+#         json_path: Path to the JSON file containing the word pool.
+#         list_size: Number of study words to use.
+
+#     Returns:
+#         A formatted prompt string.
+#     """
+#     list_lengths = experiment.list_lengths[0]
+#     with open(json_path, "r") as f:
+#         word_dict = json.load(f)
+
+#     study_list = list(word_dict.keys())[
+#         starting_position:list_lengths+starting_position]
+#     study_list_with_noise = experiment.add_distractors_between_words(
+#         study_list) if experiment.add_noise else study_list
+
+#     print("=== DEBUG: Noisy study list ===")
+#     for i, word in enumerate(study_list_with_noise):
+#         print(f'{i+1:03d}. "{word}"')
+
+#     # Note: This was previously incorrectly using the clean version regardless of noise
+#     study_section = experiment.generate_positionally_tagged_study_list(
+#         study_list_with_noise)
+
+#     instructions = experiment.construct_prompt(
+#         Q_="",
+#         study_list=study_list_with_noise,
+#         condition="constant",
+#         noise=experiment.add_noise
+#     )
+
+#     prompt = f"{instructions}\n\n{study_section}"
+#     return prompt, study_list_with_noise, study_list
+
+
+# if __name__ == '__main__':
+#     load_dotenv("CogBench/.env")
+#     openai.api_key = os.getenv("OPENAI_API_KEY")
+
+#     experiment = SerialMemoryTaskExpForLLM(get_llm)
+#     JSON_PATH = "CogBench/Experiments/SerialMemoryTask/Dataset/WikiText100_w_with_fallbacks.json"
+
+#     final_prompt, stlwn = generate_serial_memory_prompt(
+#         experiment, JSON_PATH)
+#     print("\n================ FINAL PROMPT ================\n")
+#     print(final_prompt)
+
+
+"""
+Send task description only once (as system prompt).
+Send each word/distractor as a separate user prompt.
+Do NOT wait for LLM to respond after each word.
+Only send <<The list is ended!>> to signal recall begins.
+Then get a single LLM response, which is parsed and compared to the clean list.
+"""
