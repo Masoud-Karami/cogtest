@@ -12,7 +12,8 @@ import openai
 from openai import OpenAI
 from CogBench.Experiments.SerialMemoryTask.store import StoringSerialMemoryScores
 from CogBench.Experiments.SerialMemoryTask.query import SerialMemoryTaskExpForLLM
-from CogBench.Experiments.SerialMemoryTask.query import generate_serial_memory_prompt, construct_prompt
+from SerialMemoryTaskExpForLLM import construct_prompt
+from CogBench.Experiments.SerialMemoryTask.query import generate_serial_memory_prompt
 
 
 # Load API key
@@ -43,7 +44,7 @@ client = OpenAI()
 response = client.chat.completions.create(
     model="gpt-3.5-turbo",
     messages=[
-        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "system", "content": construct_prompt()},
         {"role": "user", "content": prompt}
     ],
     temperature=0,

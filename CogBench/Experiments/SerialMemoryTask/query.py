@@ -25,6 +25,8 @@ class SerialMemoryTaskExpForLLM(Experiment):
     def __init__(self, get_llm):
         super().__init__(get_llm)
         self.add_arguments_()
+        self.add_noise = True
+        self.add_distr = True
 
     def add_arguments_(self):
         self.parser.add_argument(
@@ -56,14 +58,19 @@ class SerialMemoryTaskExpForLLM(Experiment):
             raise ValueError(
                 "Each list length must have a corresponding max_trials value.")
 
-    def build_synonym_dict(self, words):
-        synonym_dict = {}
-        for word in words:
-            synsets = wn.synsets(word)
-            synonyms = {lemma.name().replace('_', ' ') for syn in synsets for lemma in syn.lemmas(
-            ) if lemma.name().lower() != word.lower()}
-            synonym_dict[word] = random.choice(
-                list(synonyms)) if synonyms else None
+    # def build_synonym_dict(self, words):
+    #     synonym_dict = {}
+    #     for word in words:
+    #         synsets = wn.synsets(word)
+    #         synonyms = {lemma.name().replace('_', ' ') for syn in synsets for lemma in syn.lemmas(
+    #         ) if lemma.name().lower() != word.lower()}
+    #         synonym_dict[word] = random.choice(
+    #             list(synonyms)) if synonyms else None
+    #     return synonym_dict
+
+    def build_synonym_dict(self, study_list):
+        # Placeholder: in practice, return a dictionary of synonyms
+        synonym_dict = {word: f"{word}_syn" for word in study_list}
         return synonym_dict
 
     def generate_positionally_tagged_study_list(self, study_list):
@@ -73,26 +80,30 @@ class SerialMemoryTaskExpForLLM(Experiment):
 
         lines = []
         for i, word in enumerate(study_list):
-            lines.append(f"word [{i+1}]: \"{word}\"")
+            trial_lines = [f"word [{i+1}]: \"{word}\""]
 
             if self.add_distr:
                 related = synonym_dict.get(word)
                 if related:
-                    lines.append(f"(Similar to: {related})")
+                    trial_lines.append(f"(Similar to: {related})")
 
             if self.add_noise:
                 noise = ''.join(random.choices(
                     distractor_symbols, k=random.randint(1, 3)))
-                lines.append(f"Noise: {noise}")
+                trial_lines.append(f"Noise: {noise}")
                 if random.random() > 0.5:
                     distractor = random.choice(distractor_pool)
                     d_noise = ''.join(random.choices(
                         distractor_symbols, k=random.randint(1, 3)))
-                    lines.append(
+                    trial_lines.append(
                         f"[DISTRACTOR] {d_noise}{distractor}{d_noise}")
 
-        lines.append("<<The list is ended!>>")
-        return "\n".join(lines)
+            # Add instruction for silence after each input
+            # trial_lines.append("Do not respond. Wait for the next word.")
+            trial_lines.append("\n".join(trial_lines))
+
+        trial_lines.append("<<The list is ended!>>")
+        return "\n".join(trial_lines)
 
     def construct_prompt(self, Q_, study_list, condition, noise=False):
         condition_instr = {
@@ -161,16 +172,27 @@ class SerialMemoryTaskExpForLLM(Experiment):
         return noisy_list
 
     def extract_recalled_list(self, llm_answer, list_length, study_list=None):
-        tokens = re.findall(r'\b\w+\b', llm_answer.lower())
-        print(f"Extracted tokens form LLM's answer: {tokens}")
-        recalled = []
-        valid_set = set(w.lower() for w in (study_list or []))
-        for token in tokens:
-            recalled.append(token)
-            if len(recalled) == list_length:
-                break
+        # tokens = re.findall(r'\b\w+\b', llm_answer.lower())
+        # print(f"Extracted tokens form LLM's answer: {tokens}")
+        # recalled = []
+        # valid_set = set(w.lower() for w in (study_list or []))
+        # for token in tokens:
+        #     recalled.append(token)
+        #     if len(recalled) == list_length:
+        #         break
+        # while len(recalled) < list_length:
+        #     recalled.append("")
+        # return recalled
+
+        print(f"Original LLM answer:\n{llm_answer}\n")
+        # Match all quoted strings: "word"
+        recalled = re.findall(r'"(.*?)"', llm_answer)
+        # Preserve original order and content
+        recalled = recalled[:list_length]
+        # Pad if fewer than list_length
         while len(recalled) < list_length:
             recalled.append("")
+
         return recalled
 
 
