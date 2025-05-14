@@ -854,3 +854,93 @@ usage: sm_allatonce_gpt-3.py [-h] [--engines ENGINES [ENGINES ...]]
 sm_allatonce_gpt-3.py: error: unrecognized arguments: --add_noise
 
 ############################################################################################################################################################################################################################################
+/usagers2/makarf/cogvenv/bin/python /usagers2/makarf/Documents/cogtest/sm_allatonce_gpt-3.py
+=== DEBUG: Noisy study list ===
+001. "#job"
+002. "@$in"
+003. "[DISTRACTOR] Distracto%%"
+004. "[DISTRACTOR] Xyzon@$@"
+005. "[DISTRACTOR] ##&Xyzon*"
+006. "tailor"
+007. "[DISTRACTOR] Distracto&*"
+008. "*#'s**"
+009. "[DISTRACTOR] ^*$Obscure~$$"
+010. "[DISTRACTOR] ##Fuzz"
+011. "[DISTRACTOR] *%*Obscure#"
+012. "%~shop$"
+013. "[DISTRACTOR] ~@Xyzon##"
+014. "Julia*"
+015. "[DISTRACTOR] Obscure"
+016. "[DISTRACTOR] Foobar"
+017. "[DISTRACTOR] Obscure#"
+018. "[DISTRACTOR] ^^Xyzon%"
+019. "Stanley"
+020. "[DISTRACTOR] ^^Obscure"
+021. "@Alf"
+022. "[DISTRACTOR] Synthet#"
+023. "[DISTRACTOR] $&Obscure"
+024. "[DISTRACTOR] Nebula&"
+025. "[DISTRACTOR] Nope$&$"
+026. "%first"
+027. "[DISTRACTOR] #Obscure@$*"
+028. "saw"
+029. "[DISTRACTOR] ^%Blur~*"
+030. "[DISTRACTOR] ~*Xyzon"
+031. "[DISTRACTOR] ~*$Distracto"
+032. "[DISTRACTOR] Nope"
+033. "at"
+034. "#~'$&@"
+035. "[DISTRACTOR] *^$Foobar"
+036. "[DISTRACTOR] Fuzz*~%"
+037. "[DISTRACTOR] ^&Foobar&"
+038. "*Trocadero"
+039. "#&club&#"
+040. "[DISTRACTOR] ~Xyzon"
+041. "[DISTRACTOR] Obscure@$#"
+042. "[DISTRACTOR] Distracto"
+043. "converted*"
+044. "[DISTRACTOR] Nope&"
+045. "[DISTRACTOR] Xyzon@$"
+046. "&*cinema"
+047. "on"
+048. "[DISTRACTOR] *#Fuzz#"
+049. "[DISTRACTOR] &Foobar%^%"
+050. "[DISTRACTOR] Fuzz&~*"
+051. "[DISTRACTOR] Foobar@"
+052. "Camden"
+053. "[DISTRACTOR] @*Nope^"
+054. "[DISTRACTOR] Obscure@~^"
+055. "[DISTRACTOR] Blur@&~"
+056. "[DISTRACTOR] Distracto%$"
+057. "Road"
+058. "[DISTRACTOR] @*#Foobar"
+059. "[DISTRACTOR] ^^@Nope"
+060. "Liverpool"
+
+================== RAW OUTPUT ==================
+Raw output: {
+    "recalled_words": ["#job", "@$in", "tailor", "*#'s**", "%~shop$", "Julia*", "Stanley", "@Alf", "saw", "at", "#~'$&@", "*Trocadero", "#&club&#", "converted*", "&*cinema", "on", "Camden", "Road", "Liverpool"]
+}
+
+------------------ STUDY vs RECALL -------------------
+01. job                  | #job                 FALSE Recalled!------
+02. in                   | @$in                 FALSE Recalled!------
+03. tailor               | tailor               TRUE Recalled!
+04. 's                   | *#'s**               FALSE Recalled!------
+05. shop                 | %~shop$              FALSE Recalled!------
+06. Julia                | Julia*               FALSE Recalled!------
+07. Stanley              | Stanley              TRUE Recalled!
+08. Alf                  | @Alf                 FALSE Recalled!------
+09. first                | saw                  FALSE Recalled!------
+10. saw                  | at                   FALSE Recalled!------
+11. at                   | #~'$&@               FALSE Recalled!------
+12. '                    | *Trocadero           FALSE Recalled!------
+13. Trocadero            | #&club&#             FALSE Recalled!------
+14. club                 | converted*           FALSE Recalled!------
+15. converted            | &*cinema             FALSE Recalled!------
+16. cinema               | on                   FALSE Recalled!------
+17. on                   | Camden               FALSE Recalled!------
+18. Camden               | Road                 FALSE Recalled!------
+19. Road                 | Liverpool            FALSE Recalled!------
+
+Total Correct: 2/20
