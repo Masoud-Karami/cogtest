@@ -12,7 +12,6 @@ import openai
 from openai import OpenAI
 from CogBench.Experiments.SerialMemoryTask.store import StoringSerialMemoryScores
 from CogBench.Experiments.SerialMemoryTask.query import SerialMemoryTaskExpForLLM
-from SerialMemoryTaskExpForLLM import construct_prompt
 from CogBench.Experiments.SerialMemoryTask.query import generate_serial_memory_prompt
 
 
@@ -26,25 +25,18 @@ experiment = SerialMemoryTaskExpForLLM(None)
 # Path to the JSON word list
 JSON_PATH = "CogBench/Experiments/SerialMemoryTask/Dataset/WikiText100_w_with_fallbacks.json"
 
-list_size = 150
+list_lengths = experiment.list_lengths[0]
 # Generate full memory task prompt
 # prompt = generate_serial_memory_prompt(experiment, JSON_PATH, list_size)
 prompt, study_list = generate_serial_memory_prompt(
-    experiment, JSON_PATH, list_size)
-
-messages = [
-    {
-        "role": "system",
-        "content": construct_prompt()
-    }
-]
+    experiment, JSON_PATH, list_lengths)
 
 # Send prompt to OpenAI
 client = OpenAI()
 response = client.chat.completions.create(
     model="gpt-3.5-turbo",
     messages=[
-        {"role": "system", "content": construct_prompt()},
+        {"role": "system", "content": experiment.construct_prompt()},
         {"role": "user", "content": prompt}
     ],
     temperature=0,
@@ -75,7 +67,7 @@ for i, (target, guess) in enumerate(zip(study_list, words)):
     ) == guess.lower() else "FALSE Recalled!------"
     if mark == "TRUE Recalled!":
         correct += 1
-    print(f"{i+1:02d}. {target:<{list_size}} | {guess:<{list_size}} {mark}")
+    print(f"{i+1:02d}. {target:<{list_lengths}} | {guess:<{list_lengths}} {mark}")
 
 print(f"\nTotal Correct: {correct}/{len(study_list)}")
 

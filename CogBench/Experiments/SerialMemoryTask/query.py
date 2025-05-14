@@ -26,11 +26,11 @@ class SerialMemoryTaskExpForLLM(Experiment):
         super().__init__(get_llm)
         self.add_arguments_()
         self.add_noise = True
-        self.add_distr = True
+        # self.add_distr = True
 
     def add_arguments_(self):
         self.parser.add_argument(
-            '--list_lengths', nargs='+', type=int, default=[100])
+            '--list_lengths', nargs='+', type=int, default=[20])
         self.parser.add_argument(
             '--starting_conditions', nargs='+', default=['constant'])
         self.parser.add_argument(
@@ -80,7 +80,7 @@ class SerialMemoryTaskExpForLLM(Experiment):
 
         lines = []
         for i, word in enumerate(study_list):
-            trial_lines = [f"word [{i+1}]: \"{word}\""]
+            trial_lines = [f'word [{i+1}]: "{word}"']
 
             if self.add_distr:
                 related = synonym_dict.get(word)
@@ -100,10 +100,10 @@ class SerialMemoryTaskExpForLLM(Experiment):
 
             # Add instruction for silence after each input
             # trial_lines.append("Do not respond. Wait for the next word.")
-            trial_lines.append("\n".join(trial_lines))
+            lines.append("\n".join(trial_lines))
 
-        trial_lines.append("<<The list is ended!>>")
-        return "\n".join(trial_lines)
+        lines.append("<<The list is ended!>>")
+        return "\n".join(lines)
 
     def construct_prompt(self, Q_, study_list, condition, noise=False):
         condition_instr = {
@@ -196,7 +196,7 @@ class SerialMemoryTaskExpForLLM(Experiment):
         return recalled
 
 
-def generate_serial_memory_prompt(experiment, json_path, list_size=15):
+def generate_serial_memory_prompt(experiment, json_path, .list_lengths):
     """
     Generates a full serial memory prompt for a given experiment instance.
 
