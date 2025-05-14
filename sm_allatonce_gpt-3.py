@@ -10,53 +10,31 @@ from tqdm import tqdm
 from dotenv import load_dotenv
 import openai
 from openai import OpenAI
-from CogBench.Experiments.SerialMemoryTask.query import SerialMemoryTaskExpForLLM
 from CogBench.Experiments.SerialMemoryTask.store import StoringSerialMemoryScores
+from CogBench.Experiments.SerialMemoryTask.query import SerialMemoryTaskExpForLLM
+from CogBench.Experiments.SerialMemoryTask.query import generate_serial_memory_prompt
 
-# Setup OpenAI key
+
+# Load API key
 load_dotenv("CogBench/.env")
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 # Initialize experiment
 experiment = SerialMemoryTaskExpForLLM(None)
 
-# Load JSON instead of CSV
+# Path to the JSON word list
 JSON_PATH = "CogBench/Experiments/SerialMemoryTask/Dataset/WikiText100_w_with_fallbacks.json"
 
+# Generate full memory task prompt
+prompt = generate_serial_memory_prompt(experiment, JSON_PATH, list_size=15)
+
+# Load clean study list for comparison
 with open(JSON_PATH, "r") as f:
     word_dict = json.load(f)
-
-# Extract just the target words (keys)
 study_list = list(word_dict.keys())[:15]
 
-# Step 1: Prepare noisy input
-if experiment.add_noise:
-    study_list_with_noise = experiment.add_distractors_between_words(
-        study_list)
-    print("=== DEBUG: Noisy study list ===")
-    for i, word in enumerate(study_list_with_noise):
-        print(f'{i+1: 03d}. "{word}"')
-else:
-    study_list_with_noise = study_list
-
-# Step 2: Use *clean* version only for generating prompt memory tag
-cleaned_for_tagging = [re.sub(r'^[^\w]*|[^\w]*$', '', w) for w in study_list]
-study_section = experiment.generate_positionally_tagged_study_list(
-    cleaned_for_tagging)
-
-# Step 4: Construct full prompt — instructions first, then list
-instructions = experiment.construct_prompt(
-    Q_="",  # Only return instruction block
-    study_list=study_list_with_noise,
-    condition="constant",
-    noise=experiment.add_noise
-)
-
-# Combine instruction block + list
-prompt = f"{instructions}\n\n{study_section}"
-
-# Send prompt to OpenAI Chat Completion endpoint
-client = OpenAI()  # This uses your OPENAI_API_KEY from env
+# Send prompt to OpenAI
+client = OpenAI()
 response = client.chat.completions.create(
     model="gpt-3.5-turbo",
     messages=[
@@ -68,11 +46,13 @@ response = client.chat.completions.create(
 )
 
 output = response.choices[0].message.content.strip()
+print("\n================== RAW OUTPUT ==================")
 print(f"Raw output: {output}")
 
+# Try parsing JSON output
 try:
     parsed = json.loads(output)
-    words = parsed.get("recalled_words are", [])
+    words = parsed.get("recalled_words", [])
 except json.JSONDecodeError:
     print("Warning: Failed to parse JSON. Trying partial fix.")
     match = re.findall(r'"recalled_words"\s*:\s*\[(.*?)\]', output, re.DOTALL)
@@ -81,12 +61,7 @@ except json.JSONDecodeError:
     else:
         words = []
 
-# Compare and visualize
-print("\n---------------------- PROMPT ------------------------\n")
-print(prompt)
-print("\n---------------- GPT RESPONSE ------------------------\n")
-print(output)
-
+# Compare recall with target study list
 print("\n------------------ STUDY vs RECALL -------------------")
 correct = 0
 for i, (target, guess) in enumerate(zip(study_list, words)):
@@ -97,6 +72,7 @@ for i, (target, guess) in enumerate(zip(study_list, words)):
     print(f"{i+1:02d}. {target:<15} | {guess:<15} {mark}")
 
 print(f"\nTotal Correct: {correct}/{len(study_list)}")
+
 
 # # Prepare scoring
 # scorer = StoringSerialMemoryScores()
@@ -110,7 +86,7 @@ print(f"\nTotal Correct: {correct}/{len(study_list)}")
 #     'behaviour_score3', 'behaviour_score3_name',
 #     'behaviour_score4', 'behaviour_score4_name'
 # ]
-# df_scores = pd.DataFrame(columns=columns)
+# # df_scores = pd.DataFrame(columns=columns)
 
 # # Build results DataFrame
 # df_results = pd.DataFrame([{
@@ -135,7 +111,7 @@ print(f"\nTotal Correct: {correct}/{len(study_list)}")
 #     df_results, df_scores[columns], engine='gpt-3.5-turbo', run=0
 # )
 
-# # Clean row if shape mismatch
+# Clean row if shape mismatch
 # if len(scored.columns) < len(scored.iloc[-1]):
 #     scored.iloc[-1, :] = scored.iloc[-1, :len(scored.columns)]
 
