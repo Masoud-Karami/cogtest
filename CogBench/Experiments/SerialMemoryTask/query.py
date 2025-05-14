@@ -28,7 +28,7 @@ class SerialMemoryTaskExpForLLM(Experiment):
 
     def add_arguments_(self):
         self.parser.add_argument(
-            '--list_lengths', nargs='+', type=int, default=[7])
+            '--list_lengths', nargs='+', type=int, default=[100])
         self.parser.add_argument(
             '--starting_conditions', nargs='+', default=['constant'])
         self.parser.add_argument(
@@ -102,7 +102,7 @@ class SerialMemoryTaskExpForLLM(Experiment):
 
         noise_instr = "\nSome words may include symbols or distractors. Ignore these during recall." if noise else ""
 
-        return (
+        prompt_init = (
             "You are participating in an experiment involving word lists of 7, 13, or 19 nouns. Your task is to learn and accurately recall each list.\n"
             "Study and test trials alternate across two conditions: constant and spin starting positions.\n"
             f"{condition_instr}\n"
@@ -120,6 +120,8 @@ class SerialMemoryTaskExpForLLM(Experiment):
             "Respond strictly in this JSON format:\n"
             "{\n    \"recalled_words\": [\"\", \"\", ..., \"\"]\n}"
         )
+
+        return prompt_init
 
     def add_distractors_between_words(self, study_list):
         distractor_pool = DISTRACTOR_POOL
@@ -171,19 +173,6 @@ class SerialMemoryTaskExpForLLM(Experiment):
             recalled.append("")
         return recalled
 
-    def relative_order_scoring(self, recalled_list, study_list):
-        return sum(
-            study_list.index(
-                recalled_list[i]) + 1 == study_list.index(recalled_list[i + 1])
-            for i in range(len(recalled_list) - 1)
-            if recalled_list[i] in study_list and recalled_list[i + 1] in study_list
-        )
-
-    def compute_forgetting_rate(self, prev_recall, current_recall):
-        if not prev_recall:
-            return np.nan
-        return 1 - sum(1 for a, b in zip(prev_recall, current_recall) if a == b) / len(prev_recall)
-
 
 def generate_serial_memory_prompt(experiment, json_path, list_size=15):
     """
@@ -220,7 +209,7 @@ def generate_serial_memory_prompt(experiment, json_path, list_size=15):
     )
 
     prompt = f"{instructions}\n\n{study_section}"
-    return prompt
+    return prompt, study_list_with_noise
 
 
 if __name__ == '__main__':
@@ -230,7 +219,7 @@ if __name__ == '__main__':
     experiment = SerialMemoryTaskExpForLLM(get_llm)
     JSON_PATH = "CogBench/Experiments/SerialMemoryTask/Dataset/WikiText100_w_with_fallbacks.json"
 
-    final_prompt = generate_serial_memory_prompt(
+    final_prompt, stlwn = generate_serial_memory_prompt(
         experiment, JSON_PATH)
     print("\n================ FINAL PROMPT ================\n")
     print(final_prompt)

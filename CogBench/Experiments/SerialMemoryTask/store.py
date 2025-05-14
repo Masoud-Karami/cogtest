@@ -190,3 +190,18 @@ class StoringSerialMemoryScores(StoringScores):
 
 if __name__ == '__main__':
     StoringSerialMemoryScores().get_all_scores()
+
+
+# TODO add these!
+   # def relative_order_scoring(self, recalled, study_list):
+    #     return sum(
+    #         study_list.index(
+    #             recalled[i]) + 1 == study_list.index(recalled[i + 1])
+    #         for i in range(len(recalled) - 1)
+    #         if recalled[i] in study_list and recalled[i + 1] in study_list
+    #     )
+
+    # def compute_forgetting_rate(self, prev_recall, current_recall):
+    #     if not prev_recall:
+    #         return np.nan
+    #     return 1 - sum(1 for a, b in zip(prev_recall, current_recall) if a == b) / len(prev_recall)
