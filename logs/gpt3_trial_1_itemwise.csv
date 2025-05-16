@@ -1,0 +1,11 @@
+trial_id,position,target,guess,correct,outcome
+gpt3_trial_1,1,name,name,1,TRUE Recalled!
+gpt3_trial_1,2,His,His,1,TRUE Recalled!
+gpt3_trial_1,3,brother,brother,1,TRUE Recalled!
+gpt3_trial_1,4,Sydney,Sydney,1,TRUE Recalled!
+gpt3_trial_1,5,often,often,1,TRUE Recalled!
+gpt3_trial_1,6,lent,lent,1,TRUE Recalled!
+gpt3_trial_1,7,money,money,1,TRUE Recalled!
+gpt3_trial_1,8,to,to,1,TRUE Recalled!
+gpt3_trial_1,9,him,him,1,TRUE Recalled!
+gpt3_trial_1,10,after,after,1,TRUE Recalled!

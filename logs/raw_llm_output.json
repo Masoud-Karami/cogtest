@@ -1,0 +1,53 @@
+{
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are participating in a user study designed to assess your ability to recall ordered word lists. Your task is to learn and accurately recall each list.\nThe study follows a within-subjects design with alternating **study** and **test** trials across two conditions:\nIn the constant condition, each study trial starts with the same word in the same order.\nRecall the list in the order presented during the most recent study trial.\nYou will complete four total sessions (one practice and three test sessions), alternating between these two conditions.\nEach word list is studied and tested until it is recalled perfectly or a maximum number of trials is reached.\nDuring each test, you will have up to 1 minute to recall the list and must indicate when you are finished by saying \u201cdone\u201d.\nYou will be presented with a list of words to memorize.\n**Each word will be shown one at a time**, possibly containing noisy symbols or followed by a `[DISTRACTOR]` word.\nYour task is to **focus only on the clean study word** presented in each step. Ignore any distractors or symbol-based noise.\nIf any input word begins with [DISTRACTOR], it is not part of the actual list. You must output <<silent>> during recall for such entries.\nDo not respond or start recalling until the list ends with <<The list is ended!>>.\nWhen list intoduction ended, recall the words in exact order they were presented.\nRespond strictly using this JSON format:\n{\n    \"recalled_words\": [\"word1\", \"word2\", \"<<silent>>\", ...]\n}"
+    },
+    {
+      "role": "user",
+      "content": "name"
+    },
+    {
+      "role": "user",
+      "content": "His"
+    },
+    {
+      "role": "user",
+      "content": "brother"
+    },
+    {
+      "role": "user",
+      "content": "Sydney"
+    },
+    {
+      "role": "user",
+      "content": "often"
+    },
+    {
+      "role": "user",
+      "content": "lent"
+    },
+    {
+      "role": "user",
+      "content": "money"
+    },
+    {
+      "role": "user",
+      "content": "to"
+    },
+    {
+      "role": "user",
+      "content": "him"
+    },
+    {
+      "role": "user",
+      "content": "after"
+    },
+    {
+      "role": "user",
+      "content": "<<The list is ended!>>"
+    }
+  ],
+  "raw_output": "{\n    \"recalled_words\": [\"name\", \"His\", \"brother\", \"Sydney\", \"often\", \"lent\", \"money\", \"to\", \"him\", \"after\"]\n}"
+}

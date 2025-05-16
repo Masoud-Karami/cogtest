@@ -13,7 +13,10 @@ import openai
 from openai import OpenAI
 from CogBench.llm_utils.llms import get_llm
 from CogBench.Experiments.SerialMemoryTask.store import StoringSerialMemoryScores
-from CogBench.Experiments.SerialMemoryTask.query import SerialMemoryTaskExpForLLM
+from CogBench.Experiments.SerialMemoryTask.query import SerialMemoryTaskExpForLLM, prepare_study_list
+
+from CogBench.Experiments.SerialMemoryTask.query import prepare_study_list, run_serial_memory_trial
+
 
 # Setup
 load_dotenv("CogBench/.env")
@@ -22,25 +25,14 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 # Initialize experiment
 experiment = SerialMemoryTaskExpForLLM(get_llm)
 JSON_PATH = "CogBench/Experiments/SerialMemoryTask/Dataset/WikiText100_w_with_fallbacks.json"
+clean_list, noisy_list = prepare_study_list(experiment, JSON_PATH)
 list_lengths = experiment.list_lengths[0]
-# Load and prepare the list
-
-
-def prepare_study_list(experiment, json_path):
-    list_length = experiment.list_lengths[0]
-    with open(json_path, "r") as f:
-        word_dict = json.load(f)
-
-    start_pos = random.randint(0, 10)
-    clean_study_list = list(word_dict.keys())[
-        start_pos:start_pos + list_length]
-    noisy_list = experiment.add_distractors_between_words(
-        clean_study_list) if experiment.add_noise else clean_study_list
-    return clean_study_list, noisy_list
-
-
 clean_study_list, noisy_study_list = prepare_study_list(experiment, JSON_PATH)
-print("\n================== NOISY STUDY LIST SENT ==================\n")
+
+# Load and prepare the list
+clean_list, noisy_list = prepare_study_list(experiment, JSON_PATH)
+run_serial_memory_trial(experiment, clean_list, noisy_list)
+print("\n---------------- NOISY STUDY LIST SENT---------------\n")
 for i, word in enumerate(noisy_study_list):
     print(f"{i+1:02d}. {word}")
 
@@ -52,98 +44,46 @@ instruction = experiment.construct_prompt(
     noise=experiment.add_noise
 )
 
-# Construct multi-turn message list
-messages = [{"role": "system", "content": instruction}]
-for word in noisy_study_list:
-    messages.append({"role": "user", "content": word})
-
-# Signal end of list
-messages.append({"role": "user", "content": "<<The list is ended!>>"})
-
-# Call OpenAI API
-client = OpenAI()
-response = client.chat.completions.create(
-    model="gpt-3.5-turbo",
-    messages=messages,
-    temperature=0,
-    max_tokens=1500
-)
-
-# Extract and parse recall
-output = response.choices[0].message.content.strip()
-print("\n================== RAW OUTPUT ==================\n")
-print(output)
+raw_output = run_serial_memory_trial(experiment, clean_list, noisy_list)
+print("\n--------------- RAW OUTPUT ---------------\n")
+print(raw_output)
 
 # Extract recalled words
 try:
-    parsed = json.loads(output)
+    parsed = json.loads(raw_output)
     recalled_words = parsed.get("recalled_words", [])
 except json.JSONDecodeError:
     print("Warning: JSON parse failed, attempting fallback...")
     match = re.findall(r'"recalled_words"\s*:\s*\[(.*?)\]', output, re.DOTALL)
     recalled_words = re.findall(r'"(.*?)"', match[0]) if match else []
 
-# Compare recall to clean study list
 print("\n------------------ STUDY vs RECALL -------------------")
 correct = 0
-for i, (target, guess) in enumerate(zip(clean_study_list, recalled_words)):
-    mark = "TRUE Recalled!" if target.lower(
-    ) == guess.lower() else "FALSE Recalled!------"
-    if mark == "TRUE Recalled!":
+for i, (target, guess) in enumerate(zip(clean_list, recalled_words)):
+    target_clean = target.strip()
+    guess_clean = guess.strip()
+
+    # Case 1: Distractor + <<silent>>
+    if target_clean.startswith("[DISTRACTOR]") and guess_clean.lower() == "<<silent>>":
+        mark = "TRUE Recalled! (Silent on Distractor)"
         correct += 1
-    print(f"{i+1:02d}. {target:<{list_lengths}} | {guess:<{list_lengths}} {mark}")
 
-print(f"\nTotal Correct: {correct}/{len(clean_study_list)}")
+    # Case 2: Clean word matched
+    elif not target_clean.startswith("[DISTRACTOR]") and target_clean.lower() == guess_clean.lower():
+        mark = "TRUE Recalled!"
+        correct += 1
+
+    # Else: wrong or hallucinated
+    else:
+        mark = "FALSE Recalled!------"
+
+    print(f"{i+1:02d}. {target:<20} | {guess:<20} {mark}")
 
 
-# # Load API key
-# load_dotenv("CogBench/.env")
-# openai.api_key = os.getenv("OPENAI_API_KEY")
-
-# # Initialize experiment
-# experiment = SerialMemoryTaskExpForLLM(None)
-
-# # Path to the JSON word list
-# JSON_PATH = "CogBench/Experiments/SerialMemoryTask/Dataset/WikiText100_w_with_fallbacks.json"
-
-# list_lengths = experiment.list_lengths[0]
-# # Generate full memory task prompt
-# # prompt = generate_serial_memory_prompt(experiment, JSON_PATH, list_size)
-# prompt, study_list_with_noise, clean_study_list = generate_serial_memory_prompt(
-#     experiment, JSON_PATH)
-
-# # Send prompt to OpenAI
-# client = OpenAI()
-# response = client.chat.completions.create(
-#     model="gpt-3.5-turbo",
-#     messages=[
-#         {"role": "system", "content": prompt}
-#     ],
-#     temperature=0,
-#     max_tokens=2500
-# )
-
-# output = response.choices[0].message.content.strip()
-# print("\n================== RAW OUTPUT ==================")
-# print(f"Raw output: {output}")
-
-# # Try parsing JSON output
-# try:
-#     parsed = json.loads(output)
-#     asitis_recalled = parsed.get("recalled_words", [])
-# except json.JSONDecodeError:
-#     print("Warning: Failed to parse JSON. Trying partial fix.")
-#     match = re.findall(
-#         r'"asitis recalled words"\s*:\s*\[(.*?)\]', output, re.DOTALL)
-#     if match:
-#         asitis_recalled = re.findall(r'"(.*?)"', match[0])
-#     else:
-#         asitis_recalled = []
-
-# # Compare recall with target study list
+# Compare recall to clean study list
 # print("\n------------------ STUDY vs RECALL -------------------")
 # correct = 0
-# for i, (target, guess) in enumerate(zip(clean_study_list, asitis_recalled)):
+# for i, (target, guess) in enumerate(zip(clean_study_list, recalled_words)):
 #     mark = "TRUE Recalled!" if target.lower(
 #     ) == guess.lower() else "FALSE Recalled!------"
 #     if mark == "TRUE Recalled!":
@@ -194,5 +134,5 @@ print(f"\nTotal Correct: {correct}/{len(clean_study_list)}")
 # if len(scored.columns) < len(scored.iloc[-1]):
 #     scored.iloc[-1, :] = scored.iloc[-1, :len(scored.columns)]
 
-# print("\n=============== SERIAL MEMORY METRICS ===============")
+# print("\n--------------- SERIAL MEMORY METRICS ---------------")
 # print(scored.tail(1).T)
