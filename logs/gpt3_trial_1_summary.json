@@ -1,6 +1,6 @@
 {
   "trial_id": "gpt3_trial_1",
   "total_items": 10,
-  "correct_count": 10,
-  "accuracy": 1.0
+  "correct_count": 9,
+  "accuracy": 0.9
 }

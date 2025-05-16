@@ -16,8 +16,6 @@ from CogBench.llm_utils.llms import get_llm
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(
     os.path.abspath(__file__))))))
 
-DISTRACTOR_POOL = ["Xyzon", "Nope", "Blur", "Obscure",
-                   "Fuzz", "Synthet", "Distracto", "Foobar", "Nebula"]
 DISTRACTOR_SYMBOLS = list("#$%&*@^~")
 
 # Function to merge possessives in a list of words.Remove standalone apostrophes from study lists. They are not behaviorally meaningful in the context of recall. Their presence introduces tokenization and semantic misalignment. Cognitive realism is better preserved by keeping only recallable words.
@@ -53,7 +51,7 @@ def prepare_study_list(experiment, json_path):
     clean_study_list = merge_possessives(raw_study_list)[:list_length]
 
     noisy_list = experiment.add_distractors_between_words(
-        clean_study_list) if experiment.add_noise else clean_study_list
+        clean_study_list) if (experiment.add_noise or experiment.add_distr) else clean_study_list
 
     print(
         f"\n-==================CLEAN LIST({len(clean_study_list)} words) ==================")
@@ -64,6 +62,12 @@ def prepare_study_list(experiment, json_path):
         print(f"{i+1:02d}. {w}")
 
     return clean_study_list, noisy_list
+
+
+def load_synonym_dict(self):
+    path = "CogBench/Experiments/SerialMemoryTask/Dataset/WikiText100_w_with_fallbacks.json"
+    with open(path, "r") as f:
+        return json.load(f)
 
 
 class SerialMemoryTaskExpForLLM(Experiment):
@@ -107,7 +111,6 @@ class SerialMemoryTaskExpForLLM(Experiment):
         return synonym_dict
 
     def generate_positionally_tagged_study_list(self, study_list):
-        distractor_pool = DISTRACTOR_POOL
         distractor_symbols = DISTRACTOR_SYMBOLS
         synonym_dict = self.build_synonym_dict(study_list)
 
@@ -155,37 +158,32 @@ class SerialMemoryTaskExpForLLM(Experiment):
     def add_distractors_between_words(self, study_list):
         distractor_symbols = DISTRACTOR_SYMBOLS
 
-        # Load synonym dictionary from the fallback dataset
-        json_path = "CogBench/Experiments/SerialMemoryTask/Dataset/WikiText100_w_with_fallbacks.json"
-        with open(json_path, "r") as f:
-            synonym_dict = json.load(f)
-
         noisy_list = []
 
-        for i, word in enumerate(study_list):
+        for word in study_list:
             # Inject character-level noise to the actual word
-            prefix_noise = random.choice(
+            prefix = random.choice(
                 distractor_symbols) if random.random() < 0.5 else ""
-            suffix_noise = random.choice(
+            suffix = random.choice(
                 distractor_symbols) if random.random() < 0.5 else ""
-            noisy_word = f"{prefix_noise}{word}{suffix_noise}"
+            noisy_word = f"{prefix}{word}{suffix}"
             noisy_list.append(noisy_word)
 
-            # Insert distractor with ~20% probability and only if synonym exists
-            if word in synonym_dict and random.random() < 0.2:
-                synonym = synonym_dict[word]
-                if synonym:  # make sure it's not empty
-                    distractor_prefix = random.choice(distractor_symbols)
-                    distractor_suffix = random.choice(distractor_symbols)
-                    distractor_word = f"[DISTRACTOR] {distractor_prefix}{synonym}{distractor_suffix}"
-                    noisy_list.append(distractor_word)
+            # With ~20% probability, insert a distractor using known synonym
+            synonym = self.synonym_dict.get(word)
+            if synonym and random.random() < 0.2:
+                d_prefix = random.choice(distractor_symbols)
+                d_suffix = random.choice(distractor_symbols)
+                distractor = f"[DISTRACTOR] {d_prefix}{synonym}{d_suffix}"
+                noisy_list.append(distractor)
 
         return noisy_list
 
     def extract_recalled_list(self, llm_answer, list_length, study_list=None):
 
         assert study_list is not None, "Pass the correct study_list used in prompting!"
-        print(f"Original LLM answer:\n{llm_answer}\n")
+        print("\n================== ORIGINAL LLM ANSWER ==================")
+        print(f"\n Original LLM answer:\n{llm_answer}\n")
 
         # Extract raw content from JSON
         try:
@@ -220,49 +218,6 @@ class SerialMemoryTaskExpForLLM(Experiment):
             aligned.append("")
 
         return aligned
-
-    def score_trial(self, clean_list, recalled_list, trial_id=None):
-        """
-        Compare study list vs recall and compute detailed per-item scores.
-        Returns a list of dicts and an overall summary.
-        """
-        results = []
-        correct = 0
-
-        for i, (target, guess) in enumerate(zip(clean_list, recalled_list)):
-            target_clean = target.strip()
-            guess_clean = guess.strip()
-
-            if target_clean.startswith("[DISTRACTOR]"):
-                if guess_clean.lower() == "<<silent>>":
-                    outcome = "TRUE Recalled! (Distractor Ignored)"
-                    correct += 1
-                else:
-                    outcome = "FALSE Recalled! (Should be <<silent>>)"
-            else:
-                if target_clean.lower() == guess_clean.lower():
-                    outcome = "TRUE Recalled!"
-                    correct += 1
-                else:
-                    outcome = "FALSE Recalled!"
-
-            results.append({
-                "trial_id": trial_id,
-                "position": i + 1,
-                "target": target_clean,
-                "guess": guess_clean,
-                "correct": int("TRUE" in outcome),
-                "outcome": outcome
-            })
-
-        summary = {
-            "trial_id": trial_id,
-            "total_items": len(clean_list),
-            "correct_count": correct,
-            "accuracy": correct / len(clean_list)
-        }
-
-        return results, summary
 
 
 def run_serial_memory_trial(experiment, clean_list, noisy_list, seed=42):
@@ -303,38 +258,18 @@ def run_serial_memory_trial(experiment, clean_list, noisy_list, seed=42):
     print("\n================== RAW OUTPUT ==================\n")
     print(raw_output)
 
-    results, summary = experiment.score_trial(
-        noisy_list, recalled, trial_id="gpt3_trial_1")
-
-    print("\n================== STUDY vs RECALL ==================")
-    for row in results:
-        print(
-            f"{row['position']:02d}. {row['target']:<20} | {row['guess']:<20} {row['outcome']}")
-
-        print(
-            f"\nAccuracy: {summary['correct_count']}/{summary['total_items']} = {summary['accuracy']:.2f}")
-
     print("\n================Confirmed Alignment Check================")
     for i, (shown, clean) in enumerate(zip(noisy_list, clean_list)):
         print(f"{i+1:02d}. SHOWN: {shown:<20} | TARGET: {clean}")
 
-    df = pd.DataFrame(results)
-    df.to_csv("logs/gpt3_trial_1_itemwise.csv", index=False)
-
-    # Save summary stats
-    with open("logs/gpt3_trial_1_summary.json", "w") as f:
-        json.dump(summary, f, indent=2)
-
     return raw_output
 
 
-if __name__ == '__main__':
-    load_dotenv("CogBench/.env")
-    openai.api_key = os.getenv("OPENAI_API_KEY")
-
+def __init__(self, get_llm):
+    super().__init__(get_llm)
+    self.add_arguments_()
+    self.synonym_dict = self.load_synonym_dict()
     experiment = SerialMemoryTaskExpForLLM(get_llm)
-    JSON_PATH = "CogBench/Experiments/SerialMemoryTask/Dataset/WikiText100_w_with_fallbacks.json"
-    run_serial_memory_trial(experiment, JSON_PATH)
 
 
 """

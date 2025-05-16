@@ -27,19 +27,18 @@ experiment = SerialMemoryTaskExpForLLM(get_llm)
 JSON_PATH = "CogBench/Experiments/SerialMemoryTask/Dataset/WikiText100_w_with_fallbacks.json"
 clean_list, noisy_list = prepare_study_list(experiment, JSON_PATH)
 list_lengths = experiment.list_lengths[0]
-clean_study_list, noisy_study_list = prepare_study_list(experiment, JSON_PATH)
 
 # Load and prepare the list
-clean_list, noisy_list = prepare_study_list(experiment, JSON_PATH)
+
 run_serial_memory_trial(experiment, clean_list, noisy_list)
 print("\n---------------- NOISY STUDY LIST SENT---------------\n")
-for i, word in enumerate(noisy_study_list):
+for i, word in enumerate(noisy_list):
     print(f"{i+1:02d}. {word}")
 
 # Instruction
 instruction = experiment.construct_prompt(
     Q_="",
-    study_list=noisy_study_list,
+    study_list=noisy_list,
     condition="constant",
     noise=experiment.add_noise
 )

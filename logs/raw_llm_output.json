@@ -6,6 +6,38 @@
     },
     {
       "role": "user",
+      "content": "and"
+    },
+    {
+      "role": "user",
+      "content": "cinemas"
+    },
+    {
+      "role": "user",
+      "content": "where"
+    },
+    {
+      "role": "user",
+      "content": "he"
+    },
+    {
+      "role": "user",
+      "content": "knew"
+    },
+    {
+      "role": "user",
+      "content": "the"
+    },
+    {
+      "role": "user",
+      "content": "usherettes"
+    },
+    {
+      "role": "user",
+      "content": "by"
+    },
+    {
+      "role": "user",
       "content": "name"
     },
     {
@@ -14,40 +46,8 @@
     },
     {
       "role": "user",
-      "content": "brother"
-    },
-    {
-      "role": "user",
-      "content": "Sydney"
-    },
-    {
-      "role": "user",
-      "content": "often"
-    },
-    {
-      "role": "user",
-      "content": "lent"
-    },
-    {
-      "role": "user",
-      "content": "money"
-    },
-    {
-      "role": "user",
-      "content": "to"
-    },
-    {
-      "role": "user",
-      "content": "him"
-    },
-    {
-      "role": "user",
-      "content": "after"
-    },
-    {
-      "role": "user",
       "content": "<<The list is ended!>>"
     }
   ],
-  "raw_output": "{\n    \"recalled_words\": [\"name\", \"His\", \"brother\", \"Sydney\", \"often\", \"lent\", \"money\", \"to\", \"him\", \"after\"]\n}"
+  "raw_output": "{\n    \"recalled_words\": [\"and\", \"cinemas\", \"where\", \"he\", \"knew\", \"the\", \"usherettes\", \"by\", \"name\"]\n}"
 }
