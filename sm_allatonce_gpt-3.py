@@ -28,10 +28,10 @@ clean_list, noisy_list = prepare_study_list(experiment, JSON_PATH)
 list_lengths = experiment.list_lengths[0]
 
 # Load and prepare the list
-
-print("\n---------------- NOISY STUDY LIST SENT---------------\n")
-for i, word in enumerate(noisy_list):
-    print(f"{i+1:02d}. {word}")
+if experiment.add_noise or experiment.add_distr:
+    print("\n---------------- NOISY STUDY LIST SENT---------------\n")
+    for i, word in enumerate(noisy_list):
+        print(f"{i+1:02d}. {word}")
 
 
 def remove_noise(word):
