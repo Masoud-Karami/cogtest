@@ -57,9 +57,11 @@ def prepare_study_list(experiment, json_path):
         f"\n-==================CLEAN LIST({len(clean_study_list)} words) ==================")
     for i, w in enumerate(clean_study_list):
         print(f"{i+1:02d}. {w}")
-    print("\n==================NOISY LIST(+ distr & noise)==================")
-    for i, w in enumerate(noisy_list):
-        print(f"{i+1:02d}. {w}")
+
+    if not experiment.add_noise or experiment.add_distr:
+        print("\n==================NOISY LIST(+ distr & noise)==================")
+        for i, w in enumerate(noisy_list):
+            print(f"{i+1:02d}. {w}")
 
     return clean_study_list, noisy_list
 
@@ -77,7 +79,7 @@ class SerialMemoryTaskExpForLLM(Experiment):
 
     def add_arguments_(self):
         self.parser.add_argument(
-            '--list_lengths', nargs='+', type=int, default=[10])
+            '--list_lengths', nargs='+', type=int, default=[150])
         self.parser.add_argument(
             '--starting_conditions', nargs='+', default=['constant'])
         self.parser.add_argument(
