@@ -6,48 +6,100 @@
     },
     {
       "role": "user",
-      "content": "where"
+      "content": "~falls~"
     },
     {
       "role": "user",
-      "content": "he~"
+      "content": "into~"
     },
     {
       "role": "user",
-      "content": "knew"
+      "content": "a#"
     },
     {
       "role": "user",
-      "content": "the"
+      "content": "coma&"
     },
     {
       "role": "user",
-      "content": "usherettes@"
+      "content": "^Initially^"
     },
     {
       "role": "user",
-      "content": "by"
+      "content": "~police"
     },
     {
       "role": "user",
-      "content": "name"
+      "content": "$suspect"
     },
     {
       "role": "user",
-      "content": "His"
+      "content": "that"
     },
     {
       "role": "user",
-      "content": "^brother"
+      "content": "[DISTRACTOR] &that%"
     },
     {
       "role": "user",
-      "content": "%Sydney"
+      "content": "&Jake^"
+    },
+    {
+      "role": "user",
+      "content": "&was*"
+    },
+    {
+      "role": "user",
+      "content": "behind$"
+    },
+    {
+      "role": "user",
+      "content": "[DISTRACTOR] #can^"
+    },
+    {
+      "role": "user",
+      "content": "this"
+    },
+    {
+      "role": "user",
+      "content": "*but&"
+    },
+    {
+      "role": "user",
+      "content": "~later~"
+    },
+    {
+      "role": "user",
+      "content": "$release"
+    },
+    {
+      "role": "user",
+      "content": "*him"
+    },
+    {
+      "role": "user",
+      "content": "Loretta"
+    },
+    {
+      "role": "user",
+      "content": "$once"
+    },
+    {
+      "role": "user",
+      "content": "[DISTRACTOR] #formerly&"
+    },
+    {
+      "role": "user",
+      "content": "*more~"
+    },
+    {
+      "role": "user",
+      "content": "begins*"
     },
     {
       "role": "user",
       "content": "<<The list is ended!>>"
     }
   ],
-  "raw_output": "{\n    \"recalled_words\": [\"where\", \"he~\", \"knew\", \"the\", \"<<silent>>\", \"by\", \"name\", \"His\", \"<<silent>>\", \"%Sydney\"]\n}"
+  "raw_output": "{\n    \"recalled_words\": [\"falls\", \"into\", \"<<silent>>\", \"coma\", \"<<silent>>\", \"police\", \"suspect\", \"that\", \"<<silent>>\", \"Jake\", \"was\", \"behind\", \"<<silent>>\", \"can\", \"this\", \"but\", \"later\", \"release\", \"him\", \"Loretta\", \"once\", \"<<silent>>\", \"more\", \"begins\"]\n}"
 }
