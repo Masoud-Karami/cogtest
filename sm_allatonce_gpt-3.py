@@ -12,7 +12,6 @@ from dotenv import load_dotenv
 import openai
 from openai import OpenAI
 from CogBench.llm_utils.llms import get_llm
-from CogBench.Experiments.SerialMemoryTask.store import StoringSerialMemoryScores
 from CogBench.Experiments.SerialMemoryTask.query import SerialMemoryTaskExpForLLM, prepare_study_list
 
 from CogBench.Experiments.SerialMemoryTask.query import prepare_study_list, run_serial_memory_trial

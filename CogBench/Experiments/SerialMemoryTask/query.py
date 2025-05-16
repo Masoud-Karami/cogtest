@@ -64,16 +64,16 @@ def prepare_study_list(experiment, json_path):
     return clean_study_list, noisy_list
 
 
-def load_synonym_dict(self):
-    path = "CogBench/Experiments/SerialMemoryTask/Dataset/WikiText100_w_with_fallbacks.json"
-    with open(path, "r") as f:
-        return json.load(f)
-
-
 class SerialMemoryTaskExpForLLM(Experiment):
     def __init__(self, get_llm):
         super().__init__(get_llm)
         self.add_arguments_()
+        self.synonym_dict = self.load_synonym_dict()
+
+    def load_synonym_dict(self):
+        path = "CogBench/Experiments/SerialMemoryTask/Dataset/WikiText100_w_with_fallbacks.json"
+        with open(path, "r") as f:
+            return json.load(f)
 
     def add_arguments_(self):
         self.parser.add_argument(
@@ -265,11 +265,10 @@ def run_serial_memory_trial(experiment, clean_list, noisy_list, seed=42):
     return raw_output
 
 
-def __init__(self, get_llm):
-    super().__init__(get_llm)
-    self.add_arguments_()
-    self.synonym_dict = self.load_synonym_dict()
-    experiment = SerialMemoryTaskExpForLLM(get_llm)
+# def __init__(self, get_llm):
+#     super().__init__(get_llm)
+#     self.add_arguments_()
+#     experiment = SerialMemoryTaskExpForLLM(get_llm)
 
 
 """

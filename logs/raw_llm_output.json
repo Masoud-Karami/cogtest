@@ -6,48 +6,56 @@
     },
     {
       "role": "user",
-      "content": "and"
+      "content": "brother"
     },
     {
       "role": "user",
-      "content": "cinemas"
+      "content": "$Sydney"
     },
     {
       "role": "user",
-      "content": "where"
+      "content": "&often"
     },
     {
       "role": "user",
-      "content": "he"
+      "content": "lent"
     },
     {
       "role": "user",
-      "content": "knew"
+      "content": "[DISTRACTOR] %contribute~"
     },
     {
       "role": "user",
-      "content": "the"
+      "content": "money"
     },
     {
       "role": "user",
-      "content": "usherettes"
+      "content": "[DISTRACTOR] %money^"
     },
     {
       "role": "user",
-      "content": "by"
+      "content": "to"
     },
     {
       "role": "user",
-      "content": "name"
+      "content": "him"
     },
     {
       "role": "user",
-      "content": "His"
+      "content": "^after"
+    },
+    {
+      "role": "user",
+      "content": "got&"
+    },
+    {
+      "role": "user",
+      "content": "%a"
     },
     {
       "role": "user",
       "content": "<<The list is ended!>>"
     }
   ],
-  "raw_output": "{\n    \"recalled_words\": [\"and\", \"cinemas\", \"where\", \"he\", \"knew\", \"the\", \"usherettes\", \"by\", \"name\"]\n}"
+  "raw_output": "{\n    \"recalled_words\": [\"brother\", \"Sydney\", \"often\", \"lent\", \"<<silent>>\", \"money\", \"<<silent>>\", \"to\", \"him\", \"after\", \"got\", \"a\"]\n}"
 }
