@@ -6,31 +6,43 @@
     },
     {
       "role": "user",
-      "content": "~falls~"
+      "content": "the"
     },
     {
       "role": "user",
-      "content": "into~"
+      "content": "head"
     },
     {
       "role": "user",
-      "content": "a#"
+      "content": "and"
     },
     {
       "role": "user",
-      "content": "coma&"
+      "content": "falls"
     },
     {
       "role": "user",
-      "content": "^Initially^"
+      "content": "into"
     },
     {
       "role": "user",
-      "content": "~police"
+      "content": "a"
     },
     {
       "role": "user",
-      "content": "$suspect"
+      "content": "coma"
+    },
+    {
+      "role": "user",
+      "content": "Initially"
+    },
+    {
+      "role": "user",
+      "content": "police"
+    },
+    {
+      "role": "user",
+      "content": "suspect"
     },
     {
       "role": "user",
@@ -38,23 +50,15 @@
     },
     {
       "role": "user",
-      "content": "[DISTRACTOR] &that%"
+      "content": "Jake"
     },
     {
       "role": "user",
-      "content": "&Jake^"
+      "content": "was"
     },
     {
       "role": "user",
-      "content": "&was*"
-    },
-    {
-      "role": "user",
-      "content": "behind$"
-    },
-    {
-      "role": "user",
-      "content": "[DISTRACTOR] #can^"
+      "content": "behind"
     },
     {
       "role": "user",
@@ -62,19 +66,19 @@
     },
     {
       "role": "user",
-      "content": "*but&"
+      "content": "but"
     },
     {
       "role": "user",
-      "content": "~later~"
+      "content": "later"
     },
     {
       "role": "user",
-      "content": "$release"
+      "content": "release"
     },
     {
       "role": "user",
-      "content": "*him"
+      "content": "him"
     },
     {
       "role": "user",
@@ -82,24 +86,728 @@
     },
     {
       "role": "user",
-      "content": "$once"
+      "content": "once"
     },
     {
       "role": "user",
-      "content": "[DISTRACTOR] #formerly&"
+      "content": "more"
     },
     {
       "role": "user",
-      "content": "*more~"
+      "content": "begins"
     },
     {
       "role": "user",
-      "content": "begins*"
+      "content": "doubt"
+    },
+    {
+      "role": "user",
+      "content": "Upset"
+    },
+    {
+      "role": "user",
+      "content": "goes"
+    },
+    {
+      "role": "user",
+      "content": "stay"
+    },
+    {
+      "role": "user",
+      "content": "with"
+    },
+    {
+      "role": "user",
+      "content": "his"
+    },
+    {
+      "role": "user",
+      "content": "old"
+    },
+    {
+      "role": "user",
+      "content": "friend"
+    },
+    {
+      "role": "user",
+      "content": "Caroline"
+    },
+    {
+      "role": "user",
+      "content": "Amber"
+    },
+    {
+      "role": "user",
+      "content": "Hodgkiss"
+    },
+    {
+      "role": "user",
+      "content": "After"
+    },
+    {
+      "role": "user",
+      "content": "sleeping"
+    },
+    {
+      "role": "user",
+      "content": "drugs"
+    },
+    {
+      "role": "user",
+      "content": "ties"
+    },
+    {
+      "role": "user",
+      "content": "up"
+    },
+    {
+      "role": "user",
+      "content": "tries"
+    },
+    {
+      "role": "user",
+      "content": "kill"
+    },
+    {
+      "role": "user",
+      "content": "holds"
+    },
+    {
+      "role": "user",
+      "content": "hostage"
+    },
+    {
+      "role": "user",
+      "content": "for"
+    },
+    {
+      "role": "user",
+      "content": "few"
+    },
+    {
+      "role": "user",
+      "content": "days"
+    },
+    {
+      "role": "user",
+      "content": "She"
+    },
+    {
+      "role": "user",
+      "content": "is"
+    },
+    {
+      "role": "user",
+      "content": "angered"
+    },
+    {
+      "role": "user",
+      "content": "learn"
+    },
+    {
+      "role": "user",
+      "content": "he"
+    },
+    {
+      "role": "user",
+      "content": "going"
+    },
+    {
+      "role": "user",
+      "content": "out"
+    },
+    {
+      "role": "user",
+      "content": "sets"
+    },
+    {
+      "role": "user",
+      "content": "try"
+    },
+    {
+      "role": "user",
+      "content": "Holly"
+    },
+    {
+      "role": "user",
+      "content": "there"
+    },
+    {
+      "role": "user",
+      "content": "by's"
+    },
+    {
+      "role": "user",
+      "content": "bedside"
+    },
+    {
+      "role": "user",
+      "content": "attack"
+    },
+    {
+      "role": "user",
+      "content": "syringe"
+    },
+    {
+      "role": "user",
+      "content": "needle"
+    },
+    {
+      "role": "user",
+      "content": "saves"
+    },
+    {
+      "role": "user",
+      "content": "in"
+    },
+    {
+      "role": "user",
+      "content": "process"
+    },
+    {
+      "role": "user",
+      "content": "stabbed"
+    },
+    {
+      "role": "user",
+      "content": "ordeal"
+    },
+    {
+      "role": "user",
+      "content": "disappears"
+    },
+    {
+      "role": "user",
+      "content": "having"
+    },
+    {
+      "role": "user",
+      "content": "accept"
+    },
+    {
+      "role": "user",
+      "content": "fact"
+    },
+    {
+      "role": "user",
+      "content": "had"
+    },
+    {
+      "role": "user",
+      "content": "cheated"
+    },
+    {
+      "role": "user",
+      "content": "on"
+    },
+    {
+      "role": "user",
+      "content": "her"
+    },
+    {
+      "role": "user",
+      "content": "much"
+    },
+    {
+      "role": "user",
+      "content": "dismay"
+    },
+    {
+      "role": "user",
+      "content": "returns"
+    },
+    {
+      "role": "user",
+      "content": "while"
+    },
+    {
+      "role": "user",
+      "content": "she"
+    },
+    {
+      "role": "user",
+      "content": "away"
+    },
+    {
+      "role": "user",
+      "content": "become"
+    },
+    {
+      "role": "user",
+      "content": "involved"
+    },
+    {
+      "role": "user",
+      "content": "realtor"
+    },
+    {
+      "role": "user",
+      "content": "called"
+    },
+    {
+      "role": "user",
+      "content": "Adam"
+    },
+    {
+      "role": "user",
+      "content": "At"
+    },
+    {
+      "role": "user",
+      "content": "first"
+    },
+    {
+      "role": "user",
+      "content": "thought"
+    },
+    {
+      "role": "user",
+      "content": "looking"
+    },
+    {
+      "role": "user",
+      "content": "home"
+    },
+    {
+      "role": "user",
+      "content": "However"
+    },
+    {
+      "role": "user",
+      "content": "when"
+    },
+    {
+      "role": "user",
+      "content": "saw"
+    },
+    {
+      "role": "user",
+      "content": "them"
+    },
+    {
+      "role": "user",
+      "content": "both"
+    },
+    {
+      "role": "user",
+      "content": "arguing"
+    },
+    {
+      "role": "user",
+      "content": "realises"
+    },
+    {
+      "role": "user",
+      "content": "something"
+    },
+    {
+      "role": "user",
+      "content": "not"
+    },
+    {
+      "role": "user",
+      "content": "as"
+    },
+    {
+      "role": "user",
+      "content": "it"
+    },
+    {
+      "role": "user",
+      "content": "seemed"
+    },
+    {
+      "role": "user",
+      "content": "When"
+    },
+    {
+      "role": "user",
+      "content": "confronts"
+    },
+    {
+      "role": "user",
+      "content": "tells"
+    },
+    {
+      "role": "user",
+      "content": "harassing"
+    },
+    {
+      "role": "user",
+      "content": "This"
+    },
+    {
+      "role": "user",
+      "content": "leads"
+    },
+    {
+      "role": "user",
+      "content": "confronting"
+    },
+    {
+      "role": "user",
+      "content": "warning"
+    },
+    {
+      "role": "user",
+      "content": "from"
+    },
+    {
+      "role": "user",
+      "content": "been"
+    },
+    {
+      "role": "user",
+      "content": "controlling"
+    },
+    {
+      "role": "user",
+      "content": "life"
+    },
+    {
+      "role": "user",
+      "content": "wants"
+    },
+    {
+      "role": "user",
+      "content": "be"
+    },
+    {
+      "role": "user",
+      "content": "explains"
+    },
+    {
+      "role": "user",
+      "content": "told"
+    },
+    {
+      "role": "user",
+      "content": "about"
+    },
+    {
+      "role": "user",
+      "content": "biggest"
+    },
+    {
+      "role": "user",
+      "content": "mistake"
+    },
+    {
+      "role": "user",
+      "content": "of"
+    },
+    {
+      "role": "user",
+      "content": "hope"
+    },
+    {
+      "role": "user",
+      "content": "would"
+    },
+    {
+      "role": "user",
+      "content": "take"
+    },
+    {
+      "role": "user",
+      "content": "back"
+    },
+    {
+      "role": "user",
+      "content": "Later"
+    },
+    {
+      "role": "user",
+      "content": "night"
+    },
+    {
+      "role": "user",
+      "content": "The"
+    },
+    {
+      "role": "user",
+      "content": "Loft"
+    },
+    {
+      "role": "user",
+      "content": "nightclub"
+    },
+    {
+      "role": "user",
+      "content": "threatens"
+    },
+    {
+      "role": "user",
+      "content": "Charlotte"
+    },
+    {
+      "role": "user",
+      "content": "Lau"
+    },
+    {
+      "role": "user",
+      "content": "Amy"
+    },
+    {
+      "role": "user",
+      "content": "Yamazaki"
+    },
+    {
+      "role": "user",
+      "content": "says"
+    },
+    {
+      "role": "user",
+      "content": "will"
+    },
+    {
+      "role": "user",
+      "content": "if"
+    },
+    {
+      "role": "user",
+      "content": "ever"
+    },
+    {
+      "role": "user",
+      "content": "near"
+    },
+    {
+      "role": "user",
+      "content": "again"
+    },
+    {
+      "role": "user",
+      "content": "making"
+    },
+    {
+      "role": "user",
+      "content": "viewers"
+    },
+    {
+      "role": "user",
+      "content": "realise"
+    },
+    {
+      "role": "user",
+      "content": "changed"
+    },
+    {
+      "role": "user",
+      "content": "personality"
+    },
+    {
+      "role": "user",
+      "content": "behaviour"
+    },
+    {
+      "role": "user",
+      "content": "since"
+    },
+    {
+      "role": "user",
+      "content": "absence"
+    },
+    {
+      "role": "user",
+      "content": "pretends"
+    },
+    {
+      "role": "user",
+      "content": "Leukaemia"
+    },
+    {
+      "role": "user",
+      "content": "finds"
+    },
+    {
+      "role": "user",
+      "content": "truth"
+    },
+    {
+      "role": "user",
+      "content": "ends"
+    },
+    {
+      "role": "user",
+      "content": "their"
+    },
+    {
+      "role": "user",
+      "content": "relationship"
+    },
+    {
+      "role": "user",
+      "content": "convinces"
+    },
+    {
+      "role": "user",
+      "content": "Steph"
+    },
+    {
+      "role": "user",
+      "content": "lied"
+    },
+    {
+      "role": "user",
+      "content": "said"
+    },
+    {
+      "role": "user",
+      "content": "ill"
+    },
+    {
+      "role": "user",
+      "content": "makes"
+    },
+    {
+      "role": "user",
+      "content": "Frankie"
+    },
+    {
+      "role": "user",
+      "content": "believe"
+    },
+    {
+      "role": "user",
+      "content": "losing"
+    },
+    {
+      "role": "user",
+      "content": "mind"
+    },
+    {
+      "role": "user",
+      "content": "send"
+    },
+    {
+      "role": "user",
+      "content": "messages"
+    },
+    {
+      "role": "user",
+      "content": "mobile"
+    },
+    {
+      "role": "user",
+      "content": "phone"
+    },
+    {
+      "role": "user",
+      "content": "plants"
+    },
+    {
+      "role": "user",
+      "content": "defaced"
+    },
+    {
+      "role": "user",
+      "content": "pictures"
+    },
+    {
+      "role": "user",
+      "content": "coat"
+    },
+    {
+      "role": "user",
+      "content": "make"
+    },
+    {
+      "role": "user",
+      "content": "look"
+    },
+    {
+      "role": "user",
+      "content": "real"
+    },
+    {
+      "role": "user",
+      "content": "reveals"
+    },
+    {
+      "role": "user",
+      "content": "sexually"
+    },
+    {
+      "role": "user",
+      "content": "abused"
+    },
+    {
+      "role": "user",
+      "content": "child"
+    },
+    {
+      "role": "user",
+      "content": "gets"
+    },
+    {
+      "role": "user",
+      "content": "together"
+    },
+    {
+      "role": "user",
+      "content": "stop"
+    },
+    {
+      "role": "user",
+      "content": "getting"
+    },
+    {
+      "role": "user",
+      "content": "put"
+    },
+    {
+      "role": "user",
+      "content": "mental"
+    },
+    {
+      "role": "user",
+      "content": "health"
+    },
+    {
+      "role": "user",
+      "content": "clinic"
+    },
+    {
+      "role": "user",
+      "content": "Nancy"
+    },
+    {
+      "role": "user",
+      "content": "who"
+    },
+    {
+      "role": "user",
+      "content": "pushes"
+    },
+    {
+      "role": "user",
+      "content": "over"
+    },
+    {
+      "role": "user",
+      "content": "badly"
+    },
+    {
+      "role": "user",
+      "content": "hurt"
+    },
+    {
+      "role": "user",
+      "content": "agree"
+    },
+    {
+      "role": "user",
+      "content": "go"
+    },
+    {
+      "role": "user",
+      "content": "did"
     },
     {
       "role": "user",
       "content": "<<The list is ended!>>"
     }
   ],
-  "raw_output": "{\n    \"recalled_words\": [\"falls\", \"into\", \"<<silent>>\", \"coma\", \"<<silent>>\", \"police\", \"suspect\", \"that\", \"<<silent>>\", \"Jake\", \"was\", \"behind\", \"<<silent>>\", \"can\", \"this\", \"but\", \"later\", \"release\", \"him\", \"Loretta\", \"once\", \"<<silent>>\", \"more\", \"begins\"]\n}"
+  "raw_output": "{\n    \"recalled_words\": [\"the\", \"loft\", \"nightclub\", \"charlotte\", \"amy\", \"yamazaki\", \"steph\", \"frankie\", \"nancy\"]\n}"
 }
