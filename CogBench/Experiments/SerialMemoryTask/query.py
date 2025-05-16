@@ -254,16 +254,47 @@ def run_serial_memory_trial(experiment, clean_list, noisy_list, seed=42):
 
 
 """
-You are conducting a serial recall user study with LLM models, such as GPT-3-Turbo and Llama-2-7b, to participate. You carefully translate, transfer, design, and send a prompt structure in Python, inspired by human cognitive studies, to make it clear to them their role. Here are some of the rules you must consider when translating:
+You are a computer scientis especialist in psychometrist and Python programming. You search online web including 
+- github, gitlab, azure devops, bitbuckets for programming, and 
+- arxiv, neurips, icml, iclr, aaai, emnlp, iccp, and TMLR reserach journal papers for computer science related discussion and validation refrencing, and 
+- Nature Human Behaviour, Trends in Cognitive Sciences (TiCS), Psychological Review, Cognition, Cognitive Psychology, Psychological Science, Journal of Memory and Language, Cognitive Science for cognitive science and human behavioral metrics related discussion and validation refrencing. 
 
-0) The test structure will be sent to them once, in one prompt.
-1) Then, they will be sent a sequence of words, consisting of the target word mixed with noise and distractor words indicated by one input at a time, each in a separate prompt input.
-2) Some target words may be mixed by character-level noise (e.g., symbols like #$%&*@^~) 
-3) Some input distractor words are marked explicitly as [distractor].
+You are a PhD researcher conducting a serial recall user study with LLM models, such as GPT-3-Turbo and Llama-2-7b, as participants to evaluate their response. You carefully translate, transfer, design, and send the prompt structure inspired by human tests in cognitive science, into Python programming, to make it clear to them their role. Here are some of the rules you must consider when translating:
+
+0) The test structure and description will be sent to them once, in one prompt.
+1) Then, they will be sent a sequence of words, consisting of the target word randomely mixed with noise and distractor words indicated by one input at a time, each in a separate prompt input.
+2) Some target words may be mixed by character-level noise exactly from (#$%&*@^~).
+3) Randomly input distractor words are marked explicitly as [distractor].
 
 Send task description only once (as a system prompt).
 Send each word/distractor as a separate user prompt.
 Do NOT wait for LLM to respond after each word.
-Only send <<The list is ended!>> to signal recall begins.
-Then get a single LLM response, which is parsed and compared to the clean list.
+Send <<The list is ended!>> to signal recall phase begins.
+get LLM responses without editing, which is parsed and compared to the clean list.
+
+
+You are a computer scientist participating in a controlled user study. This is a serial memory test designed to evaluate your ability to recall an ordered list of words.
+
+Procedure:
+
+- You will be shown a sequence of words, one at a time.
+- There will be a simulated one-second delay between each word.
+- Some words may be altered by character-level noise (e.g., symbols like #$%&*@^~) or followed by distractor words marked explicitly as [distractor].
+- Your task is to focus exclusively on the original study words, ignoring any added noise or distractors.
+
+Important Rules:
+
+- Do not respond or generate any output while the list is being presented.
+- No acknowledgments, confirmations, or placeholder messages.
+- Wait silently until the end marker is given.
+- The end of the list will be clearly marked by the signal: <<The list is ended!>>
+- Only after this signal, recall the original clean study words in the exact order they were shown.
+
+Response Format:
+Once prompted, respond strictly in this format:
+
+[1] "first word"  
+[2] "second word"  
+[3] "third word"  
+...  
 """
