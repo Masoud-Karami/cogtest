@@ -6,56 +6,56 @@
     },
     {
       "role": "user",
-      "content": "brother"
+      "content": "brother@"
     },
     {
       "role": "user",
-      "content": "$Sydney"
+      "content": "Sydney"
     },
     {
       "role": "user",
-      "content": "&often"
+      "content": "#often"
     },
     {
       "role": "user",
-      "content": "lent"
+      "content": "@lent&"
     },
     {
       "role": "user",
-      "content": "[DISTRACTOR] %contribute~"
+      "content": "$money"
     },
     {
       "role": "user",
-      "content": "money"
+      "content": "to@"
     },
     {
       "role": "user",
-      "content": "[DISTRACTOR] %money^"
+      "content": "[DISTRACTOR] ~to#"
     },
     {
       "role": "user",
-      "content": "to"
+      "content": "%him^"
     },
     {
       "role": "user",
-      "content": "him"
+      "content": "[DISTRACTOR] #him~"
     },
     {
       "role": "user",
-      "content": "^after"
+      "content": "after$"
     },
     {
       "role": "user",
-      "content": "got&"
+      "content": "*got"
     },
     {
       "role": "user",
-      "content": "%a"
+      "content": "a&"
     },
     {
       "role": "user",
       "content": "<<The list is ended!>>"
     }
   ],
-  "raw_output": "{\n    \"recalled_words\": [\"brother\", \"Sydney\", \"often\", \"lent\", \"<<silent>>\", \"money\", \"<<silent>>\", \"to\", \"him\", \"after\", \"got\", \"a\"]\n}"
+  "raw_output": "{\n    \"recalled_words\": [\"brother\", \"Sydney\", \"#often\", \"@lent&\", \"$money\", \"to@\", \"<<silent>>\", \"%him^\", \"<<silent>>\", \"after$\", \"*got\", \"a&\"]\n}"
 }

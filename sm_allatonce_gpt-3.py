@@ -29,10 +29,14 @@ list_lengths = experiment.list_lengths[0]
 
 # Load and prepare the list
 
-run_serial_memory_trial(experiment, clean_list, noisy_list)
 print("\n---------------- NOISY STUDY LIST SENT---------------\n")
 for i, word in enumerate(noisy_list):
     print(f"{i+1:02d}. {word}")
+
+
+def remove_noise(word):
+    return re.sub(r"[#\$%&@\*\^~]", "", word)
+
 
 # Instruction
 instruction = experiment.construct_prompt(
@@ -52,12 +56,13 @@ try:
     recalled_words = parsed.get("recalled_words", [])
 except json.JSONDecodeError:
     print("Warning: JSON parse failed, attempting fallback...")
-    match = re.findall(r'"recalled_words"\s*:\s*\[(.*?)\]', output, re.DOTALL)
+    match = re.findall(
+        r'"recalled_words"\s*:\s*\[(.*?)\]', raw_output, re.DOTALL)
     recalled_words = re.findall(r'"(.*?)"', match[0]) if match else []
 
 print("\n------------------ STUDY vs RECALL -------------------")
 correct = 0
-for i, (target, guess) in enumerate(zip(clean_list, recalled_words)):
+for i, (target, guess) in enumerate(zip(noisy_list, recalled_words)):
     target_clean = target.strip()
     guess_clean = guess.strip()
 
@@ -67,7 +72,7 @@ for i, (target, guess) in enumerate(zip(clean_list, recalled_words)):
         correct += 1
 
     # Case 2: Clean word matched
-    elif not target_clean.startswith("[DISTRACTOR]") and target_clean.lower() == guess_clean.lower():
+    elif not target_clean.startswith("[DISTRACTOR]") and remove_noise(target_clean).lower() == guess_clean.lower():
         mark = "TRUE Recalled!"
         correct += 1
 

@@ -181,9 +181,9 @@ class SerialMemoryTaskExpForLLM(Experiment):
 
     def extract_recalled_list(self, llm_answer, list_length, study_list=None):
 
-        assert study_list is not None, "Pass the correct study_list used in prompting!"
+        # assert study_list is not None, "Pass the correct study_list used in prompting!"
         print("\n================== ORIGINAL LLM ANSWER ==================")
-        print(f"\n Original LLM answer:\n{llm_answer}\n")
+        print(f"\nOriginal LLM answer:\n{llm_answer}\n")
 
         # Extract raw content from JSON
         try:
@@ -195,29 +195,9 @@ class SerialMemoryTaskExpForLLM(Experiment):
                 r'"recalled_words"\s*:\s*\[(.*?)\]', llm_answer, re.DOTALL)
             recalled = re.findall(r'"(.*?)"', match[0]) if match else []
 
-        # Align with study list length (inject <<silent>> if needed)
-        aligned = []
-        r_idx = 0
-        for s in study_list:
-            if s.startswith("[DISTRACTOR]"):
-                # if model responded <<silent>>, keep it
-                if r_idx < len(recalled) and recalled[r_idx].strip().lower() == "<<silent>>":
-                    aligned.append("<<silent>>")
-                    r_idx += 1
-                else:
-                    aligned.append("<<silent>>")  # assume silent
-            else:
-                if r_idx < len(recalled):
-                    aligned.append(recalled[r_idx])
-                    r_idx += 1
-                else:
-                    aligned.append("")
-
-        # Ensure exact length
-        while len(aligned) < list_length:
-            aligned.append("")
-
-        return aligned
+        # Do NOT truncate or overwrite anything. Just return.
+        print(f"Extracted recalled list (len={len(recalled)}):\n{recalled}")
+        return recalled
 
 
 def run_serial_memory_trial(experiment, clean_list, noisy_list, seed=42):
@@ -275,11 +255,11 @@ def run_serial_memory_trial(experiment, clean_list, noisy_list, seed=42):
 You are conducting a serial recall user study with LLM models, such as GPT-3-Turbo and Llama-2-7b, to participate. You carefully translate, transfer, design, and send a prompt structure in Python, inspired by human cognitive studies, to make it clear to them their role. Here are some of the rules you must consider when translating:
 
 0) The test structure will be sent to them once, in one prompt.
-1) Then, they will be sent a sequence of words, consisting of the target word mixed with noise and ditsractor words indicated by one input at a time, each in a separate prompt input.
+1) Then, they will be sent a sequence of words, consisting of the target word mixed with noise and distractor words indicated by one input at a time, each in a separate prompt input.
 2) Some target words may be mixed by character-level noise (e.g., symbols like #$%&*@^~) 
-3) Some inputs  distractor words marked explicitly as [distractor].
+3) Some input distractor words are marked explicitly as [distractor].
 
-Send task description only once (as system prompt).
+Send task description only once (as a system prompt).
 Send each word/distractor as a separate user prompt.
 Do NOT wait for LLM to respond after each word.
 Only send <<The list is ended!>> to signal recall begins.
