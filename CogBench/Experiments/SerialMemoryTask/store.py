@@ -1,12 +1,15 @@
+# -------------------------------------------------------------------------
+# Next Section: store.py - Serial Memory Task Scoring & Behavioral Metrics
+# -------------------------------------------------------------------------
+
+from CogBench.base_classes import StoringScores
 import argparse
 import numpy as np
 import pandas as pd
 import os
 import sys
 from tqdm import tqdm
-from CogBench.base_classes import StoringScores
 
-# Ensure proper import of CogBench as a package
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(
     os.path.abspath(__file__))))))
 
@@ -25,9 +28,6 @@ class StoringSerialMemoryScores(StoringScores):
             'behaviour_score3', 'behaviour_score3_name',
             'behaviour_score4', 'behaviour_score4_name'
         ])
-        # if '--version_number' not in sys.argv:
-        #     self.parser.add_argument(
-        #         '--version_number', type=str, default='1', help='Version number of the dataset')
 
     def get_all_scores(self):
         args = self.parser.parse_args()
@@ -41,35 +41,29 @@ class StoringSerialMemoryScores(StoringScores):
         else:
             engines = args.engines
 
-        # Initialize storing dataframe
         storing_df = pd.read_csv(scores_csv_name) if os.path.isfile(
             scores_csv_name) else pd.DataFrame(columns=args.columns + ['engine', 'run'])
 
         for engine in tqdm(engines):
-            print(
-                f'Fitting for engine: {engine}-------------------------------------------')
+            print(f'Fitting for engine: {engine} --------------------------')
             path = os.path.join(data_folder, f"{engine}.csv")
             full_df = pd.read_csv(path)
-
-            # Support for participant-wise logic, currently all as participant 0
             full_df['participant'] = 0
             no_participants = full_df['participant'].max() + 1
 
             for participant in range(no_participants):
-                df_run = full_df[full_df['participant']
-                                 == participant].reset_index(drop=True)
+                df_run = full_df[full_df['participant'] ==
+                                 participant].reset_index(drop=True)
                 storing_df = self.get_scores(
                     df_run, storing_df, engine, run=participant)
                 storing_df.to_csv(scores_csv_name, index=False)
 
     def get_scores(self, df, storing_df, engine, run):
         args = self.parser.parse_args()
-
         for col in args.columns:
             if col not in storing_df.columns:
                 storing_df[col] = np.nan
 
-        # --- Performance Metrics ---
         total_words = df['list_length'].sum()
         accuracy = df['correct_recall'].sum(
         ) / total_words if total_words > 0 else 0
@@ -78,11 +72,9 @@ class StoringSerialMemoryScores(StoringScores):
             ['session', 'condition', 'list_index'])['trial'].min()
         ttc_mean = ttc_df.mean() if len(ttc_df) > 0 else np.nan
 
-        # --- Behavioral Metrics ---
         initiation_error_rate = 1 - df['init_correct'].mean()
         forgetting_rate = df['forget_rate'].mean()
 
-        # Serial position effects
         primacy_correct = 0
         recency_correct = 0
         primacy_total = 0
@@ -91,19 +83,13 @@ class StoringSerialMemoryScores(StoringScores):
         for _, row in df.iterrows():
             study = row['study_list'].split(',')
             recalled_raw = row['recalled_list']
-            # [['a', 'b', 'c', 'd', 'e', 'f', 'g'], [], ['a', 'b', 'c', 'd', 'e', 'x', 'g']]
             if not isinstance(recalled_raw, str) or pd.isna(recalled_raw):
                 recall = []
             else:
                 recall = recalled_raw.split(',')
 
-            # if len(study) < 4 or len(recall) != len(study):
-            #     continue
-
-            # Remove strict length filter — keep all trials, even imperfect ones
-            # Align lengths for scoring (e.g., primacy/recency)
             while len(recall) < len(study):
-                recall.append("")  # pad missing with empty
+                recall.append("")
             if len(recall) > len(study):
                 recall = recall[:len(study)]
 
@@ -140,16 +126,6 @@ class StoringSerialMemoryScores(StoringScores):
             storing_df.loc[existing,
                            'behaviour_score4_name'] = 'recency effect'
         else:
-            # storing_df.loc[len(storing_df)] = [
-            #     engine, 'engine',
-            #     run, 'run',
-            #     accuracy, 'serial memory accuracy',
-            #     ttc_mean, 'mean TTC',
-            #     initiation_error_rate, 'initiation error rate',
-            #     forgetting_rate, 'intertrial forgetting',
-            #     primacy_effect, 'primacy effect',
-            #     recency_effect, 'recency effect'
-            # ]
             storing_df.loc[len(storing_df)] = [
                 engine, run,
                 accuracy, 'serial memory accuracy',
@@ -159,25 +135,7 @@ class StoringSerialMemoryScores(StoringScores):
                 primacy_effect, 'primacy effect',
                 recency_effect, 'recency effect'
             ]
-            # Debugging information: remove the above block and uncomment the block before taht to see the DataFrame structure
-            # print("\n--- DEBUG INFO ---")
-            # print("DataFrame columns:", storing_df.columns.tolist())
-            # print("Length of columns:", len(storing_df.columns))
-            # row_data = [
-            #     engine, 'engine',
-            #     run, 'run',
-            #     accuracy, 'serial memory accuracy',
-            #     ttc_mean, 'mean TTC',
-            #     initiation_error_rate, 'initiation error rate',
-            #     forgetting_rate, 'intertrial forgetting',
-            #     primacy_effect, 'primacy effect',
-            #     recency_effect, 'recency effect'
-            # ]
-            # print("Row to insert:", row_data)
-            # print("Length of row_data:", len(row_data))
-            # storing_df.loc[len(storing_df)] = row_data
 
-        # --- Print Behavioral Metrics to Shell --- for test experiments without saving with gpt-3
         print(f"\n--- Behavioral Metrics for engine: {engine}, run: {run} ---")
         print(f"  Initiation Error Rate:     {initiation_error_rate:.3f}")
         print(f"  Intertrial Forgetting:     {forgetting_rate:.3f}")
@@ -190,18 +148,3 @@ class StoringSerialMemoryScores(StoringScores):
 
 if __name__ == '__main__':
     StoringSerialMemoryScores().get_all_scores()
-
-
-# TODO add these!
-   # def relative_order_scoring(self, recalled, study_list):
-    #     return sum(
-    #         study_list.index(
-    #             recalled[i]) + 1 == study_list.index(recalled[i + 1])
-    #         for i in range(len(recalled) - 1)
-    #         if recalled[i] in study_list and recalled[i + 1] in study_list
-    #     )
-
-    # def compute_forgetting_rate(self, prev_recall, current_recall):
-    #     if not prev_recall:
-    #         return np.nan
-    #     return 1 - sum(1 for a, b in zip(prev_recall, current_recall) if a == b) / len(prev_recall)

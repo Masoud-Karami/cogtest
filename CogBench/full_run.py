@@ -24,76 +24,72 @@ Note:
 import os
 import argparse
 import subprocess
-# os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
 
-def run_benchmark(engine):
+def run_benchmark(engine, only_analysis=False, compare_with=None):
     """
-    This function runs the benchmark for the specified LLM. It runs all the experiments, stores the required values, 
-    and prints and plots the main metrics.
+    Runs the benchmark for the specified LLM, focusing only on SerialMemoryTask.
 
-    Arguments:
-        engine: The LLM to run the benchmark on.
-
-    Returns:
-        None
+    Parameters:
+    - engine (str): Name of the LLM engine.
+    - only_analysis (bool): If True, skips experiment and score execution.
+    - compare_with (List[str] or None): Other models to compare with in analysis.
     """
+
     experiments_dir = './Experiments'
     analysis_dir = './Analysis'
 
-    # Define folders to exclude
-    all_experiments = {'ProbabilisticReasoning', 'HorizonTask', 'RestlessBandit',
-                       'InstrumentalLearning', 'TwoStepTask', 'BART', 'SerialMemoryTask', 'TemporalDiscounting'}
-    # if exlude all, replace with set() instead of exc_exp{''}
-    # excluded_experiments = set()
-    excluded_experiments = {'ProbabilisticReasoning', 'HorizonTask', "TwoStepTask",
-                            'RestlessBandit', 'InstrumentalLearning', 'BART', 'TemporalDiscounting'}
+    # Focus on SerialMemoryTask only
+    target_experiment = 'SerialMemoryTask'
+    experiment_path = os.path.join(experiments_dir, target_experiment)
 
-    # Add folder names you want to skip 'TwoStepTask'
-    focusing_folders = list(all_experiments - excluded_experiments)
-    if not args.only_analysis:
-        # Get all the experiment folders
-        experiment_folders = [f.path for f in os.scandir(
-            experiments_dir) if f.is_dir()]
+    if not only_analysis:
+        print(f'Running experiment: {target_experiment}')
+        os.chdir(experiment_path)
 
-        # Filter to only include focusing folders
-        experiment_folders = [
-            f for f in experiment_folders if os.path.basename(f) in focusing_folders]
+        subprocess.run(['python3', 'query.py', '--engine', engine])
+        subprocess.run(['python3', 'store.py', '--engines', engine])
 
-        print(f'Focusing tasks: {focusing_folders}')
+        os.chdir('../../')  # Return to root
 
-        for task in experiment_folders:
-            folder_name = os.path.basename(task)
-
-            # Run query.py and store.py for each experiment
-            os.chdir(task)
-            print(f'Running experiment {folder_name}')
-            subprocess.run(['python3', 'query.py', '--engines', engine])
-            print(
-                f'Storing the behavioral scores for experiment {folder_name}')
-            subprocess.run(['python3', 'store.py', '--engines', engine])
-            os.chdir('../..')  # Go back to the root directory
-
-    # Run phenotype_comp.py in the Analysis folder
+    # Run analysis
     os.chdir(analysis_dir)
     print(f'Behaviour scores:')
-    subprocess.run(['python3', 'phenotype_comp.py', '--models', args.engine] + args.compare_with +
-                   ['--interest', 'behaviour', '--store_id', 'full_run', '--print_scores', '--print_scores_for', 'human', 'random', args.engine] + args.compare_with)
+    subprocess.run([
+        'python3', 'phenotype_comp.py',
+        '--models', engine,
+        *(compare_with if compare_with else []),
+        '--interest', 'behaviour',
+        '--store_id', 'full_run',
+        '--print_scores',
+        '--print_scores_for', 'human', 'random', engine,
+        *(compare_with if compare_with else [])
+    ])
+
     print(f'Performance scores:')
-    subprocess.run(['python3', 'phenotype_comp.py', '--models', args.engine] + args.compare_with +
-                   ['--interest', 'performance', '--store_id', 'full_run', '--print_scores', '--print_scores_for', 'human', 'random', args.engine] + args.compare_with)
+    subprocess.run([
+        'python3', 'phenotype_comp.py',
+        '--models', engine,
+        *(compare_with if compare_with else []),
+        '--interest', 'performance',
+        '--store_id', 'full_run',
+        '--print_scores',
+        '--print_scores_for', 'human', 'random', engine,
+        *(compare_with if compare_with else [])
+    ])
+    os.chdir('..')
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     parser = argparse.ArgumentParser(
-        description='Run the entire benchmark for a chosen LLM.')
+        description='Run the Serial Memory Task benchmark for a given LLM.')
     parser.add_argument('--engine', type=str, required=True,
-                        help='The LLM to run the benchmark on.')
-    parser.add_argument('--compare_with', type=str, nargs='+',
-                        help='The models to compare against.')  # default=['gpt-4', 'claude-2'], help='The models to compare against.')
-
+                        help='The LLM to run the benchmark on (e.g., gpt-3.5-turbo).')
+    parser.add_argument('--compare_with', type=str, nargs='+', default=[],
+                        help='Optional list of other models to compare with.')
     parser.add_argument('--only_analysis', action='store_true',
-                        help='If set, only run the analysis and skip the experiment running and storing steps.')
+                        help='If set, only run the analysis step.')
     args = parser.parse_args()
 
-    run_benchmark(args.engine)
+    run_benchmark(engine=args.engine, only_analysis=args.only_analysis,
+                  compare_with=args.compare_with)

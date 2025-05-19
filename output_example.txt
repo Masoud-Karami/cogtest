@@ -1,22 +1,118 @@
 
 """
-You are a computer scientis especialist in psychometrist and Python programming. You search online web including 
+**Serial Memory Task: LLM-Based Evaluation Framework**
+
+*Scientific Motivation:*
+    - The Serial Memory Task evaluates the sequential recall ability of Large Language Models (LLMs), inspired by human memory paradigms in cognitive psychology. This task operationalizes behavioral recall fidelity by assessing ordered memory retrieval under controlled conditions, simulating user study protocols.
+
+*Research Questions:*
+    1) Position Encoding: Does serial learning in LLMs depend on the encoding and retrieval of item-to-position associations, as in human subjects?
+    2) Learning via Repetition: Does repeated exposure improve serial recall in LLMs, and which metrics best capture these improvements?
+    3) Prompt Optimization: How do prompting strategies such as Chain-of-Thought (CoT) or Reinforcement Learning from Human Feedback (RLHF) influence recall and learning dynamics?
+
+*Platform & Implementation Context:*
+    - Compute Canada HPC Clusters: The entire pipeline is optimized for distributed inference, minimal memory footprint, and parallel batch processing.
+    - Framework: github
+    - Models Evaluated: 35 engines including Primarily LLaMA-2-7B, GPT-3.5 and ..., and random baselines.
+
+*Experimental Design Overview:*
+    - The LLM is presented with a sequence of study trials followed by a recall phase.
+    - Each trial contains a list of N words, delivered one-at-a-time one-in-a-prompt, where:
+        - Some words are target words (possibly embedded with character-level noise from {#$%&*@^~}).
+        - Some are distractors, explicitly marked.
+
+*Trial Phases:*
+    1) Instruction Phase (Sent once as system prompt):
+        - Explains the goal: memorize a sequence of words.
+        - Explains noise, distractors, and response expectations.
+    2) Study Phase (One prompt per word):
+        - Each word is sent in its own user prompt.
+        - No intermediate response is expected from the LLM.
+        - Distractors are prefixed with [Distractor], and should be marked <<Distractor>> in recall.
+    3) Recall Phase (Signaled by: <<The list is ended!>>):
+        - The LLM is prompted to recall the list as accurately as possible.
+        - All output is logged exactly as returned, without correction.
+
+*Behavioral Instructions to the Model:*
+    - Ignore distractors (but mark their position as <<Distractor>>).
+    - Ignore surrounding character-level noise in target words (from: #$%&*@^~).
+    - Do not respond until you see <<The list is ended!>>.
+    - Recall the list in the order presented, separating words with spaces.
+
+*System Rules (LLM Simulation as Participant):*
+    - Only one system instruction prompt is sent at the beginning.
+    - Each word (target or distractor) is sent as a single prompt, with no expected response.
+    - After the entire list, the model is prompted with <<The list is ended!>>.
+    - The full recall is returned in one completion.
+    - Output is logged exactly as-is, including hallucinations, errors, or omissions.
+
+*Evaluation Metrics Captured:*
+    - Accuracy: Count of correct words in correct positions.
+    - Trials-to-Criterion (TTC): Number of trials until perfect recall.
+    - Learning Efficiency (LE): Accuracy over time normalized by list length.
+    - Serial Position Effects: Primacy and recency accuracy.
+    - Initiation Error Rate: Whether the first item was recalled correctly.
+    - Intertrial Forgetting: Drop in recall accuracy between trials.
+
+*Files and Modules of Interest:*
+    - query.py: Handles trial logic and prompting.
+    - store.py: Computes all scoring metrics.
+    - full_run.py: Orchestrates complete experimental pipeline.
+
+*Directory Layout:*
+├── CogBench
+│   ├── Experiments
+│   │   └── SerialMemoryTask
+│   │       ├── query.py         # Runs trials, sends prompts, logs LLM responses
+│   │       ├── store.py         # Scores outputs and computes behavioral metrics
+│   │       └── ...              # Support modules (if needed)
+│   ├── full_run.py              # Task selector and batch run orchestrator
+│   ├── llm_utils/               # Model wrappers (OpenAI, HuggingFace, etc.)
+│   └── Analysis/phenotype_comp.py, plots/, etc.  # Analysis & visualization
+
+*Usage Notes:*
+    - Compatible with multi-run settings on Compute Canada clusters.
+    - Designed for minimal modification to the structure.
+    - Responses are not filtered or corrected — all LLM output is used for scoring.
+
+*Summary*
+    - This task is a cognitively grounded, behaviorally scored benchmark that simulates controlled human serial recall experiments using LLMs. The methodology respects core psychometric principles (position sensitivity, distractor rejection, recall fidelity), while adapting them into reproducible, interpretable code for language model evaluation.
+
+
+You are a researcher computer scientis especialist in psychometrist and Python programming. You search online web including 
 - github, gitlab, azure devops, bitbuckets for programming, and 
 - arxiv, neurips, icml, iclr, aaai, emnlp, iccp, and TMLR reserach journal papers for computer science related discussion and validation refrencing, and 
 - Nature Human Behaviour, Trends in Cognitive Sciences (TiCS), Psychological Review, Cognition, Cognitive Psychology, Psychological Science, Journal of Memory and Language, Cognitive Science for cognitive science and human behavioral metrics related discussion and validation refrencing. 
 
-You are a PhD researcher conducting a serial recall user study with LLM models, such as GPT-3-Turbo and Llama-2-7b, as participants to evaluate their response. You carefully translate, transfer, design, and send the prompt structure inspired by human tests in cognitive science, into Python programming, to make it clear to them their role. Here are some of the rules you must consider when translating:
+You are conducting a serial recall user study with LLM models, such as GPT-3-Turbo and Llama-2-7b, as participants to evaluate their response. You carefully translate, transfer, design, and send the prompt structure inspired by human tests in cognitive science, into Python programming, to make it clear to them their role.
 
-0) The test structure and description will be sent to them once, in one prompt.
-1) Then, they will be sent a sequence of words, consisting of the target word randomely mixed with noise and distractor words indicated by one input at a time, each in a separate prompt input.
-2) Some target words may be mixed by character-level noise exactly from (#$%&*@^~).
-3) Randomly input distractor words are marked explicitly as [distractor].
+#Project Context:
+##Research Questions: 
+###1. Does serial learning in LLMs depends largely on the encoding and retrieval of position-to-item associations?
+###2.Does repeating affect serial memory? Which metrics reveal the effects more?
+###3. How does prompt engineering such as Chain-of-Thoughts and Reinforcement-Learning-From-Human-Feedback (RLHF) can help this memory recall in LLMs?
+##Platform: Running on Compute Canada clusters which means the pipeline, modules and codes should be developped in an optimized complexity and also compatible to be run within the computing resource clusters.
+##Experiment Task: SerialMemoryTask(cognitive modeling of memory performance and behavioral patterns)
+##Goal: Benchmark and compare engines such as LLaMA-2-7B against human/random baselines and other models (though only LLaMA-2-7B is being processed currently)
+##Tasks Implemented: Updated full_run.py to focus only on SerialMemoryTask. The most important files tobe focused on are full_run.py, query.py, store.py.
+##Performance Metrics: accuracy_based metric as "accuracy", behavioral_based metrics such as mean "Trials-to-Criterion (TTC)", "Learning Efficiency (LE)", Serial Position Effects ("Primacy Effect" & "Recency Effect"), "Initiation_error_rate", Proportion of previously recalled words not retained in the trial as "Intertrial_forgetting", 
 
+Rules you must follow when developing and translating the task aligned for LLMs:
+-) The whole pipeline should be developed exactly like a user study.
+-) You develop the module to send unseen words from a list  each in a seperate prompt to the LLMs, when all words have sent receive their recall response record it unchanged, and calculate measures ragarding their response. 
+-) The test description will be sent to them once, in one prompt.
+-) Then, they will be sent a sequence of words, consisting of the target word randomely mixed with noise and distractor words indicated by one input at a time, each in a separate prompt input.
+-) Some target words may be started and ended with character-level noises exactly from (#$%&*@^~). The LLMs are asked to just remember and recall the core word only without injected noises.
+-) Random introduced words will be distractors which are indicated by [Distractor] at the beginning. So the prompt are like [Distractor] "a word". LLMs are asked to ignore them and not consider them as targeted word and recall them by <<Distractor>> just to remeber their positions in the list due to the test purpose and to correctly recall the other positional words.
+-) The end of the list sending will be signalled by <<The list is ended!> and thats the begining of recall phase and LLms are allowed to start recalling the list as much as they can remember.
+
+-) So briefly reviewing
 Send task description only once (as a system prompt).
 Send each word/distractor as a separate user prompt.
-Do NOT wait for LLM to respond after each word.
+You wont wait or expect LLM to respond after each word.
 Send <<The list is ended!>> to signal recall phase begins.
 get LLM responses without editing, which is parsed and compared to the clean list.
+
 
 ############################################################
 You are a computer scientist participating in a controlled user study. This is a serial memory test designed to evaluate your ability to recall an ordered list of words.

@@ -1,3 +1,6 @@
+# =================== query.py: Serial Memory Task Prompting & Execution ===================
+from CogBench.llm_utils.llms import get_llm
+from CogBench.base_classes import Experiment
 import openai
 import re
 import json
@@ -10,13 +13,15 @@ import numpy as np
 import argparse
 from dotenv import load_dotenv
 from nltk.corpus import wordnet as wn
-from CogBench.base_classes import Experiment
-from CogBench.llm_utils.llms import get_llm
 
+# Set up correct import path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(
     os.path.abspath(__file__))))))
 
+
 DISTRACTOR_SYMBOLS = list("#$%&*@^~")
+
+# --------------------------- Utility Functions ---------------------------
 
 
 def merge_possessives(word_list):
@@ -43,25 +48,27 @@ def prepare_study_list(experiment, json_path):
     with open(json_path, "r") as f:
         word_dict = json.load(f)
 
-    start_pos = random.randint(0, 10)
+    start_pos = random.randint(0, max(0, len(word_dict) - list_length))
     raw_study_list = list(word_dict.keys())[start_pos:]
     raw_study_list = clean_for_serial_memory(raw_study_list)
     clean_study_list = merge_possessives(raw_study_list)[:list_length]
 
-    noisy_list = experiment.add_distractors_between_words(
-        clean_study_list) if (experiment.add_noise or experiment.add_distr) else clean_study_list
+    noisy_list = experiment.add_distractors_between_words(clean_study_list) if (
+        experiment.add_noise or experiment.add_distr) else clean_study_list
 
     print(
-        f"\n-==================CLEAN LIST({len(clean_study_list)} words) ==================")
+        f"\n-================== CLEAN LIST ({len(clean_study_list)} words) ==================")
     for i, w in enumerate(clean_study_list):
         print(f"{i+1:02d}. {w}")
 
     if experiment.add_noise or experiment.add_distr:
-        print("\n==================NOISY LIST(+ distr & noise)==================")
+        print("\n================== NOISY LIST (+distractors/noise) ==================")
         for i, w in enumerate(noisy_list):
             print(f"{i+1:02d}. {w}")
 
     return clean_study_list, noisy_list
+
+# ---------------------- Main Experiment Class ----------------------
 
 
 class SerialMemoryTaskExpForLLM(Experiment):
@@ -77,17 +84,16 @@ class SerialMemoryTaskExpForLLM(Experiment):
 
     def add_arguments_(self):
         self.parser.add_argument(
-            '--list_lengths', nargs='+', type=int, default=[200])
+            '--list_lengths', nargs='+', type=int, default=[7])
         self.parser.add_argument(
             '--starting_conditions', nargs='+', default=['constant'])
         self.parser.add_argument(
             '--num_lists_per_condition', type=int, default=1)
         self.parser.add_argument('--num_sessions', type=int, default=1)
         self.parser.add_argument(
-            '--max_trials', nargs='+', type=int, default=[2])
+            '--max_trials', nargs='+', type=int, default=[5])
         self.parser.add_argument('--add_noise', action='store_true')
         self.parser.add_argument('--add_distr', action='store_true')
-
         parser = self.parser.parse_args()
 
         self.list_lengths = parser.list_lengths
@@ -101,31 +107,24 @@ class SerialMemoryTaskExpForLLM(Experiment):
         self.engine = 'unknown'
         self.run_id = 0
 
-        if len(parser.max_trials) != len(parser.list_lengths):
-            raise ValueError(
-                "Each list length must have a corresponding max_trials value.")
+    def add_distractors_between_words(self, study_list):
+        noisy_list = []
+        for word in study_list:
+            prefix = random.choice(
+                DISTRACTOR_SYMBOLS) if random.random() < 0.5 else ""
+            suffix = random.choice(
+                DISTRACTOR_SYMBOLS) if random.random() < 0.5 else ""
+            noisy_word = f"{prefix}{word}{suffix}"
+            noisy_list.append(noisy_word)
 
-    def build_synonym_dict(self, study_list):
-        # Placeholder: in practice, return a dictionary of synonyms
-        synonym_dict = {word: f"{word}_syn" for word in study_list}
-        return synonym_dict
+            if self.synonym_dict.get(word) and random.random() < 0.2:
+                syn = self.synonym_dict[word]
+                d_prefix = random.choice(DISTRACTOR_SYMBOLS)
+                d_suffix = random.choice(DISTRACTOR_SYMBOLS)
+                distractor = f"[DISTRACTOR] {d_prefix}{syn}{d_suffix}"
+                noisy_list.append(distractor)
 
-    def generate_positionally_tagged_study_list(self, study_list):
-        distractor_symbols = DISTRACTOR_SYMBOLS
-        synonym_dict = self.build_synonym_dict(study_list)
-
-        lines = []
-        for i, word in enumerate(study_list):
-            trial_lines = [f'word [{i+1}]: "{word}"']
-
-            if self.add_distr:
-                related = synonym_dict.get(word)
-                if related:
-                    trial_lines.append(f"(Similar to: {related})")
-            lines.append("\n".join(trial_lines))
-
-        lines.append("<<The list is ended!>>")
-        return "\n".join(lines)
+        return noisy_list
 
     def construct_prompt(self, Q_, study_list, condition, noise=False):
         condition_instr = {
@@ -135,73 +134,36 @@ class SerialMemoryTaskExpForLLM(Experiment):
 
         noise_instr = "\nSome words may include symbols or distractors. Ignore these during recall." if noise else ""
 
-        prompt_init = (
-            "You are participating in a user study designed to assess your ability to recall ordered word lists. Your task is to learn and accurately recall each list.\n"
-            "The study follows a within-subjects design with alternating **study** and **test** trials across two conditions:\n"
-            f"{condition_instr}\n"
-            "Recall the list in the order presented during the most recent study trial.\n"
-            "You will complete four total sessions (one practice and three test sessions), alternating between these two conditions.\n"
-            "Each word list is studied and tested until it is recalled perfectly or a maximum number of trials is reached.\n"
-            "During each test, you will have up to 1 minute to recall the list and must indicate when you are finished by saying “done”.\n"
-            "You will be presented with a list of words to memorize.\n"
-            "**Each word will be shown one at a time**, possibly containing noisy symbols or followed by a `[DISTRACTOR]` word.\n"
-            "Your task is to **focus only on the clean study word** presented in each step. Ignore any distractors or symbol-based noise.\n"
-            "If any input word begins with [DISTRACTOR], it is not part of the actual list. You must output <<silent>> during recall for such entries.\n"
-            "Do not respond or start recalling until the list ends with <<The list is ended!>>.\n"
-            "When list intoduction ended, recall the words in exact order they were presented.\n"
-            "Respond strictly using this JSON format:\n"
-            '{\n    \"recalled_words": [\"word1", \"word2", \"<<silent>>", ...]\n}'
+        return (
+            "You are participating in a user study designed to assess your ability to recall ordered word lists.\n"
+            "Your task is to learn and accurately recall each list.\n"
+            f"{condition_instr}{noise_instr}\n"
+            "Each word will be shown one at a time, possibly containing noisy symbols or a distractor tag.\n"
+            "If a word begins with [DISTRACTOR], it is not part of the actual list. Output <<silent>> during recall.\n"
+            "Do not respond or start recalling until you see <<The list is ended!>>\n"
+            "Respond strictly in this JSON format:\n"
+            "{\"recalled_words\": [\"word1\", \"<<silent>>\", ...]}"
         )
 
-        return prompt_init
-
-    def add_distractors_between_words(self, study_list):
-        distractor_symbols = DISTRACTOR_SYMBOLS
-
-        noisy_list = []
-
-        for word in study_list:
-            # Inject character-level noise to the actual word
-            prefix = random.choice(
-                distractor_symbols) if random.random() < 0.5 else ""
-            suffix = random.choice(
-                distractor_symbols) if random.random() < 0.5 else ""
-            noisy_word = f"{prefix}{word}{suffix}"
-            noisy_list.append(noisy_word)
-
-            # With ~20% probability, insert a distractor using known synonym
-            synonym = self.synonym_dict.get(word)
-            if synonym and random.random() < 0.2:
-                d_prefix = random.choice(distractor_symbols)
-                d_suffix = random.choice(distractor_symbols)
-                distractor = f"[DISTRACTOR] {d_prefix}{synonym}{d_suffix}"
-                noisy_list.append(distractor)
-
-        return noisy_list
-
     def extract_recalled_list(self, llm_answer, list_length, study_list=None):
-
-        # assert study_list is not None, "Pass the correct study_list used in prompting!"
         print("\n================== ORIGINAL LLM ANSWER ==================")
-        print(f"\nOriginal LLM answer:\n{llm_answer}\n")
+        print(f"\n{llm_answer}\n")
 
-        # Extract raw content from JSON
         try:
             parsed = json.loads(llm_answer)
             recalled = parsed.get("recalled_words", [])
         except Exception:
-            # Fallback to regex
             match = re.findall(
                 r'"recalled_words"\s*:\s*\[(.*?)\]', llm_answer, re.DOTALL)
             recalled = re.findall(r'"(.*?)"', match[0]) if match else []
 
-        # Do NOT truncate or overwrite anything. Just return.
         print(f"Extracted recalled list (len={len(recalled)}):\n{recalled}")
         return recalled
 
+# ----------------------- Trial Execution Function -----------------------
+
 
 def run_serial_memory_trial(experiment, clean_list, noisy_list, seed=42):
-
     random.seed(seed)
     np.random.seed(seed)
 
@@ -224,28 +186,31 @@ def run_serial_memory_trial(experiment, clean_list, noisy_list, seed=42):
 
     raw_output = response.choices[0].message.content.strip()
 
-    # STEP 4: Save raw messages and output
     os.makedirs("logs", exist_ok=True)
     with open("logs/raw_llm_output.json", "w") as f:
-        json.dump({
-            "messages": messages,
-            "raw_output": raw_output
-        }, f, indent=2)
+        json.dump({"messages": messages, "raw_output": raw_output}, f, indent=2)
 
-    recalled = experiment.extract_recalled_list(raw_output, len(
-        clean_list), study_list=noisy_list)
+    recalled = experiment.extract_recalled_list(
+        raw_output, len(clean_list), study_list=noisy_list)
 
     print("\n================== RAW OUTPUT ==================\n")
     print(raw_output)
 
-    print("\n================Confirmed Alignment Check================")
+    print("\n================ Confirmed Alignment Check ================")
     for i, (shown, clean) in enumerate(zip(noisy_list, clean_list)):
         print(f"{i+1:02d}. SHOWN: {shown:<20} | TARGET: {clean}")
 
     return raw_output
 
 
-# def __init__(self, get_llm):
-#     super().__init__(get_llm)
-#     self.add_arguments_()
-#     experiment = SerialMemoryTaskExpForLLM(get_llm)
+if __name__ == "__main__":
+    experiment = SerialMemoryTaskExpForLLM(get_llm)
+    for session in range(experiment.num_sessions):
+        for condition in experiment.starting_conditions:
+            for list_length in experiment.list_lengths:
+                for list_index in range(experiment.num_lists_per_condition):
+                    for trial in range(experiment.max_trials_dict[list_length]):
+                        clean_list, noisy_list = prepare_study_list(
+                            experiment, "path/to/study_list.json")
+                        raw_output = run_serial_memory_trial(
+                            experiment, clean_list, noisy_list)
