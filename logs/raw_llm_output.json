@@ -6,408 +6,56 @@
     },
     {
       "role": "user",
-      "content": "suspect"
+      "content": "%NFL"
     },
     {
       "role": "user",
-      "content": "that"
+      "content": "#playoffs"
     },
     {
       "role": "user",
-      "content": "Jake"
+      "content": "*but*"
     },
     {
       "role": "user",
-      "content": "was"
+      "content": "$Wheatley&"
     },
     {
       "role": "user",
-      "content": "behind"
+      "content": "*only"
     },
     {
       "role": "user",
-      "content": "this"
+      "content": "&had"
     },
     {
       "role": "user",
-      "content": "but"
+      "content": "[DISTRACTOR] *own%"
     },
     {
       "role": "user",
-      "content": "later"
+      "content": "*88@"
     },
     {
       "role": "user",
-      "content": "release"
+      "content": "carries"
     },
     {
       "role": "user",
-      "content": "him"
+      "content": "#during%"
     },
     {
       "role": "user",
-      "content": "Loretta"
+      "content": "[DISTRACTOR] &during$"
     },
     {
       "role": "user",
-      "content": "once"
-    },
-    {
-      "role": "user",
-      "content": "more"
-    },
-    {
-      "role": "user",
-      "content": "begins"
-    },
-    {
-      "role": "user",
-      "content": "doubt"
-    },
-    {
-      "role": "user",
-      "content": "Upset"
-    },
-    {
-      "role": "user",
-      "content": "goes"
-    },
-    {
-      "role": "user",
-      "content": "stay"
-    },
-    {
-      "role": "user",
-      "content": "with"
-    },
-    {
-      "role": "user",
-      "content": "his"
-    },
-    {
-      "role": "user",
-      "content": "old"
-    },
-    {
-      "role": "user",
-      "content": "friend"
-    },
-    {
-      "role": "user",
-      "content": "Caroline"
-    },
-    {
-      "role": "user",
-      "content": "Amber"
-    },
-    {
-      "role": "user",
-      "content": "Hodgkiss"
-    },
-    {
-      "role": "user",
-      "content": "After"
-    },
-    {
-      "role": "user",
-      "content": "sleeping"
-    },
-    {
-      "role": "user",
-      "content": "drugs"
-    },
-    {
-      "role": "user",
-      "content": "ties"
-    },
-    {
-      "role": "user",
-      "content": "up"
-    },
-    {
-      "role": "user",
-      "content": "tries"
-    },
-    {
-      "role": "user",
-      "content": "kill"
-    },
-    {
-      "role": "user",
-      "content": "holds"
-    },
-    {
-      "role": "user",
-      "content": "hostage"
-    },
-    {
-      "role": "user",
-      "content": "for"
-    },
-    {
-      "role": "user",
-      "content": "few"
-    },
-    {
-      "role": "user",
-      "content": "days"
-    },
-    {
-      "role": "user",
-      "content": "She"
-    },
-    {
-      "role": "user",
-      "content": "is"
-    },
-    {
-      "role": "user",
-      "content": "angered"
-    },
-    {
-      "role": "user",
-      "content": "learn"
-    },
-    {
-      "role": "user",
-      "content": "he"
-    },
-    {
-      "role": "user",
-      "content": "going"
-    },
-    {
-      "role": "user",
-      "content": "out"
-    },
-    {
-      "role": "user",
-      "content": "sets"
-    },
-    {
-      "role": "user",
-      "content": "try"
-    },
-    {
-      "role": "user",
-      "content": "Holly"
-    },
-    {
-      "role": "user",
-      "content": "there"
-    },
-    {
-      "role": "user",
-      "content": "by's"
-    },
-    {
-      "role": "user",
-      "content": "bedside"
-    },
-    {
-      "role": "user",
-      "content": "attack"
-    },
-    {
-      "role": "user",
-      "content": "syringe"
-    },
-    {
-      "role": "user",
-      "content": "needle"
-    },
-    {
-      "role": "user",
-      "content": "saves"
-    },
-    {
-      "role": "user",
-      "content": "in"
-    },
-    {
-      "role": "user",
-      "content": "process"
-    },
-    {
-      "role": "user",
-      "content": "stabbed"
-    },
-    {
-      "role": "user",
-      "content": "ordeal"
-    },
-    {
-      "role": "user",
-      "content": "disappears"
-    },
-    {
-      "role": "user",
-      "content": "having"
-    },
-    {
-      "role": "user",
-      "content": "accept"
-    },
-    {
-      "role": "user",
-      "content": "fact"
-    },
-    {
-      "role": "user",
-      "content": "had"
-    },
-    {
-      "role": "user",
-      "content": "cheated"
-    },
-    {
-      "role": "user",
-      "content": "on"
-    },
-    {
-      "role": "user",
-      "content": "her"
-    },
-    {
-      "role": "user",
-      "content": "much"
-    },
-    {
-      "role": "user",
-      "content": "dismay"
-    },
-    {
-      "role": "user",
-      "content": "returns"
-    },
-    {
-      "role": "user",
-      "content": "while"
-    },
-    {
-      "role": "user",
-      "content": "she"
-    },
-    {
-      "role": "user",
-      "content": "away"
-    },
-    {
-      "role": "user",
-      "content": "become"
-    },
-    {
-      "role": "user",
-      "content": "involved"
-    },
-    {
-      "role": "user",
-      "content": "realtor"
-    },
-    {
-      "role": "user",
-      "content": "called"
-    },
-    {
-      "role": "user",
-      "content": "Adam"
-    },
-    {
-      "role": "user",
-      "content": "At"
-    },
-    {
-      "role": "user",
-      "content": "first"
-    },
-    {
-      "role": "user",
-      "content": "thought"
-    },
-    {
-      "role": "user",
-      "content": "looking"
-    },
-    {
-      "role": "user",
-      "content": "home"
-    },
-    {
-      "role": "user",
-      "content": "However"
-    },
-    {
-      "role": "user",
-      "content": "when"
-    },
-    {
-      "role": "user",
-      "content": "saw"
-    },
-    {
-      "role": "user",
-      "content": "them"
-    },
-    {
-      "role": "user",
-      "content": "both"
-    },
-    {
-      "role": "user",
-      "content": "arguing"
-    },
-    {
-      "role": "user",
-      "content": "realises"
-    },
-    {
-      "role": "user",
-      "content": "something"
-    },
-    {
-      "role": "user",
-      "content": "not"
-    },
-    {
-      "role": "user",
-      "content": "as"
-    },
-    {
-      "role": "user",
-      "content": "it"
-    },
-    {
-      "role": "user",
-      "content": "seemed"
-    },
-    {
-      "role": "user",
-      "content": "When"
-    },
-    {
-      "role": "user",
-      "content": "confronts"
-    },
-    {
-      "role": "user",
-      "content": "tells"
-    },
-    {
-      "role": "user",
-      "content": "harassing"
-    },
-    {
-      "role": "user",
-      "content": "This"
-    },
-    {
-      "role": "user",
-      "content": "leads"
+      "content": "regular"
     },
     {
       "role": "user",
       "content": "<<The list is ended!>>"
     }
   ],
-  "raw_output": "{\n    \"recalled_words\": [\"suspect\", \"that\", \"Jake\", \"was\", \"behind\", \"this\", \"but\", \"later\", \"release\", \"him\", \"Loretta\", \"once\", \"more\", \"begins\", \"doubt\", \"Upset\", \"goes\", \"stay\", \"with\", \"his\", \"old\", \"friend\", \"Caroline\", \"Amber\", \"<<silent>>\", \"After\", \"sleeping\", \"drugs\", \"ties\", \"up\", \"tries\", \"kill\", \"holds\", \"hostage\", \"for\", \"few\", \"days\", \"She\", \"is\", \"angered\", \"learn\", \"he\", \"going\", \"out\", \"sets\", \"try\", \"Holly\", \"there\", \"<<silent>>\", \"by's\", \"bedside\", \"attack\", \"syringe\", \"needle\", \"saves\", \"in\", \"process\", \"stabbed\", \"ordeal\", \"disappears\", \"having\", \"accept\", \"fact\", \"had\", \"cheated\", \"on\", \"her\", \"much\", \"dismay\", \"returns\", \"while\", \"she\", \"away\", \"become\", \"involved\", \"realtor\", \"called\", \"Adam\", \"At\", \"first\", \"thought\", \"looking\", \"home\", \"However\", \"when\", \"saw\", \"them\", \"both\", \"arguing\", \"realises\", \"something\", \"not\", \"as\", \"it\", \"seemed\", \"When\", \"confronts\", \"tells\", \"harassing\"]\n}"
+  "raw_output": "{\n    \"recalled_words\": [\"%NFL\", \"#playoffs\", \"*but*\", \"$Wheatley&\", \"*only\", \"&had\", \"<<silent>>\", \"*88@\", \"carries\", \"#during%\", \"<<silent>>\", \"regular\"]\n}"
 }
