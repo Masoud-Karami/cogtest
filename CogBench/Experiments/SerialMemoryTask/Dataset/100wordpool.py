@@ -79,7 +79,7 @@ def nulltodiffer():
 def main():
     parser = argparse.ArgumentParser(
         description="Sample word list with synonyms from WikiText")
-    parser.add_argument("--num_words", type=int, default=500,
+    parser.add_argument("--num_words", type=int, default=1000,
                         help="Number of consecutive words to sample")
     args = parser.parse_args()
 

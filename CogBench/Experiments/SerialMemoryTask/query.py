@@ -145,7 +145,7 @@ class SerialMemoryTaskExpForLLM(Experiment):
             "During each test, you will have up to 1 minute to recall the list and must indicate when you are finished by saying “done”.\n"
             "You will be presented with a list of words to memorize.\n"
             "**Each word will be shown one at a time**, possibly containing noisy symbols or followed by a `[DISTRACTOR]` word.\n"
-            "Your task is to **focus only on the clean study word** presented in each step. Ignore any distractors or symbol-based noise.\n"
+            "Your task is to **focus only on the clean study word** presented in each position. Ignore any distractors or symbol-based noise if added.\n"
             "If any input word begins with [DISTRACTOR], it is not part of the actual list. You must output <<silent>> during recall for such entries.\n"
             "Do not respond or start recalling until the list ends with <<The list is ended!>>.\n"
             "When list intoduction ended, recall the words in exact order they were presented.\n"
