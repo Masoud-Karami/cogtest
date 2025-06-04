@@ -1,0 +1,8 @@
+#LLMs Tasks For Memory Experiments
+
+## Require identifying relevant info in their input contexts:
+- multi-document question answering
+    . mimics the retrieval-augmented generation setup
+    . changing the position can affect model performance
+    . U-shaped performance (accuracy-position) curve
+- key-value retrieval
