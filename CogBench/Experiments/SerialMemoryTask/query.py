@@ -1,7 +1,7 @@
 # =================== query.py: Serial Memory Task Prompting & Execution ===================
 from CogBench.llm_utils.llms import get_llm
 from CogBench.base_classes import Experiment
-import openai
+# import openai
 import re
 import json
 import random
@@ -67,6 +67,10 @@ def prepare_study_list(experiment, json_path):
             print(f"{i+1:02d}. {w}")
 
     return clean_study_list, noisy_list
+
+
+def spin_list(lst, offset):
+    return lst[offset:] + lst[:offset]
 
 # ---------------------- Main Experiment Class ----------------------
 
@@ -163,9 +167,14 @@ class SerialMemoryTaskExpForLLM(Experiment):
 # ----------------------- Trial Execution Function -----------------------
 
 
-def run_serial_memory_trial(experiment, clean_list, noisy_list, seed=42):
-    random.seed(seed)
-    np.random.seed(seed)
+def run_serial_memory_trial(experiment, clean_list, noisy_list, trial_number=0, condition='constant', seed=42):
+    random.seed(seed + trial_number)
+    np.random.seed(seed + trial_number)
+
+    if condition == 'spin':
+        offset = random.randint(0, len(noisy_list) - 1)
+        noisy_list = spin_list(noisy_list, offset)
+        clean_list = spin_list(clean_list, offset)
 
     messages = [
         {"role": "system", "content": experiment.construct_prompt(
@@ -175,42 +184,38 @@ def run_serial_memory_trial(experiment, clean_list, noisy_list, seed=42):
         messages.append({"role": "user", "content": word})
     messages.append({"role": "user", "content": "<<The list is ended!>>"})
 
-    from openai import OpenAI
-    client = OpenAI()
-    response = client.chat.completions.create(
-        model="gpt-3.5-turbo",
-        messages=messages,
-        temperature=0,
-        max_tokens=1500
-    )
+    llm = experiment.get_llm()
 
-    raw_output = response.choices[0].message.content.strip()
+    raw_output = llm.generate_chat(
+        messages, temperature=0.0, max_tokens=1500, engine=experiment.engine)
 
     os.makedirs("logs", exist_ok=True)
-    with open("logs/raw_llm_output.json", "w") as f:
+    with open(f"logs/raw_llm_output_{experiment.run_id}_trial_{trial_number}.json", "w") as f:
         json.dump({"messages": messages, "raw_output": raw_output}, f, indent=2)
 
     recalled = experiment.extract_recalled_list(
         raw_output, len(clean_list), study_list=noisy_list)
 
-    print("\n================== RAW OUTPUT ==================\n")
-    print(raw_output)
+    # print("\n================== RAW OUTPUT ==================\n")
+    # print(raw_output)
 
-    print("\n================ Confirmed Alignment Check ================")
-    for i, (shown, clean) in enumerate(zip(noisy_list, clean_list)):
-        print(f"{i+1:02d}. SHOWN: {shown:<20} | TARGET: {clean}")
+    # print("\n================ Confirmed Alignment Check ================")
+    # for i, (shown, clean) in enumerate(zip(noisy_list, clean_list)):
+    #     print(f"{i+1:02d}. SHOWN: {shown:<20} | TARGET: {clean}")
 
-    return raw_output
+    return raw_output, recalled
 
 
 if __name__ == "__main__":
     experiment = SerialMemoryTaskExpForLLM(get_llm)
     for session in range(experiment.num_sessions):
+        experiment.run_id = session
         for condition in experiment.starting_conditions:
             for list_length in experiment.list_lengths:
                 for list_index in range(experiment.num_lists_per_condition):
+                    clean_list, noisy_list = prepare_study_list(
+                        experiment, "path/to/study_list.json")
                     for trial in range(experiment.max_trials_dict[list_length]):
-                        clean_list, noisy_list = prepare_study_list(
-                            experiment, "path/to/study_list.json")
-                        raw_output = run_serial_memory_trial(
-                            experiment, clean_list, noisy_list)
+
+                        raw_output, recalled = run_serial_memory_trial(
+                            experiment, clean_list, noisy_list, trial_number=trial, condition=condition, seed=session)

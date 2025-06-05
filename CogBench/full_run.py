@@ -36,21 +36,21 @@ def run_benchmark(engine, only_analysis=False, compare_with=None):
     - compare_with (List[str] or None): Other models to compare with in analysis.
     """
 
-    experiments_dir = './Experiments'
+    experiments_dir = '.Experiments/SerialMemoryTask'
     analysis_dir = './Analysis'
 
-    # Focus on SerialMemoryTask only
-    target_experiment = 'SerialMemoryTask'
-    experiment_path = os.path.join(experiments_dir, target_experiment)
+    # # Focus on SerialMemoryTask only
+    # target_experiment = 'SerialMemoryTask'
+    # experiment_path = os.path.join(experiments_dir, target_experiment)
 
-    if not only_analysis:
-        print(f'Running experiment: {target_experiment}')
-        os.chdir(experiment_path)
+    # if not only_analysis:
+    #     print(f'Running experiment: {target_experiment}')
+    #     os.chdir(experiment_path)
 
-        subprocess.run(['python3', 'query.py', '--engine', engine])
-        subprocess.run(['python3', 'store.py', '--engines', engine])
+    #     subprocess.run(['python3', 'query.py', '--engine', engine])
+    #     subprocess.run(['python3', 'store.py', '--engines', engine])
 
-        os.chdir('../../')  # Return to root
+    #     os.chdir('../../')  # Return to root
 
     # Run analysis
     os.chdir(analysis_dir)

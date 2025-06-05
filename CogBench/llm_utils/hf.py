@@ -41,11 +41,12 @@ class HF_API_LLM(LLM):
         elif 'CodeLlama' in engine:
             engine = 'codellama/' + engine + '-hf'
         elif engine.startswith('llama-2'):
+            engine_size = engine.replace(
+                "llama-2-", "").replace("-chat", "").replace("-hf", "")
             if 'chat' in engine:
-                engine = 'meta-llama/L' + \
-                    engine[1:].replace('-chat', '') + 'b-chat-hf'
+                engine = f"meta-llama/Llama-2-{engine_size}b-chat-hf"
             else:
-                engine = 'meta-llama/L' + engine[1:] + 'b-hf'
+                engine = f"meta-llama/Llama-2-{engine_size}b-hf"
         else:
             raise NotImplementedError(f"Unknown HF model: {engine}")
 
