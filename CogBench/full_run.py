@@ -7,7 +7,7 @@ Usage:
 
 Arguments:
     --engine: The LLM to run the benchmark on. This is a required argument.
-    --compare_with: The models to compare against. This is an optional argument. If not provided, it defaults to ['gpt-4', 'claude-2'].
+    --compare_with: The models to compare against. This is an optional argument but I am not going to use it to test serialMemoryTask. However, if not provided, it defaults to ['gpt-4', 'claude-2'].
     --only_analysis: If set, only run the analysis and skip the experiment running and storing steps. This is an optional argument.
 
 Functions:
@@ -24,7 +24,7 @@ Note:
 import os
 import argparse
 import subprocess
-#os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+# os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
 
 def run_benchmark(engine):
@@ -42,17 +42,23 @@ def run_benchmark(engine):
     analysis_dir = './Analysis'
 
     # Define folders to exclude
-    all_experiments = {'ProbabilisticReasoning','HorizonTask','RestlessBandit','InstrumentalLearning','TwoStepTask','BART','SerialMemoryTask','TemporalDiscounting'}
-    excluded_experiments = set()
-    #if exlude all, replace with set() instead of exc_exp{''}
+    all_experiments = {'ProbabilisticReasoning', 'HorizonTask', 'RestlessBandit',
+                       'InstrumentalLearning', 'TwoStepTask', 'BART', 'SerialMemoryTask', 'TemporalDiscounting'}
+    # if exlude all, replace with set() instead of exc_exp{''}
+    # excluded_experiments = set()
+    excluded_experiments = {'ProbabilisticReasoning', 'HorizonTask', "TwoStepTask",
+                            'RestlessBandit', 'InstrumentalLearning', 'BART', 'TemporalDiscounting'}
+
     # Add folder names you want to skip 'TwoStepTask'
     focusing_folders = list(all_experiments - excluded_experiments)
     if not args.only_analysis:
         # Get all the experiment folders
-        experiment_folders = [f.path for f in os.scandir(experiments_dir) if f.is_dir()]
+        experiment_folders = [f.path for f in os.scandir(
+            experiments_dir) if f.is_dir()]
 
         # Filter to only include focusing folders
-        experiment_folders = [f for f in experiment_folders if os.path.basename(f) in focusing_folders]
+        experiment_folders = [
+            f for f in experiment_folders if os.path.basename(f) in focusing_folders]
 
         print(f'Focusing tasks: {focusing_folders}')
 
@@ -63,10 +69,10 @@ def run_benchmark(engine):
             os.chdir(task)
             print(f'Running experiment {folder_name}')
             subprocess.run(['python3', 'query.py', '--engines', engine])
-            print(f'Storing the behavioral scores for experiment {folder_name}')
+            print(
+                f'Storing the behavioral scores for experiment {folder_name}')
             subprocess.run(['python3', 'store.py', '--engines', engine])
             os.chdir('../..')  # Go back to the root directory
-
 
     # Run phenotype_comp.py in the Analysis folder
     os.chdir(analysis_dir)
@@ -84,7 +90,8 @@ if __name__ == "__main__":
     parser.add_argument('--engine', type=str, required=True,
                         help='The LLM to run the benchmark on.')
     parser.add_argument('--compare_with', type=str, nargs='+',
-                        default=['gpt-4', 'claude-2'], help='The models to compare against.')
+                        help='The models to compare against.')  # default=['gpt-4', 'claude-2'], help='The models to compare against.')
+
     parser.add_argument('--only_analysis', action='store_true',
                         help='If set, only run the analysis and skip the experiment running and storing steps.')
     args = parser.parse_args()

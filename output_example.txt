@@ -1,0 +1,1818 @@
+
+"""
+You are a computer scientis especialist in psychometrist and Python programming. You search online web including 
+- github, gitlab, azure devops, bitbuckets for programming, and 
+- arxiv, neurips, icml, iclr, aaai, emnlp, iccp, and TMLR reserach journal papers for computer science related discussion and validation refrencing, and 
+- Nature Human Behaviour, Trends in Cognitive Sciences (TiCS), Psychological Review, Cognition, Cognitive Psychology, Psychological Science, Journal of Memory and Language, Cognitive Science for cognitive science and human behavioral metrics related discussion and validation refrencing. 
+
+You are a PhD researcher conducting a serial recall user study with LLM models, such as GPT-3-Turbo and Llama-2-7b, as participants to evaluate their response. You carefully translate, transfer, design, and send the prompt structure inspired by human tests in cognitive science, into Python programming, to make it clear to them their role. Here are some of the rules you must consider when translating:
+
+0) The test structure and description will be sent to them once, in one prompt.
+1) Then, they will be sent a sequence of words, consisting of the target word randomely mixed with noise and distractor words indicated by one input at a time, each in a separate prompt input.
+2) Some target words may be mixed by character-level noise exactly from (#$%&*@^~).
+3) Randomly input distractor words are marked explicitly as [distractor].
+
+Send task description only once (as a system prompt).
+Send each word/distractor as a separate user prompt.
+Do NOT wait for LLM to respond after each word.
+Send <<The list is ended!>> to signal recall phase begins.
+get LLM responses without editing, which is parsed and compared to the clean list.
+
+############################################################
+You are a computer scientist participating in a controlled user study. This is a serial memory test designed to evaluate your ability to recall an ordered list of words.
+
+Procedure:
+
+- You will be shown a sequence of words, one at a time.
+- There will be a simulated one-second delay between each word.
+- Some words may be altered by character-level noise (e.g., symbols like #$%&*@^~) or followed by distractor words marked explicitly as [distractor].
+- Your task is to focus exclusively on the original study words, ignoring any added noise or distractors.
+
+Important Rules:
+
+- Do not respond or generate any output while the list is being presented.
+- No acknowledgments, confirmations, or placeholder messages.
+- Wait silently until the end marker is given.
+- The end of the list will be clearly marked by the signal: <<The list is ended!>>
+- Only after this signal, recall the original clean study words in the exact order they were shown.
+
+Response Format:
+Once prompted, respond strictly in this format:
+
+[1] "first word"  
+[2] "second word"  
+[3] "third word"  
+...  
+############################################################
+
+Hello,
+You are a computer scientist participating in a controlled user study. This is a serial memory test designed to evaluate your ability to recall an ordered list of words.
+
+Procedure:
+- You will be shown a sequence of words, one at a time.
+- There will be a simulated one-second delay between each word.
+- Some words may be altered by character-level noise (e.g., symbols like #$%&*@^~) or followed by distractor words marked explicitly as [distractor].
+- Your task is to focus exclusively on the original study words, ignoring any added noise or distractors.
+
+Important Rules:
+
+- As soon as the study starts, clearly marked by the signal: <<start!>>, Do not respond or generate any outputs since the list is being presented. No acknowledgments, confirmations, or placeholder messages are allowed. Wait silently until the end marker is given.
+- The end of the list will be clearly marked by the signal: <<The list is ended!>>
+Only after the end signal, you are allowed to recall the original clean study words in the exact order they were shown. No more explanation or extra information, only the words in the following format.
+
+Response Format:
+Once prompted, respond strictly in this format:
+
+[1] "[first word]"  
+[2] "[second word]"  
+[3] "[third word]"  
+...  
+No additional explanation or commentary is permitted.
+
+<<start!>>
+"""
+
+
+#########################################################################
+single-turn 
+You are participating in a user study designed to assess your ability to recall ordered word lists. Your task is to learn and accurately recall each list. The study follows a within-subjects design with alternating **study** and **test** trials. You will be presented with a list of words to memorize. Your task is to recall the list in the order presented during the most recent study trial. You will complete four total sessions (one practice and three test sessions), alternating between these two conditions. Each word list is studied and tested until it is recalled perfectly or a maximum number of trials is reached. During each test, you will have up to 1 minute to recall the list and must indicate when you are finished by saying “done”. Do not respond or start recalling until the list ends with <<The list is ended!>>. Respond strictly using this format
+"recalled_words":
+01. "word1",
+02. "word2",
+03 "word3",
+etc.
+############################################################################
+###########################################################################
+
+
+
+/usagers2/makarf/cogvenv/bin/python /usagers2/makarf/Documents/cogtest/sm_allatonce_gpt-3.py --add_noise
+=== DEBUG: Noisy study list ===
+ 01. "*Menacer#$^"
+ 02. "[DISTRACTOR] ~%Xyzon"
+ 03. "%^is@"
+ 04. "[DISTRACTOR] Blur"
+ 05. "[DISTRACTOR] $@*Distracto~~"
+ 06. "his%#"
+ 07. "[DISTRACTOR] ^&$Blur~"
+ 08. "[DISTRACTOR] %&Nope@~"
+ 09. "[DISTRACTOR] Nebula"
+ 10. "*$$favorite"
+ 11. "[DISTRACTOR] Blur$"
+ 12. "[DISTRACTOR] ~#Blur$&"
+ 13. "piece"
+ 14. "[DISTRACTOR] ^%Foobar%$*"
+ 15. "[DISTRACTOR] Nebula%~$"
+ 16. "#~in"
+ 17. "[DISTRACTOR] %~Distracto%"
+ 18. "[DISTRACTOR] $*&Synthet#*"
+ 19. "the"
+ 20. "[DISTRACTOR] #@Foobar"
+ 21. "[DISTRACTOR] Distracto"
+ 22. "[DISTRACTOR] Distracto"
+ 23. "*$$collection#$#"
+ 24. "when%&#"
+ 25. "[DISTRACTOR] ~Xyzon*"
+ 26. "[DISTRACTOR] $~$Xyzon"
+ 27. "[DISTRACTOR] #^Foobar"
+ 28. "used*%"
+ 29. "[DISTRACTOR] *Nebula"
+ 30. "~with*"
+ 31. "[DISTRACTOR] Foobar"
+ 32. "[DISTRACTOR] Fuzz"
+ 33. "[DISTRACTOR] %%~Blur"
+ 34. "[DISTRACTOR] $Blur"
+ 35. "@*^Aura"
+ 36. "[DISTRACTOR] *Distracto$"
+ 37. "[DISTRACTOR] @*Nebula"
+ 38. "[DISTRACTOR] Nebula"
+ 39. "Interactor&&"
+ 40. "[DISTRACTOR] &Fuzz"
+ 41. "[DISTRACTOR] #Distracto~^^"
+ 42. "[DISTRACTOR] Nebula"
+ 43. "haptic$~"
+ 44. "[DISTRACTOR] *Foobar*~"
+ 45. "suit"
+ 46. "[DISTRACTOR] Xyzon@&"
+ 47. "[DISTRACTOR] Fuzz"
+ 48. "Medieval"
+ 49. "[DISTRACTOR] ^Obscure"
+ 50. "[DISTRACTOR] @$Obscure%%"
+ 51. "^#^Total@^^"
+ 52. "[DISTRACTOR] %~Xyzon&^"
+ 53. "[DISTRACTOR] &Synthet"
+ 54. "War~@"
+ 55. "[DISTRACTOR] #%#Distracto"
+ 56. "[DISTRACTOR] %@~Distracto"
+ 57. "[DISTRACTOR] **$Blur~%"
+ 58. "a*"
+ 59. "&turn@"
+ 60. "[DISTRACTOR] ~%Distracto$@"
+ 61. "based"
+ 62. "[DISTRACTOR] Obscure"
+ 63. "[DISTRACTOR] ^Fuzz"
+ 64. "[DISTRACTOR] Distracto"
+ 65. "strategy~^*"
+ 66. "[DISTRACTOR] Foobar"
+ 67. "[DISTRACTOR] Distracto&~$"
+ 68. "[DISTRACTOR] ~Xyzon"
+ 69. "*%and"
+ 70. "real"
+ 71. "[DISTRACTOR] ~Nebula"
+ 72. "*^&time@*@"
+ 73. "[DISTRACTOR] ~~%Xyzon&@"
+ 74. "[DISTRACTOR] Nope$^@"
+ 75. "[DISTRACTOR] %Nebula~&%"
+ 76. "[DISTRACTOR] Synthet~"
+ 77. "@#tactics"
+ 78. "[DISTRACTOR] Distracto"
+ 79. "[DISTRACTOR] Distracto"
+ 80. "~computer~$$"
+ 81. "@#%game"
+ 82. "[DISTRACTOR] &&Distracto"
+ 83. "[DISTRACTOR] Blur&%"
+ 84. "[DISTRACTOR] #Synthet"
+ 85. "[DISTRACTOR] Blur@"
+ 86. "developed"
+ 87. "[DISTRACTOR] Nebula"
+ 88. "[DISTRACTOR] $$Fuzz"
+ 89. "[DISTRACTOR] Nebula"
+ 90. "by~%$"
+ 91. "The*"
+ 92. "[DISTRACTOR] Xyzon&*%"
+ 93. "[DISTRACTOR] Nope"
+ 94. "[DISTRACTOR] Synthet&#"
+ 95. "[DISTRACTOR] ^%#Nope"
+ 96. "^@~Creative#^"
+ 97. "[DISTRACTOR] $&&Xyzon"
+ 98. "[DISTRACTOR] Nope*"
+ 99. "Assembly*&"
+ 100. "[DISTRACTOR] &~Nope"
+ 101. "[DISTRACTOR] Nope"
+ 102. "[DISTRACTOR] Nope#"
+ 103. "[DISTRACTOR] Nebula"
+ 104. "published"
+ 105. "[DISTRACTOR] *$*Nope"
+ 106. "[DISTRACTOR] Foobar"
+ 107. "^*Activision^"
+ 108. "[DISTRACTOR] Synthet%"
+ 109. "[DISTRACTOR] Fuzz$&"
+ 110. "[DISTRACTOR] %*Fuzz"
+ 111. "[DISTRACTOR] Distracto"
+ 112. "#@Set*%@"
+ 113. "&*Middle***"
+ 114. "[DISTRACTOR] Distracto$$"
+ 115. "[DISTRACTOR] Blur"
+ 116. "[DISTRACTOR] %#Blur*#"
+ 117. "[DISTRACTOR] $@&Obscure##"
+ 118. "*Ages~~"
+ 119. "[DISTRACTOR] $@~Xyzon*&"
+ 120. "[DISTRACTOR] Foobar"
+ 121. "%~it"
+ 122. "[DISTRACTOR] Nope"
+ 123. "[DISTRACTOR] Xyzon*^&"
+ 124. "&@second"
+ 125. "[DISTRACTOR] Fuzz"
+ 126. "series*$"
+ 127. "*&*following"
+ 128. "[DISTRACTOR] Foobar^~*"
+ 129. "[DISTRACTOR] Foobar"
+ 130. "[DISTRACTOR] $~$Foobar"
+ 131. "[DISTRACTOR] Fuzz*"
+ 132. "on"
+ 133. "[DISTRACTOR] Distracto"
+ 134. "[DISTRACTOR] Obscure"
+ 135. "@from~~&"
+ 136. "2000$"
+ 137. "[DISTRACTOR] ~Nebula@"
+ 138. "[DISTRACTOR] Distracto"
+ 139. "[DISTRACTOR] ~Blur%"
+ 140. "[DISTRACTOR] ~$~Nebula**"
+ 141. "title@^"
+ 142. "[DISTRACTOR] &##Fuzz"
+ 143. "%Shogun^"
+ 144. "[DISTRACTOR] ^#@Distracto"
+ 145. "[DISTRACTOR] Blur@$$"
+ 146. "[DISTRACTOR] Foobar"
+ 147. "[DISTRACTOR] $%Nope~@$"
+ 148. "Originally"
+ 149. "[DISTRACTOR] Fuzz"
+ 150. "[DISTRACTOR] ~^&Xyzon%$^"
+ 151. "[DISTRACTOR] @$#Obscure"
+ 152. "^#announced"
+ 153. "[DISTRACTOR] Obscure%"
+ 154. "[DISTRACTOR] Obscure@"
+ 155. "[DISTRACTOR] %$Foobar&"
+ 156. "[DISTRACTOR] Fuzz"
+ 157. "August"
+ 158. "^*2001$&"
+ 159. "[DISTRACTOR] ~Obscure"
+ 160. "[DISTRACTOR] Nope#%"
+ 161. "[DISTRACTOR] Blur~*"
+ 162. "[DISTRACTOR] Nope"
+ 163. "~$was~#^"
+ 164. "released"
+ 165. "[DISTRACTOR] Nope~*#"
+ 166. "[DISTRACTOR] *%*Fuzz"
+ 167. "North@#"
+ 168. "[DISTRACTOR] Distracto"
+ 169. "[DISTRACTOR] *Nope"
+ 170. "^America&#"
+ 171. "[DISTRACTOR] Fuzz"
+ 172. "[DISTRACTOR] ~$^Obscure"
+ 173. "19^^"
+ 174. "[DISTRACTOR] Obscure%^%"
+ 175. "[DISTRACTOR] *~Nebula"
+ 176. "[DISTRACTOR] ^Foobar&~"
+ 177. "[DISTRACTOR] $@^Fuzz&##"
+ 178. "@$@2002"
+ 179. "[DISTRACTOR] Foobar@"
+ 180. "[DISTRACTOR] Nebula"
+ 181. "[DISTRACTOR] Fuzz"
+ 182. "[DISTRACTOR] $~Nebula"
+ 183. "*&Europe"
+ 184. "[DISTRACTOR] Nebula&%@"
+ 185. "[DISTRACTOR] Xyzon@"
+ 186. "[DISTRACTOR] Foobar@&&"
+ 187. "^30%&*"
+ 188. "for"
+ 189. "[DISTRACTOR] Distracto^"
+ 190. "[DISTRACTOR] Blur%&"
+ 191. "#Microsoft"
+ 192. "[DISTRACTOR] &@Fuzz"
+ 193. "[DISTRACTOR] ^$~Nebula%&"
+ 194. "[DISTRACTOR] Nebula"
+ 195. "*~Windows#$"
+ 196. "#*Following$"
+ 197. "[DISTRACTOR] Xyzon"
+ 198. "[DISTRACTOR] ~Distracto"
+ 199. "[DISTRACTOR] Fuzz"
+ 200. "[DISTRACTOR] Nebula"
+ 201. "^similar&&$"
+ 202. "[DISTRACTOR] ~Foobar&%@"
+ 203. "[DISTRACTOR] Synthet"
+ 204. "[DISTRACTOR] %@Blur$%*"
+ 205. "form$"
+ 206. "[DISTRACTOR] Fuzz"
+ 207. "of^*"
+ 208. "[DISTRACTOR] Xyzon&%"
+ 209. "play^~#"
+ 210. "[DISTRACTOR] Xyzon~"
+ 211. "[DISTRACTOR] *Distracto^~"
+ 212. "[DISTRACTOR] Fuzz"
+ 213. "%%%to*"
+ 214. "[DISTRACTOR] $Synthet&@#"
+ 215. "[DISTRACTOR] ~#$Nope&$"
+ 216. "^~#player"
+ 217. "[DISTRACTOR] ^#%Blur"
+ 218. "[DISTRACTOR] Nebula"
+ 219. "[DISTRACTOR] Xyzon@&&"
+ 220. "[DISTRACTOR] Xyzon%%"
+ 221. "&#~builds%*"
+ 222. "[DISTRACTOR] #Synthet~%$"
+ 223. "[DISTRACTOR] Blur"
+ 224. "[DISTRACTOR] Xyzon"
+ 225. "dynastic~"
+ 226. "[DISTRACTOR] Xyzon%$"
+ 227. "empire&##"
+ 228. "[DISTRACTOR] $Nope%"
+ 229. "[DISTRACTOR] %$@Xyzon$*#"
+ 230. "[DISTRACTOR] ^~~Xyzon~"
+ 231. "Africa"
+ 232. "[DISTRACTOR] #Foobar%**"
+ 233. "East%~@"
+ 234. "[DISTRACTOR] Nebula"
+ 235. "[DISTRACTOR] &$Nebula*"
+ 236. "[DISTRACTOR] $Foobar^&*"
+ 237. "[DISTRACTOR] *%Nebula"
+ 238. "spanning"
+ 239. "[DISTRACTOR] &$Fuzz%$"
+ 240. "[DISTRACTOR] ~Nebula#"
+ 241. "[DISTRACTOR] Distracto*"
+ 242. "period*~"
+ 243. "[DISTRACTOR] Fuzz"
+ 244. "[DISTRACTOR] Foobar%%"
+ 245. "[DISTRACTOR] Blur&%"
+ 246. "%1087"
+ 247. "[DISTRACTOR] Nebula*~@"
+ 248. "1453^"
+ 249. "[DISTRACTOR] %#%Foobar%@@"
+ 250. "[DISTRACTOR] Nebula^%%"
+ 251. "~Gameplay"
+ 252. "[DISTRACTOR] &&&Blur"
+ 253. "[DISTRACTOR] Fuzz%&^"
+ 254. "both"
+ 255. "[DISTRACTOR] Nebula"
+ 256. "[DISTRACTOR] ~$#Blur^$"
+ 257. "$%strategic@$@"
+ 258. "[DISTRACTOR] Blur"
+ 259. "tactical%*~"
+ 260. "[DISTRACTOR] Fuzz*@#"
+ 261. "[DISTRACTOR] Xyzon"
+ 262. "*played"
+ 263. "[DISTRACTOR] Synthet&"
+ 264. "[DISTRACTOR] Foobar@"
+ 265. "out"
+ 266. "[DISTRACTOR] Distracto~^"
+ 267. "fashion#"
+ 268. "[DISTRACTOR] Fuzz#&"
+ 269. "[DISTRACTOR] ^Distracto"
+ 270. "~@province%@"
+ 271. "[DISTRACTOR] @$Foobar"
+ 272. "[DISTRACTOR] Nebula"
+ 273. "[DISTRACTOR] Nebula@$@"
+ 274. "level%"
+ 275. "[DISTRACTOR] Xyzon^$"
+ 276. "[DISTRACTOR] Xyzon#&"
+ 277. "[DISTRACTOR] Distracto&#%"
+ 278. "[DISTRACTOR] Distracto"
+ 279. "while"
+ 280. "[DISTRACTOR] $^Blur%^@"
+ 281. "[DISTRACTOR] Blur"
+ 282. "[DISTRACTOR] #$~Obscure"
+ 283. "[DISTRACTOR] Nope"
+ 284. "military"
+ 285. "[DISTRACTOR] Foobar@#"
+ 286. "[DISTRACTOR] Synthet*#*"
+ 287. "~#*units^$"
+ 288. "%varying"
+ 289. "^~#types"
+ 290. "[DISTRACTOR] Distracto"
+ 291. "[DISTRACTOR] Nope"
+ 292. "&$$capabilities~$~"
+ 293. "[DISTRACTOR] Foobar^"
+ 294. "[DISTRACTOR] $Synthet@"
+ 295. "[DISTRACTOR] @~#Obscure"
+ 296. "[DISTRACTOR] #~Obscure"
+ 297. "fight^#%"
+ 298. "[DISTRACTOR] ##*Obscure"
+ 299. "[DISTRACTOR] $Fuzz^*#"
+ 300. "[DISTRACTOR] Distracto*@"
+ 301. "[DISTRACTOR] ~$@Synthet~$%"
+ 302. "%~against"
+ 303. "[DISTRACTOR] *#$Foobar"
+ 304. "each#^@"
+ 305. "[DISTRACTOR] Obscure"
+ 306. "[DISTRACTOR] ^~&Fuzz~%"
+ 307. "[DISTRACTOR] &Obscure"
+ 308. "[DISTRACTOR] Nope"
+ 309. "other"
+ 310. "[DISTRACTOR] @@Distracto"
+ 311. "~3D"
+ 312. "battlefield@"
+ 313. "[DISTRACTOR] Synthet~~^"
+ 314. "[DISTRACTOR] @^@Nope"
+ 315. "[DISTRACTOR] Blur^#@"
+ 316. "*$#received^%#"
+ 317. "[DISTRACTOR] Nope"
+You will now be presented with a list of words to memorize.
+word [1]: "Menacer"
+Noise: ~$
+word [2]: "is"
+Noise: #@
+word [3]: "his"
+Noise: #@
+[DISTRACTOR] ~^&Xyzon~^&
+word [4]: "favorite"
+Noise: **^
+word [5]: "piece"
+Noise: *$@
+[DISTRACTOR] $&%Synthet$&%
+word [6]: "in"
+Noise: %%#
+word [7]: "the"
+Noise: ^
+word [8]: "collection"
+Noise: #
+[DISTRACTOR] #Blur#
+word [9]: "when"
+Noise: ^*@
+[DISTRACTOR] $Xyzon$
+word [10]: "used"
+Noise: ^
+[DISTRACTOR] %Distracto%
+word [11]: "with"
+Noise: ^^$
+word [12]: "Aura"
+Noise: ^
+[DISTRACTOR] *&Nebula*&
+word [13]: "Interactor"
+Noise: ~%
+word [14]: "haptic"
+Noise: *
+[DISTRACTOR] &%Distracto&%
+word [15]: "suit"
+Noise: ~^$
+word [16]: "Medieval"
+Noise: #%
+word [17]: "Total"
+Noise: ^$
+[DISTRACTOR] $@Distracto$@
+word [18]: "War"
+Noise: $
+[DISTRACTOR] ~Distracto~
+word [19]: "a"
+Noise: @&~
+word [20]: "turn"
+Noise: %
+[DISTRACTOR] ^Blur^
+word [21]: "based"
+Noise: $#%
+[DISTRACTOR] ^Xyzon^
+word [22]: "strategy"
+Noise: $#*
+word [23]: "and"
+Noise: $
+word [24]: "real"
+Noise: *@&
+[DISTRACTOR] *&Distracto*&
+word [25]: "time"
+Noise: #
+[DISTRACTOR] $$#Distracto$$#
+word [26]: "tactics"
+Noise: %^
+word [27]: "computer"
+Noise: ~
+[DISTRACTOR] @&~Xyzon@&~
+word [28]: "game"
+Noise: $#@
+[DISTRACTOR] ##Nebula##
+word [29]: "developed"
+Noise: *%
+word [30]: "by"
+Noise: ^^%
+word [31]: "The"
+Noise: ^
+[DISTRACTOR] &*&Nebula&*&
+word [32]: "Creative"
+Noise: ##
+[DISTRACTOR] &^Distracto&^
+word [33]: "Assembly"
+Noise: $%*
+[DISTRACTOR] %$^Xyzon%$^
+word [34]: "published"
+Noise: %
+word [35]: "Activision"
+Noise: &
+word [36]: "Set"
+Noise: ~
+word [37]: "Middle"
+Noise: &#%
+[DISTRACTOR] $^Nebula$^
+word [38]: "Ages"
+Noise: %$%
+[DISTRACTOR] @#Synthet@#
+word [39]: "it"
+Noise: $#$
+[DISTRACTOR] @@#Nebula@@#
+word [40]: "second"
+Noise: $#
+word [41]: "series"
+Noise: #~
+[DISTRACTOR] ~&$Obscure~&$
+word [42]: "following"
+Noise: @&
+word [43]: "on"
+Noise: ~&
+word [44]: "from"
+Noise: *
+word [45]: "2000"
+Noise: ^
+word [46]: "title"
+Noise: *%#
+[DISTRACTOR] $^Synthet$^
+word [47]: "Shogun"
+Noise: **@
+[DISTRACTOR] ^~~Fuzz^~~
+word [48]: "Originally"
+Noise: $
+[DISTRACTOR] *Nope*
+word [49]: "announced"
+Noise: ~&$
+word [50]: "August"
+Noise: &~*
+[DISTRACTOR] %%Nebula%%
+word [51]: "2001"
+Noise: ~
+[DISTRACTOR] &#*Blur&#*
+word [52]: "was"
+Noise: ^~
+word [53]: "released"
+Noise: ~$^
+[DISTRACTOR] ~&Nope~&
+word [54]: "North"
+Noise: ~#$
+[DISTRACTOR] #&*Fuzz#&*
+word [55]: "America"
+Noise: $%
+word [56]: "19"
+Noise: %
+word [57]: "2002"
+Noise: @#
+word [58]: "Europe"
+Noise: $&
+word [59]: "30"
+Noise: ~
+word [60]: "for"
+Noise: ~*
+word [61]: "Microsoft"
+Noise: #%
+word [62]: "Windows"
+Noise: @^
+[DISTRACTOR] %#Xyzon%#
+word [63]: "Following"
+Noise: %%@
+[DISTRACTOR] **%Foobar**%
+word [64]: "similar"
+Noise: @$&
+[DISTRACTOR] &*Blur&*
+word [65]: "form"
+Noise: &
+[DISTRACTOR] *Xyzon*
+word [66]: "of"
+Noise: %
+word [67]: "play"
+Noise: ~
+[DISTRACTOR] &$Fuzz&$
+word [68]: "to"
+Noise: %$*
+[DISTRACTOR] %&Distracto%&
+word [69]: "player"
+Noise: #
+word [70]: "builds"
+Noise: @
+[DISTRACTOR] @~Obscure@~
+word [71]: "dynastic"
+Noise: ~#~
+word [72]: "empire"
+Noise: ^%$
+[DISTRACTOR] &%*Nebula&%*
+word [73]: "Africa"
+Noise: ~@
+[DISTRACTOR] ^#$Nebula^#$
+word [74]: "East"
+Noise: &&$
+[DISTRACTOR] ^Blur^
+word [75]: "spanning"
+Noise: ^
+[DISTRACTOR] *Fuzz*
+word [76]: "period"
+Noise: &&
+[DISTRACTOR] &%Distracto&%
+word [77]: "1087"
+Noise: $%
+[DISTRACTOR] &Obscure&
+word [78]: "1453"
+Noise: #$
+word [79]: "Gameplay"
+Noise: @#&
+word [80]: "both"
+Noise: ^~
+word [81]: "strategic"
+Noise: $~
+[DISTRACTOR] %%&Obscure%%&
+word [82]: "tactical"
+Noise: ^@
+word [83]: "played"
+Noise: @$
+word [84]: "out"
+Noise: $
+word [85]: "fashion"
+Noise: &$$
+word [86]: "province"
+Noise: &%@
+[DISTRACTOR] %Foobar%
+word [87]: "level"
+Noise: ^
+[DISTRACTOR] @&Distracto@&
+word [88]: "while"
+Noise: *
+[DISTRACTOR] %Nope%
+word [89]: "military"
+Noise: %*
+[DISTRACTOR] @&Obscure@&
+word [90]: "units"
+Noise: ^~
+word [91]: "varying"
+Noise: %@
+word [92]: "types"
+Noise: %#
+word [93]: "capabilities"
+Noise: %
+word [94]: "fight"
+Noise: $@*
+[DISTRACTOR] %^^Xyzon%^^
+word [95]: "against"
+Noise: &
+[DISTRACTOR] &*&Foobar&*&
+word [96]: "each"
+Noise: &&
+[DISTRACTOR] ^Fuzz^
+word [97]: "other"
+Noise: #%*
+[DISTRACTOR] %*Obscure%*
+word [98]: "3D"
+Noise: &%
+[DISTRACTOR] $@^Obscure$@^
+word [99]: "battlefield"
+Noise: $^
+word [100]: "received"
+Noise: @&
+<<The list is ended!>>
+Raw output: Understood! Please wait until the list is completed before recalling the words.
+Warning: Failed to parse JSON. Trying partial fix.
+
+---------------------- PROMPT ------------------------
+
+You will now be presented with a list of words to memorize.
+word [1]: "Menacer"
+Noise: ~$
+word [2]: "is"
+Noise: #@
+word [3]: "his"
+Noise: #@
+[DISTRACTOR] ~^&Xyzon~^&
+word [4]: "favorite"
+Noise: **^
+word [5]: "piece"
+Noise: *$@
+[DISTRACTOR] $&%Synthet$&%
+word [6]: "in"
+Noise: %%#
+word [7]: "the"
+Noise: ^
+word [8]: "collection"
+Noise: #
+[DISTRACTOR] #Blur#
+word [9]: "when"
+Noise: ^*@
+[DISTRACTOR] $Xyzon$
+word [10]: "used"
+Noise: ^
+[DISTRACTOR] %Distracto%
+word [11]: "with"
+Noise: ^^$
+word [12]: "Aura"
+Noise: ^
+[DISTRACTOR] *&Nebula*&
+word [13]: "Interactor"
+Noise: ~%
+word [14]: "haptic"
+Noise: *
+[DISTRACTOR] &%Distracto&%
+word [15]: "suit"
+Noise: ~^$
+word [16]: "Medieval"
+Noise: #%
+word [17]: "Total"
+Noise: ^$
+[DISTRACTOR] $@Distracto$@
+word [18]: "War"
+Noise: $
+[DISTRACTOR] ~Distracto~
+word [19]: "a"
+Noise: @&~
+word [20]: "turn"
+Noise: %
+[DISTRACTOR] ^Blur^
+word [21]: "based"
+Noise: $#%
+[DISTRACTOR] ^Xyzon^
+word [22]: "strategy"
+Noise: $#*
+word [23]: "and"
+Noise: $
+word [24]: "real"
+Noise: *@&
+[DISTRACTOR] *&Distracto*&
+word [25]: "time"
+Noise: #
+[DISTRACTOR] $$#Distracto$$#
+word [26]: "tactics"
+Noise: %^
+word [27]: "computer"
+Noise: ~
+[DISTRACTOR] @&~Xyzon@&~
+word [28]: "game"
+Noise: $#@
+[DISTRACTOR] ##Nebula##
+word [29]: "developed"
+Noise: *%
+word [30]: "by"
+Noise: ^^%
+word [31]: "The"
+Noise: ^
+[DISTRACTOR] &*&Nebula&*&
+word [32]: "Creative"
+Noise: ##
+[DISTRACTOR] &^Distracto&^
+word [33]: "Assembly"
+Noise: $%*
+[DISTRACTOR] %$^Xyzon%$^
+word [34]: "published"
+Noise: %
+word [35]: "Activision"
+Noise: &
+word [36]: "Set"
+Noise: ~
+word [37]: "Middle"
+Noise: &#%
+[DISTRACTOR] $^Nebula$^
+word [38]: "Ages"
+Noise: %$%
+[DISTRACTOR] @#Synthet@#
+word [39]: "it"
+Noise: $#$
+[DISTRACTOR] @@#Nebula@@#
+word [40]: "second"
+Noise: $#
+word [41]: "series"
+Noise: #~
+[DISTRACTOR] ~&$Obscure~&$
+word [42]: "following"
+Noise: @&
+word [43]: "on"
+Noise: ~&
+word [44]: "from"
+Noise: *
+word [45]: "2000"
+Noise: ^
+word [46]: "title"
+Noise: *%#
+[DISTRACTOR] $^Synthet$^
+word [47]: "Shogun"
+Noise: **@
+[DISTRACTOR] ^~~Fuzz^~~
+word [48]: "Originally"
+Noise: $
+[DISTRACTOR] *Nope*
+word [49]: "announced"
+Noise: ~&$
+word [50]: "August"
+Noise: &~*
+[DISTRACTOR] %%Nebula%%
+word [51]: "2001"
+Noise: ~
+[DISTRACTOR] &#*Blur&#*
+word [52]: "was"
+Noise: ^~
+word [53]: "released"
+Noise: ~$^
+[DISTRACTOR] ~&Nope~&
+word [54]: "North"
+Noise: ~#$
+[DISTRACTOR] #&*Fuzz#&*
+word [55]: "America"
+Noise: $%
+word [56]: "19"
+Noise: %
+word [57]: "2002"
+Noise: @#
+word [58]: "Europe"
+Noise: $&
+word [59]: "30"
+Noise: ~
+word [60]: "for"
+Noise: ~*
+word [61]: "Microsoft"
+Noise: #%
+word [62]: "Windows"
+Noise: @^
+[DISTRACTOR] %#Xyzon%#
+word [63]: "Following"
+Noise: %%@
+[DISTRACTOR] **%Foobar**%
+word [64]: "similar"
+Noise: @$&
+[DISTRACTOR] &*Blur&*
+word [65]: "form"
+Noise: &
+[DISTRACTOR] *Xyzon*
+word [66]: "of"
+Noise: %
+word [67]: "play"
+Noise: ~
+[DISTRACTOR] &$Fuzz&$
+word [68]: "to"
+Noise: %$*
+[DISTRACTOR] %&Distracto%&
+word [69]: "player"
+Noise: #
+word [70]: "builds"
+Noise: @
+[DISTRACTOR] @~Obscure@~
+word [71]: "dynastic"
+Noise: ~#~
+word [72]: "empire"
+Noise: ^%$
+[DISTRACTOR] &%*Nebula&%*
+word [73]: "Africa"
+Noise: ~@
+[DISTRACTOR] ^#$Nebula^#$
+word [74]: "East"
+Noise: &&$
+[DISTRACTOR] ^Blur^
+word [75]: "spanning"
+Noise: ^
+[DISTRACTOR] *Fuzz*
+word [76]: "period"
+Noise: &&
+[DISTRACTOR] &%Distracto&%
+word [77]: "1087"
+Noise: $%
+[DISTRACTOR] &Obscure&
+word [78]: "1453"
+Noise: #$
+word [79]: "Gameplay"
+Noise: @#&
+word [80]: "both"
+Noise: ^~
+word [81]: "strategic"
+Noise: $~
+[DISTRACTOR] %%&Obscure%%&
+word [82]: "tactical"
+Noise: ^@
+word [83]: "played"
+Noise: @$
+word [84]: "out"
+Noise: $
+word [85]: "fashion"
+Noise: &$$
+word [86]: "province"
+Noise: &%@
+[DISTRACTOR] %Foobar%
+word [87]: "level"
+Noise: ^
+[DISTRACTOR] @&Distracto@&
+word [88]: "while"
+Noise: *
+[DISTRACTOR] %Nope%
+word [89]: "military"
+Noise: %*
+[DISTRACTOR] @&Obscure@&
+word [90]: "units"
+Noise: ^~
+word [91]: "varying"
+Noise: %@
+word [92]: "types"
+Noise: %#
+word [93]: "capabilities"
+Noise: %
+word [94]: "fight"
+Noise: $@*
+[DISTRACTOR] %^^Xyzon%^^
+word [95]: "against"
+Noise: &
+[DISTRACTOR] &*&Foobar&*&
+word [96]: "each"
+Noise: &&
+[DISTRACTOR] ^Fuzz^
+word [97]: "other"
+Noise: #%*
+[DISTRACTOR] %*Obscure%*
+word [98]: "3D"
+Noise: &%
+[DISTRACTOR] $@^Obscure$@^
+word [99]: "battlefield"
+Noise: $^
+word [100]: "received"
+Noise: @&
+<<The list is ended!>>
+
+This is a serial memory test for evaluating your ability to remember ordered information.
+Each trial starts from the same word.
+Some words may include symbols or distractors. Ignore these during recall.
+Do not respond until the list is marked as completed using `<<The list is ended!>>`.
+Once that appears, recall the exact order of original study words.
+You must respond strictly in the following JSON format:
+{
+    "recalled_words": ["", "", ..., ""]
+}
+
+---------------- GPT RESPONSE ------------------------
+
+Understood! Please wait until the list is completed before recalling the words.
+
+------------------ STUDY vs RECALL -------------------
+
+Total Correct: 0/100
+usage: sm_allatonce_gpt-3.py [-h] [--engines ENGINES [ENGINES ...]]
+                             [--no_perf_score NO_PERF_SCORE [NO_PERF_SCORE ...]]
+                             [--version_number VERSION_NUMBER] [--columns COLUMNS [COLUMNS ...]]
+sm_allatonce_gpt-3.py: error: unrecognized arguments: --add_noise
+
+############################################################################################################################################################################################################################################
+/usagers2/makarf/cogvenv/bin/python /usagers2/makarf/Documents/cogtest/sm_allatonce_gpt-3.py
+=== DEBUG: Noisy study list ===
+001. "#job"
+002. "@$in"
+003. "[DISTRACTOR] Distracto%%"
+004. "[DISTRACTOR] Xyzon@$@"
+005. "[DISTRACTOR] ##&Xyzon*"
+006. "tailor"
+007. "[DISTRACTOR] Distracto&*"
+008. "*#'s**"
+009. "[DISTRACTOR] ^*$Obscure~$$"
+010. "[DISTRACTOR] ##Fuzz"
+011. "[DISTRACTOR] *%*Obscure#"
+012. "%~shop$"
+013. "[DISTRACTOR] ~@Xyzon##"
+014. "Julia*"
+015. "[DISTRACTOR] Obscure"
+016. "[DISTRACTOR] Foobar"
+017. "[DISTRACTOR] Obscure#"
+018. "[DISTRACTOR] ^^Xyzon%"
+019. "Stanley"
+020. "[DISTRACTOR] ^^Obscure"
+021. "@Alf"
+022. "[DISTRACTOR] Synthet#"
+023. "[DISTRACTOR] $&Obscure"
+024. "[DISTRACTOR] Nebula&"
+025. "[DISTRACTOR] Nope$&$"
+026. "%first"
+027. "[DISTRACTOR] #Obscure@$*"
+028. "saw"
+029. "[DISTRACTOR] ^%Blur~*"
+030. "[DISTRACTOR] ~*Xyzon"
+031. "[DISTRACTOR] ~*$Distracto"
+032. "[DISTRACTOR] Nope"
+033. "at"
+034. "#~'$&@"
+035. "[DISTRACTOR] *^$Foobar"
+036. "[DISTRACTOR] Fuzz*~%"
+037. "[DISTRACTOR] ^&Foobar&"
+038. "*Trocadero"
+039. "#&club&#"
+040. "[DISTRACTOR] ~Xyzon"
+041. "[DISTRACTOR] Obscure@$#"
+042. "[DISTRACTOR] Distracto"
+043. "converted*"
+044. "[DISTRACTOR] Nope&"
+045. "[DISTRACTOR] Xyzon@$"
+046. "&*cinema"
+047. "on"
+048. "[DISTRACTOR] *#Fuzz#"
+049. "[DISTRACTOR] &Foobar%^%"
+050. "[DISTRACTOR] Fuzz&~*"
+051. "[DISTRACTOR] Foobar@"
+052. "Camden"
+053. "[DISTRACTOR] @*Nope^"
+054. "[DISTRACTOR] Obscure@~^"
+055. "[DISTRACTOR] Blur@&~"
+056. "[DISTRACTOR] Distracto%$"
+057. "Road"
+058. "[DISTRACTOR] @*#Foobar"
+059. "[DISTRACTOR] ^^@Nope"
+060. "Liverpool"
+
+================== RAW OUTPUT ==================
+Raw output: {
+    "recalled_words": ["#job", "@$in", "tailor", "*#'s**", "%~shop$", "Julia*", "Stanley", "@Alf", "saw", "at", "#~'$&@", "*Trocadero", "#&club&#", "converted*", "&*cinema", "on", "Camden", "Road", "Liverpool"]
+}
+
+------------------ STUDY vs RECALL -------------------
+01. job                  | #job                 FALSE Recalled!------
+02. in                   | @$in                 FALSE Recalled!------
+03. tailor               | tailor               TRUE Recalled!
+04. 's                   | *#'s**               FALSE Recalled!------
+05. shop                 | %~shop$              FALSE Recalled!------
+06. Julia                | Julia*               FALSE Recalled!------
+07. Stanley              | Stanley              TRUE Recalled!
+08. Alf                  | @Alf                 FALSE Recalled!------
+09. first                | saw                  FALSE Recalled!------
+10. saw                  | at                   FALSE Recalled!------
+11. at                   | #~'$&@               FALSE Recalled!------
+12. '                    | *Trocadero           FALSE Recalled!------
+13. Trocadero            | #&club&#             FALSE Recalled!------
+14. club                 | converted*           FALSE Recalled!------
+15. converted            | &*cinema             FALSE Recalled!------
+16. cinema               | on                   FALSE Recalled!------
+17. on                   | Camden               FALSE Recalled!------
+18. Camden               | Road                 FALSE Recalled!------
+19. Road                 | Liverpool            FALSE Recalled!------
+
+Total Correct: 2/20
+
+
+##########################################################################
+
+/usagers2/makarf/cogvenv/bin/python /usagers2/makarf/Documents/cogtest/sm_allatonce_gpt-3.py
+
+-==================CLEAN LIST(200 words) ==================
+01. into
+02. a
+03. coma
+04. Initially
+05. police
+06. suspect
+07. that
+08. Jake
+09. was
+10. behind
+11. this
+12. but
+13. later
+14. release
+15. him
+16. Loretta
+17. once
+18. more
+19. begins
+20. doubt
+21. Upset
+22. goes
+23. stay
+24. with
+25. his
+26. old
+27. friend
+28. Caroline
+29. Amber
+30. Hodgkiss
+31. After
+32. sleeping
+33. drugs
+34. ties
+35. up
+36. tries
+37. kill
+38. holds
+39. hostage
+40. for
+41. few
+42. days
+43. She
+44. is
+45. angered
+46. learn
+47. he
+48. going
+49. out
+50. sets
+51. try
+52. Holly
+53. there
+54. by's
+55. bedside
+56. attack
+57. syringe
+58. needle
+59. saves
+60. in
+61. process
+62. stabbed
+63. ordeal
+64. disappears
+65. having
+66. accept
+67. fact
+68. had
+69. cheated
+70. on
+71. her
+72. much
+73. dismay
+74. returns
+75. while
+76. she
+77. away
+78. become
+79. involved
+80. realtor
+81. called
+82. Adam
+83. At
+84. first
+85. thought
+86. looking
+87. home
+88. However
+89. when
+90. saw
+91. them
+92. both
+93. arguing
+94. realises
+95. something
+96. not
+97. as
+98. it
+99. seemed
+100. When
+101. confronts
+102. tells
+103. harassing
+104. This
+105. leads
+106. confronting
+107. warning
+108. from
+109. been
+110. controlling
+111. life
+112. wants
+113. be
+114. explains
+115. told
+116. about
+117. biggest
+118. mistake
+119. of
+120. hope
+121. would
+122. take
+123. back
+124. Later
+125. night
+126. The
+127. Loft
+128. nightclub
+129. threatens
+130. Charlotte
+131. Lau
+132. Amy
+133. Yamazaki
+134. says
+135. will
+136. if
+137. ever
+138. near
+139. again
+140. making
+141. viewers
+142. realise
+143. changed
+144. personality
+145. behaviour
+146. since
+147. absence
+148. pretends
+149. Leukaemia
+150. finds
+151. truth
+152. ends
+153. their
+154. relationship
+155. convinces
+156. Steph
+157. lied
+158. said
+159. ill
+160. makes
+161. Frankie
+162. believe
+163. losing
+164. mind
+165. send
+166. messages
+167. mobile
+168. phone
+169. plants
+170. defaced
+171. pictures
+172. coat
+173. make
+174. look
+175. real
+176. reveals
+177. sexually
+178. abused
+179. child
+180. gets
+181. together
+182. stop
+183. getting
+184. put
+185. mental
+186. health
+187. clinic
+188. Nancy
+189. who
+190. pushes
+191. over
+192. badly
+193. hurt
+194. agree
+195. go
+196. did
+197. lie
+198. asks
+199. get
+200. help
+
+================== ORIGINAL LLM ANSWER ==================
+
+Original LLM answer:
+{
+    "recalled_words": ["into", "a", "coma", "Initially", "police", "suspect", "that", "Jake", "was", "behind", "this", "but", "later", "released", "him", "Loretta", "once", "more", "begins", "doubt", "Upset", "goes", "stay", "with", "his", "old", "friend", "Caroline", "Amber", "Hodgkiss", "After", "sleeping", "drugs", "ties", "up", "tries", "kill", "holds", "hostage", "for", "a", "few", "days", "She", "is", "angered", "to", "learn", "he", "is", "going", "out", "sets", "try", "Holly", "there", "by's", "bedside", "attack", "syringe", "needle", "saves", "in", "process", "stabbed", "ordeal", "disappears", "having", "accepted", "the", "fact", "he", "had", "cheated", "on", "her", "much", "to", "her", "dismay", "returns", "while", "she", "is", "away", "becomes", "involved", "with", "a", "realtor", "called", "Adam", "At", "first", "thought", "looking", "home", "However", "when", "saw", "them", "both", "arguing", "realises", "something", "is", "not", "as", "it", "seemed", "When", "confronts", "tells", "him", "he", "is", "harassing", "This", "leads", "to", "confronting", "and", "warning", "from", "been", "controlling", "his", "life", "wants", "to", "be", "explains", "told", "about", "the", "biggest", "mistake", "of", "hope", "would", "take", "back", "Later", "night", "The", "Loft", "nightclub", "threatens", "Charlotte", "Lau", "Amy", "Yamazaki", "says", "will", "if", "ever", "near", "again", "making", "viewers", "realise", "changed", "personality", "behaviour", "since", "absence", "pretends", "Leukaemia", "finds", "truth", "ends", "their", "relationship", "convinces", "Steph", "lied", "said", "ill", "makes", "Frankie", "believe", "losing", "mind", "send", "messages", "mobile", "phone", "plants", "defaced", "pictures", "coat", "make", "look", "real", "reveals", "sexually", "abused", "child", "gets", "together", "stop", "getting", "put", "mental", "health", "clinic", "Nancy", "who", "pushes", "over", "badly", "hurt", "agree", "go", "did", "lie", "asks", "get", "help"]
+}
+
+Extracted recalled list (len=219):
+['into', 'a', 'coma', 'Initially', 'police', 'suspect', 'that', 'Jake', 'was', 'behind', 'this', 'but', 'later', 'released', 'him', 'Loretta', 'once', 'more', 'begins', 'doubt', 'Upset', 'goes', 'stay', 'with', 'his', 'old', 'friend', 'Caroline', 'Amber', 'Hodgkiss', 'After', 'sleeping', 'drugs', 'ties', 'up', 'tries', 'kill', 'holds', 'hostage', 'for', 'a', 'few', 'days', 'She', 'is', 'angered', 'to', 'learn', 'he', 'is', 'going', 'out', 'sets', 'try', 'Holly', 'there', "by's", 'bedside', 'attack', 'syringe', 'needle', 'saves', 'in', 'process', 'stabbed', 'ordeal', 'disappears', 'having', 'accepted', 'the', 'fact', 'he', 'had', 'cheated', 'on', 'her', 'much', 'to', 'her', 'dismay', 'returns', 'while', 'she', 'is', 'away', 'becomes', 'involved', 'with', 'a', 'realtor', 'called', 'Adam', 'At', 'first', 'thought', 'looking', 'home', 'However', 'when', 'saw', 'them', 'both', 'arguing', 'realises', 'something', 'is', 'not', 'as', 'it', 'seemed', 'When', 'confronts', 'tells', 'him', 'he', 'is', 'harassing', 'This', 'leads', 'to', 'confronting', 'and', 'warning', 'from', 'been', 'controlling', 'his', 'life', 'wants', 'to', 'be', 'explains', 'told', 'about', 'the', 'biggest', 'mistake', 'of', 'hope', 'would', 'take', 'back', 'Later', 'night', 'The', 'Loft', 'nightclub', 'threatens', 'Charlotte', 'Lau', 'Amy', 'Yamazaki', 'says', 'will', 'if', 'ever', 'near', 'again', 'making', 'viewers', 'realise', 'changed', 'personality', 'behaviour', 'since', 'absence', 'pretends', 'Leukaemia', 'finds', 'truth', 'ends', 'their', 'relationship', 'convinces', 'Steph', 'lied', 'said', 'ill', 'makes', 'Frankie', 'believe', 'losing', 'mind', 'send', 'messages', 'mobile', 'phone', 'plants', 'defaced', 'pictures', 'coat', 'make', 'look', 'real', 'reveals', 'sexually', 'abused', 'child', 'gets', 'together', 'stop', 'getting', 'put', 'mental', 'health', 'clinic', 'Nancy', 'who', 'pushes', 'over', 'badly', 'hurt', 'agree', 'go', 'did', 'lie', 'asks', 'get', 'help']
+
+================== RAW OUTPUT ==================
+
+{
+    "recalled_words": ["into", "a", "coma", "Initially", "police", "suspect", "that", "Jake", "was", "behind", "this", "but", "later", "released", "him", "Loretta", "once", "more", "begins", "doubt", "Upset", "goes", "stay", "with", "his", "old", "friend", "Caroline", "Amber", "Hodgkiss", "After", "sleeping", "drugs", "ties", "up", "tries", "kill", "holds", "hostage", "for", "a", "few", "days", "She", "is", "angered", "to", "learn", "he", "is", "going", "out", "sets", "try", "Holly", "there", "by's", "bedside", "attack", "syringe", "needle", "saves", "in", "process", "stabbed", "ordeal", "disappears", "having", "accepted", "the", "fact", "he", "had", "cheated", "on", "her", "much", "to", "her", "dismay", "returns", "while", "she", "is", "away", "becomes", "involved", "with", "a", "realtor", "called", "Adam", "At", "first", "thought", "looking", "home", "However", "when", "saw", "them", "both", "arguing", "realises", "something", "is", "not", "as", "it", "seemed", "When", "confronts", "tells", "him", "he", "is", "harassing", "This", "leads", "to", "confronting", "and", "warning", "from", "been", "controlling", "his", "life", "wants", "to", "be", "explains", "told", "about", "the", "biggest", "mistake", "of", "hope", "would", "take", "back", "Later", "night", "The", "Loft", "nightclub", "threatens", "Charlotte", "Lau", "Amy", "Yamazaki", "says", "will", "if", "ever", "near", "again", "making", "viewers", "realise", "changed", "personality", "behaviour", "since", "absence", "pretends", "Leukaemia", "finds", "truth", "ends", "their", "relationship", "convinces", "Steph", "lied", "said", "ill", "makes", "Frankie", "believe", "losing", "mind", "send", "messages", "mobile", "phone", "plants", "defaced", "pictures", "coat", "make", "look", "real", "reveals", "sexually", "abused", "child", "gets", "together", "stop", "getting", "put", "mental", "health", "clinic", "Nancy", "who", "pushes", "over", "badly", "hurt", "agree", "go", "did", "lie", "asks", "get", "help"]
+}
+
+================Confirmed Alignment Check================
+01. SHOWN: into                 | TARGET: into
+02. SHOWN: a                    | TARGET: a
+03. SHOWN: coma                 | TARGET: coma
+04. SHOWN: Initially            | TARGET: Initially
+05. SHOWN: police               | TARGET: police
+06. SHOWN: suspect              | TARGET: suspect
+07. SHOWN: that                 | TARGET: that
+08. SHOWN: Jake                 | TARGET: Jake
+09. SHOWN: was                  | TARGET: was
+10. SHOWN: behind               | TARGET: behind
+11. SHOWN: this                 | TARGET: this
+12. SHOWN: but                  | TARGET: but
+13. SHOWN: later                | TARGET: later
+14. SHOWN: release              | TARGET: release
+15. SHOWN: him                  | TARGET: him
+16. SHOWN: Loretta              | TARGET: Loretta
+17. SHOWN: once                 | TARGET: once
+18. SHOWN: more                 | TARGET: more
+19. SHOWN: begins               | TARGET: begins
+20. SHOWN: doubt                | TARGET: doubt
+21. SHOWN: Upset                | TARGET: Upset
+22. SHOWN: goes                 | TARGET: goes
+23. SHOWN: stay                 | TARGET: stay
+24. SHOWN: with                 | TARGET: with
+25. SHOWN: his                  | TARGET: his
+26. SHOWN: old                  | TARGET: old
+27. SHOWN: friend               | TARGET: friend
+28. SHOWN: Caroline             | TARGET: Caroline
+29. SHOWN: Amber                | TARGET: Amber
+30. SHOWN: Hodgkiss             | TARGET: Hodgkiss
+31. SHOWN: After                | TARGET: After
+32. SHOWN: sleeping             | TARGET: sleeping
+33. SHOWN: drugs                | TARGET: drugs
+34. SHOWN: ties                 | TARGET: ties
+35. SHOWN: up                   | TARGET: up
+36. SHOWN: tries                | TARGET: tries
+37. SHOWN: kill                 | TARGET: kill
+38. SHOWN: holds                | TARGET: holds
+39. SHOWN: hostage              | TARGET: hostage
+40. SHOWN: for                  | TARGET: for
+41. SHOWN: few                  | TARGET: few
+42. SHOWN: days                 | TARGET: days
+43. SHOWN: She                  | TARGET: She
+44. SHOWN: is                   | TARGET: is
+45. SHOWN: angered              | TARGET: angered
+46. SHOWN: learn                | TARGET: learn
+47. SHOWN: he                   | TARGET: he
+48. SHOWN: going                | TARGET: going
+49. SHOWN: out                  | TARGET: out
+50. SHOWN: sets                 | TARGET: sets
+51. SHOWN: try                  | TARGET: try
+52. SHOWN: Holly                | TARGET: Holly
+53. SHOWN: there                | TARGET: there
+54. SHOWN: by's                 | TARGET: by's
+55. SHOWN: bedside              | TARGET: bedside
+56. SHOWN: attack               | TARGET: attack
+57. SHOWN: syringe              | TARGET: syringe
+58. SHOWN: needle               | TARGET: needle
+59. SHOWN: saves                | TARGET: saves
+60. SHOWN: in                   | TARGET: in
+61. SHOWN: process              | TARGET: process
+62. SHOWN: stabbed              | TARGET: stabbed
+63. SHOWN: ordeal               | TARGET: ordeal
+64. SHOWN: disappears           | TARGET: disappears
+65. SHOWN: having               | TARGET: having
+66. SHOWN: accept               | TARGET: accept
+67. SHOWN: fact                 | TARGET: fact
+68. SHOWN: had                  | TARGET: had
+69. SHOWN: cheated              | TARGET: cheated
+70. SHOWN: on                   | TARGET: on
+71. SHOWN: her                  | TARGET: her
+72. SHOWN: much                 | TARGET: much
+73. SHOWN: dismay               | TARGET: dismay
+74. SHOWN: returns              | TARGET: returns
+75. SHOWN: while                | TARGET: while
+76. SHOWN: she                  | TARGET: she
+77. SHOWN: away                 | TARGET: away
+78. SHOWN: become               | TARGET: become
+79. SHOWN: involved             | TARGET: involved
+80. SHOWN: realtor              | TARGET: realtor
+81. SHOWN: called               | TARGET: called
+82. SHOWN: Adam                 | TARGET: Adam
+83. SHOWN: At                   | TARGET: At
+84. SHOWN: first                | TARGET: first
+85. SHOWN: thought              | TARGET: thought
+86. SHOWN: looking              | TARGET: looking
+87. SHOWN: home                 | TARGET: home
+88. SHOWN: However              | TARGET: However
+89. SHOWN: when                 | TARGET: when
+90. SHOWN: saw                  | TARGET: saw
+91. SHOWN: them                 | TARGET: them
+92. SHOWN: both                 | TARGET: both
+93. SHOWN: arguing              | TARGET: arguing
+94. SHOWN: realises             | TARGET: realises
+95. SHOWN: something            | TARGET: something
+96. SHOWN: not                  | TARGET: not
+97. SHOWN: as                   | TARGET: as
+98. SHOWN: it                   | TARGET: it
+99. SHOWN: seemed               | TARGET: seemed
+100. SHOWN: When                 | TARGET: When
+101. SHOWN: confronts            | TARGET: confronts
+102. SHOWN: tells                | TARGET: tells
+103. SHOWN: harassing            | TARGET: harassing
+104. SHOWN: This                 | TARGET: This
+105. SHOWN: leads                | TARGET: leads
+106. SHOWN: confronting          | TARGET: confronting
+107. SHOWN: warning              | TARGET: warning
+108. SHOWN: from                 | TARGET: from
+109. SHOWN: been                 | TARGET: been
+110. SHOWN: controlling          | TARGET: controlling
+111. SHOWN: life                 | TARGET: life
+112. SHOWN: wants                | TARGET: wants
+113. SHOWN: be                   | TARGET: be
+114. SHOWN: explains             | TARGET: explains
+115. SHOWN: told                 | TARGET: told
+116. SHOWN: about                | TARGET: about
+117. SHOWN: biggest              | TARGET: biggest
+118. SHOWN: mistake              | TARGET: mistake
+119. SHOWN: of                   | TARGET: of
+120. SHOWN: hope                 | TARGET: hope
+121. SHOWN: would                | TARGET: would
+122. SHOWN: take                 | TARGET: take
+123. SHOWN: back                 | TARGET: back
+124. SHOWN: Later                | TARGET: Later
+125. SHOWN: night                | TARGET: night
+126. SHOWN: The                  | TARGET: The
+127. SHOWN: Loft                 | TARGET: Loft
+128. SHOWN: nightclub            | TARGET: nightclub
+129. SHOWN: threatens            | TARGET: threatens
+130. SHOWN: Charlotte            | TARGET: Charlotte
+131. SHOWN: Lau                  | TARGET: Lau
+132. SHOWN: Amy                  | TARGET: Amy
+133. SHOWN: Yamazaki             | TARGET: Yamazaki
+134. SHOWN: says                 | TARGET: says
+135. SHOWN: will                 | TARGET: will
+136. SHOWN: if                   | TARGET: if
+137. SHOWN: ever                 | TARGET: ever
+138. SHOWN: near                 | TARGET: near
+139. SHOWN: again                | TARGET: again
+140. SHOWN: making               | TARGET: making
+141. SHOWN: viewers              | TARGET: viewers
+142. SHOWN: realise              | TARGET: realise
+143. SHOWN: changed              | TARGET: changed
+144. SHOWN: personality          | TARGET: personality
+145. SHOWN: behaviour            | TARGET: behaviour
+146. SHOWN: since                | TARGET: since
+147. SHOWN: absence              | TARGET: absence
+148. SHOWN: pretends             | TARGET: pretends
+149. SHOWN: Leukaemia            | TARGET: Leukaemia
+150. SHOWN: finds                | TARGET: finds
+151. SHOWN: truth                | TARGET: truth
+152. SHOWN: ends                 | TARGET: ends
+153. SHOWN: their                | TARGET: their
+154. SHOWN: relationship         | TARGET: relationship
+155. SHOWN: convinces            | TARGET: convinces
+156. SHOWN: Steph                | TARGET: Steph
+157. SHOWN: lied                 | TARGET: lied
+158. SHOWN: said                 | TARGET: said
+159. SHOWN: ill                  | TARGET: ill
+160. SHOWN: makes                | TARGET: makes
+161. SHOWN: Frankie              | TARGET: Frankie
+162. SHOWN: believe              | TARGET: believe
+163. SHOWN: losing               | TARGET: losing
+164. SHOWN: mind                 | TARGET: mind
+165. SHOWN: send                 | TARGET: send
+166. SHOWN: messages             | TARGET: messages
+167. SHOWN: mobile               | TARGET: mobile
+168. SHOWN: phone                | TARGET: phone
+169. SHOWN: plants               | TARGET: plants
+170. SHOWN: defaced              | TARGET: defaced
+171. SHOWN: pictures             | TARGET: pictures
+172. SHOWN: coat                 | TARGET: coat
+173. SHOWN: make                 | TARGET: make
+174. SHOWN: look                 | TARGET: look
+175. SHOWN: real                 | TARGET: real
+176. SHOWN: reveals              | TARGET: reveals
+177. SHOWN: sexually             | TARGET: sexually
+178. SHOWN: abused               | TARGET: abused
+179. SHOWN: child                | TARGET: child
+180. SHOWN: gets                 | TARGET: gets
+181. SHOWN: together             | TARGET: together
+182. SHOWN: stop                 | TARGET: stop
+183. SHOWN: getting              | TARGET: getting
+184. SHOWN: put                  | TARGET: put
+185. SHOWN: mental               | TARGET: mental
+186. SHOWN: health               | TARGET: health
+187. SHOWN: clinic               | TARGET: clinic
+188. SHOWN: Nancy                | TARGET: Nancy
+189. SHOWN: who                  | TARGET: who
+190. SHOWN: pushes               | TARGET: pushes
+191. SHOWN: over                 | TARGET: over
+192. SHOWN: badly                | TARGET: badly
+193. SHOWN: hurt                 | TARGET: hurt
+194. SHOWN: agree                | TARGET: agree
+195. SHOWN: go                   | TARGET: go
+196. SHOWN: did                  | TARGET: did
+197. SHOWN: lie                  | TARGET: lie
+198. SHOWN: asks                 | TARGET: asks
+199. SHOWN: get                  | TARGET: get
+200. SHOWN: help                 | TARGET: help
+
+--------------- RAW OUTPUT ---------------
+
+{
+    "recalled_words": ["into", "a", "coma", "Initially", "police", "suspect", "that", "Jake", "was", "behind", "this", "but", "later", "released", "him", "Loretta", "once", "more", "begins", "doubt", "Upset", "goes", "stay", "with", "his", "old", "friend", "Caroline", "Amber", "Hodgkiss", "After", "sleeping", "drugs", "ties", "up", "tries", "kill", "holds", "hostage", "for", "a", "few", "days", "She", "is", "angered", "to", "learn", "he", "is", "going", "out", "sets", "try", "Holly", "there", "by's", "bedside", "attack", "syringe", "needle", "saves", "in", "process", "stabbed", "ordeal", "disappears", "having", "accepted", "the", "fact", "he", "had", "cheated", "on", "her", "much", "to", "her", "dismay", "returns", "while", "she", "is", "away", "becomes", "involved", "with", "a", "realtor", "called", "Adam", "At", "first", "thought", "looking", "home", "However", "when", "saw", "them", "both", "arguing", "realises", "something", "is", "not", "as", "it", "seemed", "When", "confronts", "tells", "him", "he", "is", "harassing", "This", "leads", "to", "confronting", "and", "warning", "from", "been", "controlling", "his", "life", "wants", "to", "be", "explains", "told", "about", "the", "biggest", "mistake", "of", "hope", "would", "take", "back", "Later", "night", "The", "Loft", "nightclub", "threatens", "Charlotte", "Lau", "Amy", "Yamazaki", "says", "will", "if", "ever", "near", "again", "making", "viewers", "realise", "changed", "personality", "behaviour", "since", "absence", "pretends", "Leukaemia", "finds", "truth", "ends", "their", "relationship", "convinces", "Steph", "lied", "said", "ill", "makes", "Frankie", "believe", "losing", "mind", "send", "messages", "mobile", "phone", "plants", "defaced", "pictures", "coat", "make", "look", "real", "reveals", "sexually", "abused", "child", "gets", "together", "stop", "getting", "put", "mental", "health", "clinic", "Nancy", "who", "pushes", "over", "badly", "hurt", "agree", "go", "did", "lie", "asks", "get", "help"]
+}
+
+------------------ STUDY vs RECALL -------------------
+01. into                 | into                 TRUE Recalled!
+02. a                    | a                    TRUE Recalled!
+03. coma                 | coma                 TRUE Recalled!
+04. Initially            | Initially            TRUE Recalled!
+05. police               | police               TRUE Recalled!
+06. suspect              | suspect              TRUE Recalled!
+07. that                 | that                 TRUE Recalled!
+08. Jake                 | Jake                 TRUE Recalled!
+09. was                  | was                  TRUE Recalled!
+10. behind               | behind               TRUE Recalled!
+11. this                 | this                 TRUE Recalled!
+12. but                  | but                  TRUE Recalled!
+13. later                | later                TRUE Recalled!
+14. release              | released             FALSE Recalled!------
+15. him                  | him                  TRUE Recalled!
+16. Loretta              | Loretta              TRUE Recalled!
+17. once                 | once                 TRUE Recalled!
+18. more                 | more                 TRUE Recalled!
+19. begins               | begins               TRUE Recalled!
+20. doubt                | doubt                TRUE Recalled!
+21. Upset                | Upset                TRUE Recalled!
+22. goes                 | goes                 TRUE Recalled!
+23. stay                 | stay                 TRUE Recalled!
+24. with                 | with                 TRUE Recalled!
+25. his                  | his                  TRUE Recalled!
+26. old                  | old                  TRUE Recalled!
+27. friend               | friend               TRUE Recalled!
+28. Caroline             | Caroline             TRUE Recalled!
+29. Amber                | Amber                TRUE Recalled!
+30. Hodgkiss             | Hodgkiss             TRUE Recalled!
+31. After                | After                TRUE Recalled!
+32. sleeping             | sleeping             TRUE Recalled!
+33. drugs                | drugs                TRUE Recalled!
+34. ties                 | ties                 TRUE Recalled!
+35. up                   | up                   TRUE Recalled!
+36. tries                | tries                TRUE Recalled!
+37. kill                 | kill                 TRUE Recalled!
+38. holds                | holds                TRUE Recalled!
+39. hostage              | hostage              TRUE Recalled!
+40. for                  | for                  TRUE Recalled!
+41. few                  | a                    FALSE Recalled!------
+42. days                 | few                  FALSE Recalled!------
+43. She                  | days                 FALSE Recalled!------
+44. is                   | She                  FALSE Recalled!------
+45. angered              | is                   FALSE Recalled!------
+46. learn                | angered              FALSE Recalled!------
+47. he                   | to                   FALSE Recalled!------
+48. going                | learn                FALSE Recalled!------
+49. out                  | he                   FALSE Recalled!------
+50. sets                 | is                   FALSE Recalled!------
+51. try                  | going                FALSE Recalled!------
+52. Holly                | out                  FALSE Recalled!------
+53. there                | sets                 FALSE Recalled!------
+54. by's                 | try                  FALSE Recalled!------
+55. bedside              | Holly                FALSE Recalled!------
+56. attack               | there                FALSE Recalled!------
+57. syringe              | by's                 FALSE Recalled!------
+58. needle               | bedside              FALSE Recalled!------
+59. saves                | attack               FALSE Recalled!------
+60. in                   | syringe              FALSE Recalled!------
+61. process              | needle               FALSE Recalled!------
+62. stabbed              | saves                FALSE Recalled!------
+63. ordeal               | in                   FALSE Recalled!------
+64. disappears           | process              FALSE Recalled!------
+65. having               | stabbed              FALSE Recalled!------
+66. accept               | ordeal               FALSE Recalled!------
+67. fact                 | disappears           FALSE Recalled!------
+68. had                  | having               FALSE Recalled!------
+69. cheated              | accepted             FALSE Recalled!------
+70. on                   | the                  FALSE Recalled!------
+71. her                  | fact                 FALSE Recalled!------
+72. much                 | he                   FALSE Recalled!------
+73. dismay               | had                  FALSE Recalled!------
+74. returns              | cheated              FALSE Recalled!------
+75. while                | on                   FALSE Recalled!------
+76. she                  | her                  FALSE Recalled!------
+77. away                 | much                 FALSE Recalled!------
+78. become               | to                   FALSE Recalled!------
+79. involved             | her                  FALSE Recalled!------
+80. realtor              | dismay               FALSE Recalled!------
+81. called               | returns              FALSE Recalled!------
+82. Adam                 | while                FALSE Recalled!------
+83. At                   | she                  FALSE Recalled!------
+84. first                | is                   FALSE Recalled!------
+85. thought              | away                 FALSE Recalled!------
+86. looking              | becomes              FALSE Recalled!------
+87. home                 | involved             FALSE Recalled!------
+88. However              | with                 FALSE Recalled!------
+89. when                 | a                    FALSE Recalled!------
+90. saw                  | realtor              FALSE Recalled!------
+91. them                 | called               FALSE Recalled!------
+92. both                 | Adam                 FALSE Recalled!------
+93. arguing              | At                   FALSE Recalled!------
+94. realises             | first                FALSE Recalled!------
+95. something            | thought              FALSE Recalled!------
+96. not                  | looking              FALSE Recalled!------
+97. as                   | home                 FALSE Recalled!------
+98. it                   | However              FALSE Recalled!------
+99. seemed               | when                 FALSE Recalled!------
+100. When                 | saw                  FALSE Recalled!------
+101. confronts            | them                 FALSE Recalled!------
+102. tells                | both                 FALSE Recalled!------
+103. harassing            | arguing              FALSE Recalled!------
+104. This                 | realises             FALSE Recalled!------
+105. leads                | something            FALSE Recalled!------
+106. confronting          | is                   FALSE Recalled!------
+107. warning              | not                  FALSE Recalled!------
+108. from                 | as                   FALSE Recalled!------
+109. been                 | it                   FALSE Recalled!------
+110. controlling          | seemed               FALSE Recalled!------
+111. life                 | When                 FALSE Recalled!------
+112. wants                | confronts            FALSE Recalled!------
+113. be                   | tells                FALSE Recalled!------
+114. explains             | him                  FALSE Recalled!------
+115. told                 | he                   FALSE Recalled!------
+116. about                | is                   FALSE Recalled!------
+117. biggest              | harassing            FALSE Recalled!------
+118. mistake              | This                 FALSE Recalled!------
+119. of                   | leads                FALSE Recalled!------
+120. hope                 | to                   FALSE Recalled!------
+121. would                | confronting          FALSE Recalled!------
+122. take                 | and                  FALSE Recalled!------
+123. back                 | warning              FALSE Recalled!------
+124. Later                | from                 FALSE Recalled!------
+125. night                | been                 FALSE Recalled!------
+126. The                  | controlling          FALSE Recalled!------
+127. Loft                 | his                  FALSE Recalled!------
+128. nightclub            | life                 FALSE Recalled!------
+129. threatens            | wants                FALSE Recalled!------
+130. Charlotte            | to                   FALSE Recalled!------
+131. Lau                  | be                   FALSE Recalled!------
+132. Amy                  | explains             FALSE Recalled!------
+133. Yamazaki             | told                 FALSE Recalled!------
+134. says                 | about                FALSE Recalled!------
+135. will                 | the                  FALSE Recalled!------
+136. if                   | biggest              FALSE Recalled!------
+137. ever                 | mistake              FALSE Recalled!------
+138. near                 | of                   FALSE Recalled!------
+139. again                | hope                 FALSE Recalled!------
+140. making               | would                FALSE Recalled!------
+141. viewers              | take                 FALSE Recalled!------
+142. realise              | back                 FALSE Recalled!------
+143. changed              | Later                FALSE Recalled!------
+144. personality          | night                FALSE Recalled!------
+145. behaviour            | The                  FALSE Recalled!------
+146. since                | Loft                 FALSE Recalled!------
+147. absence              | nightclub            FALSE Recalled!------
+148. pretends             | threatens            FALSE Recalled!------
+149. Leukaemia            | Charlotte            FALSE Recalled!------
+150. finds                | Lau                  FALSE Recalled!------
+151. truth                | Amy                  FALSE Recalled!------
+152. ends                 | Yamazaki             FALSE Recalled!------
+153. their                | says                 FALSE Recalled!------
+154. relationship         | will                 FALSE Recalled!------
+155. convinces            | if                   FALSE Recalled!------
+156. Steph                | ever                 FALSE Recalled!------
+157. lied                 | near                 FALSE Recalled!------
+158. said                 | again                FALSE Recalled!------
+159. ill                  | making               FALSE Recalled!------
+160. makes                | viewers              FALSE Recalled!------
+161. Frankie              | realise              FALSE Recalled!------
+162. believe              | changed              FALSE Recalled!------
+163. losing               | personality          FALSE Recalled!------
+164. mind                 | behaviour            FALSE Recalled!------
+165. send                 | since                FALSE Recalled!------
+166. messages             | absence              FALSE Recalled!------
+167. mobile               | pretends             FALSE Recalled!------
+168. phone                | Leukaemia            FALSE Recalled!------
+169. plants               | finds                FALSE Recalled!------
+170. defaced              | truth                FALSE Recalled!------
+171. pictures             | ends                 FALSE Recalled!------
+172. coat                 | their                FALSE Recalled!------
+173. make                 | relationship         FALSE Recalled!------
+174. look                 | convinces            FALSE Recalled!------
+175. real                 | Steph                FALSE Recalled!------
+176. reveals              | lied                 FALSE Recalled!------
+177. sexually             | said                 FALSE Recalled!------
+178. abused               | ill                  FALSE Recalled!------
+179. child                | makes                FALSE Recalled!------
+180. gets                 | Frankie              FALSE Recalled!------
+181. together             | believe              FALSE Recalled!------
+182. stop                 | losing               FALSE Recalled!------
+183. getting              | mind                 FALSE Recalled!------
+184. put                  | send                 FALSE Recalled!------
+185. mental               | messages             FALSE Recalled!------
+186. health               | mobile               FALSE Recalled!------
+187. clinic               | phone                FALSE Recalled!------
+188. Nancy                | plants               FALSE Recalled!------
+189. who                  | defaced              FALSE Recalled!------
+190. pushes               | pictures             FALSE Recalled!------
+191. over                 | coat                 FALSE Recalled!------
+192. badly                | make                 FALSE Recalled!------
+193. hurt                 | look                 FALSE Recalled!------
+194. agree                | real                 FALSE Recalled!------
+195. go                   | reveals              FALSE Recalled!------
+196. did                  | sexually             FALSE Recalled!------
+197. lie                  | abused               FALSE Recalled!------
+198. asks                 | child                FALSE Recalled!------
+199. get                  | gets                 FALSE Recalled!------
+200. help                 | together             FALSE Recalled!------
+(cogvenv) [makarf@m4415-15 cogtest]$ /usagers2/makarf/cogvenv/bin/python /usagers2/makarf/Documents/cogtest/sm_allatonce_gpt-3.py --add_noise --list_length=20
+
+-==================CLEAN LIST(20 words) ==================
+01. falls
+02. into
+03. a
+04. coma
+05. Initially
+06. police
+07. suspect
+08. that
+09. Jake
+10. was
+11. behind
+12. this
+13. but
+14. later
+15. release
+16. him
+17. Loretta
+18. once
+19. more
+20. begins
+
+==================NOISY LIST(+ distr & noise)==================
+01. ~falls~
+02. into~
+03. a#
+04. coma&
+05. ^Initially^
+06. ~police
+07. $suspect
+08. that
+09. [DISTRACTOR] &that%
+10. &Jake^
+11. &was*
+12. behind$
+13. [DISTRACTOR] #can^
+14. this
+15. *but&
+16. ~later~
+17. $release
+18. *him
+19. Loretta
+20. $once
+21. [DISTRACTOR] #formerly&
+22. *more~
+23. begins*
+
+---------------- NOISY STUDY LIST SENT---------------
+
+01. ~falls~
+02. into~
+03. a#
+04. coma&
+05. ^Initially^
+06. ~police
+07. $suspect
+08. that
+09. [DISTRACTOR] &that%
+10. &Jake^
+11. &was*
+12. behind$
+13. [DISTRACTOR] #can^
+14. this
+15. *but&
+16. ~later~
+17. $release
+18. *him
+19. Loretta
+20. $once
+21. [DISTRACTOR] #formerly&
+22. *more~
+23. begins*
+
+================== ORIGINAL LLM ANSWER ==================
+
+Original LLM answer:
+{
+    "recalled_words": ["falls", "into", "<<silent>>", "coma", "<<silent>>", "police", "suspect", "that", "<<silent>>", "Jake", "was", "behind", "<<silent>>", "can", "this", "but", "later", "release", "him", "Loretta", "once", "<<silent>>", "more", "begins"]
+}
+
+Extracted recalled list (len=24):
+['falls', 'into', '<<silent>>', 'coma', '<<silent>>', 'police', 'suspect', 'that', '<<silent>>', 'Jake', 'was', 'behind', '<<silent>>', 'can', 'this', 'but', 'later', 'release', 'him', 'Loretta', 'once', '<<silent>>', 'more', 'begins']
+
+================== RAW OUTPUT ==================
+
+{
+    "recalled_words": ["falls", "into", "<<silent>>", "coma", "<<silent>>", "police", "suspect", "that", "<<silent>>", "Jake", "was", "behind", "<<silent>>", "can", "this", "but", "later", "release", "him", "Loretta", "once", "<<silent>>", "more", "begins"]
+}
+
+================Confirmed Alignment Check================
+01. SHOWN: ~falls~              | TARGET: falls
+02. SHOWN: into~                | TARGET: into
+03. SHOWN: a#                   | TARGET: a
+04. SHOWN: coma&                | TARGET: coma
+05. SHOWN: ^Initially^          | TARGET: Initially
+06. SHOWN: ~police              | TARGET: police
+07. SHOWN: $suspect             | TARGET: suspect
+08. SHOWN: that                 | TARGET: that
+09. SHOWN: [DISTRACTOR] &that%  | TARGET: Jake
+10. SHOWN: &Jake^               | TARGET: was
+11. SHOWN: &was*                | TARGET: behind
+12. SHOWN: behind$              | TARGET: this
+13. SHOWN: [DISTRACTOR] #can^   | TARGET: but
+14. SHOWN: this                 | TARGET: later
+15. SHOWN: *but&                | TARGET: release
+16. SHOWN: ~later~              | TARGET: him
+17. SHOWN: $release             | TARGET: Loretta
+18. SHOWN: *him                 | TARGET: once
+19. SHOWN: Loretta              | TARGET: more
+20. SHOWN: $once                | TARGET: begins
+
+--------------- RAW OUTPUT ---------------
+
+{
+    "recalled_words": ["falls", "into", "<<silent>>", "coma", "<<silent>>", "police", "suspect", "that", "<<silent>>", "Jake", "was", "behind", "<<silent>>", "can", "this", "but", "later", "release", "him", "Loretta", "once", "<<silent>>", "more", "begins"]
+}
+
+------------------ STUDY vs RECALL -------------------
+01. ~falls~              | falls                TRUE Recalled!
+02. into~                | into                 TRUE Recalled!
+03. a#                   | <<silent>>           FALSE Recalled!------
+04. coma&                | coma                 TRUE Recalled!
+05. ^Initially^          | <<silent>>           FALSE Recalled!------
+06. ~police              | police               TRUE Recalled!
+07. $suspect             | suspect              TRUE Recalled!
+08. that                 | that                 TRUE Recalled!
+09. [DISTRACTOR] &that%  | <<silent>>           TRUE Recalled! (Silent on Distractor)
+10. &Jake^               | Jake                 TRUE Recalled!
+11. &was*                | was                  TRUE Recalled!
+12. behind$              | behind               TRUE Recalled!
+13. [DISTRACTOR] #can^   | <<silent>>           TRUE Recalled! (Silent on Distractor)
+14. this                 | can                  FALSE Recalled!------
+15. *but&                | this                 FALSE Recalled!------
+16. ~later~              | but                  FALSE Recalled!------
+17. $release             | later                FALSE Recalled!------
+18. *him                 | release              FALSE Recalled!------
+19. Loretta              | him                  FALSE Recalled!------
+20. $once                | Loretta              FALSE Recalled!------
+21. [DISTRACTOR] #formerly& | once                 FALSE Recalled!------
+22. *more~               | <<silent>>           FALSE Recalled!------
+23. begins*              | more                 FALSE Recalled!------
+(cogvenv) [makarf@m4415-15 cogtest]$ git branch -a
+  main
+* newtask-serialmemory
+  remotes/origin/HEAD -> origin/main
+  remotes/origin/main
+  remotes/origin/newtask-serialmemory
+  remotes/origin/serialmemo_Llama2-7b
+(cogvenv) [makarf@m4415-15 cogtest]$ 

@@ -3,8 +3,9 @@ import vertexai
 import time
 import sys
 from vertexai.preview.generative_models import GenerativeModel, ChatSession
-from vertexai.preview.language_models import TextGenerationModel, ChatModel 
+from vertexai.preview.language_models import TextGenerationModel, ChatModel
 from ..base_classes import LLM
+
 
 class GoogleLLM(LLM):
     def __init__(self, llm_info):
@@ -17,29 +18,30 @@ class GoogleLLM(LLM):
         self.model = TextGenerationModel.from_pretrained(engine)
 
     def _generate(self, text, temp, max_tokens):
-        time.sleep(12.01) #Due to rate limits of 5 queries per minute
+        time.sleep(12.01)  # Due to rate limits of 5 queries per minute
         try:
             text = text.rstrip()
             response = self.model.predict(
                 text,
-                temperature=temp,  
-                max_output_tokens=max_tokens, 
+                temperature=temp,
+                max_output_tokens=max_tokens,
             )
             output = response.text
 
             print(text, response.text, '\n\n\n\n')
         except:
-            print(f"Error in google is: {sys.exc_info()[0]}, try again once....")
+            print(
+                f"Error in google is: {sys.exc_info()[0]}, try again once....")
             time.sleep(100)
             response = self.model.predict(
-                            text,
-                            temperature=temp,
-                            max_output_tokens=max_tokens,
-                        )
+                text,
+                temperature=temp,
+                max_output_tokens=max_tokens,
+            )
             output = response.text
         return output
-    
-#TODO: Work in progress..
+
+# TODO: Work in progress..
 # class GeminiLLM(LLM):
 #     def __init__(self, llm_info):
 #         super().__init__(llm_info)
@@ -60,7 +62,7 @@ class GoogleLLM(LLM):
 #         "temperature": temp,
 #         "top_p": 1
 #         }
-        
+
 #         from vertexai.generative_models._generative_models import HarmCategory, HarmBlockThreshold, ResponseBlockedError
 #         safety_settings = {
 #             HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: HarmBlockThreshold.BLOCK_NONE,
@@ -72,7 +74,7 @@ class GoogleLLM(LLM):
 #         response = self.model.generate_content(
 #             text, generation_config=config, safety_settings=safety_settings
 #         )
-        
+
 #         print(response.text)
 #         import ipdb; ipdb.set_trace()
 
