@@ -86,9 +86,7 @@ EOF
 # Export Python path for local imports
 `export PYTHONPATH=$(pwd)`
 
-
-# -----------------------------
 # Run Serial Memory Experiments
-# -----------------------------
+
 
 `python3 full_run.py --engine llama-2-7`
