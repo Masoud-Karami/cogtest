@@ -75,7 +75,7 @@ git push origin newtask-serialmemory
   ```git checkout computecanada-no-third-party```
 
   ### Move to a compute note (this allocation is temporary and just for tests)
-  ```srun --pty --cpus-per-task=8 --mem=16G --gres=gpu:1 --time=03:00:00 bash```
+  ```srun --pty --cpus-per-task=8 --mem=16G --gres=gpu:1 --time=04:00:00 bash```
 
   ### When you're in the compute node, load Python, virtualenv, and install the necessary libraries
   ```cd ~/scratch/CogBench```
