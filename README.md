@@ -1,12 +1,12 @@
 # SSH Configuration Setup
 
 # 1. Configure your SSH settings
-cat <<EOF >> ~/.ssh/config
+```cat ~/.ssh/config
 Host narval beluga graham cedar
     User <your_username>
     HostName %h.alliancecan.ca
     IdentityFile ~/.ssh/your_private_key
-EOF
+```
 
 # 2. Connect to a cluster
 ```ssh narval```
