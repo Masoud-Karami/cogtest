@@ -64,13 +64,23 @@ Host narval beluga graham cedar
 ```module load python/3.11.5```
 ``` module load python/3.12.4```
 ```module load python/3.13.2```
-```virtualenv --no-download $SLURM_TMPDIR/env```
-```source $SLURM_TMPDIR/env/bin/activate```
+
+```
+python -m venv ~/envs/temp_env
+source ~/envs/hf-llama/bin/activate
+pip install --upgrade pip
+pip install transformers accelerate huggingface_hub   
+```
+
+```source llamaenv/env/bin/activate```
 
 # Install Python packages
 ```pip install --no-index --upgrade pip```
-```pip install --no-index accelerate```
+```pip install --no-index transformers accelerate huggingface_hub    #for downloading hf meta llama models``` 
 ```pip install --no-index -r requirements.txt```
+```git config --global credential.helper store```
+```huggingface-cli login```
+```git lfs install```
 
 # Export Python path for local imports
 ```export PYTHONPATH=$(pwd)```
