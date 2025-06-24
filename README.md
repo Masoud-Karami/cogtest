@@ -32,4 +32,5 @@ git lfs install
 
 export PYTHONPATH=$(pwd)
 python Experiments/SerialMemoryTask/query.py --list_lengths 10 --starting_conditions constant --max_trials 4 --num_sessions 1
+PYTHONPATH=$(pwd) python Experiments/SerialMemoryTask/query.py --engine TinyLlama-1.1B-Chat-v1.0 --add_distr --debug
 ```
