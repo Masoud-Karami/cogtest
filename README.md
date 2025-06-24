@@ -21,14 +21,18 @@ module load python/3.12.4
 # module load python/3.13.2 # too new
 virtualenv --no-download $SLURM_TMPDIR/cccbvenv # or ~/envs/cccbenvs
 source cccbenvs/bin/activate
-
-du -sh *
-
 pip install --no-index --upgrade pip
+pip install --no-index -r requirements.txt
+pip freeze --local > requirements.txt
+
+
+
 pip install --no-index transformers accelerate huggingface_hub    #for downloading hf meta llama models
 git config --global credential.helper store
 huggingface-cli login
 git lfs install
+
+
 
 export PYTHONPATH=$(pwd)
 python Experiments/SerialMemoryTask/query.py --list_lengths 10 --starting_conditions constant --max_trials 4 --num_sessions 1
