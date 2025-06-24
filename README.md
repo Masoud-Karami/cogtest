@@ -11,10 +11,10 @@ ssh narval
 module load git-lfs
 git lfs install
 git lfs clone https://huggingface.co/meta-llama/Llama-2-7b-hf
-unset TRANSFORMERS_CACHE```
-export HF_HOME=~/scratch/huggingface/```
+unset TRANSFORMERS_CACHE
+export HF_HOME=~/scratch/huggingface/
 srun --pty --cpus-per-task=8 --mem=16G --gres=gpu:1 --time=04:00:00 bash
-cd ~/scratch/CogBench
+cd ~/scratch/llms_serialmemory
 module load python/3.10.13
 module load python/3.11.5
 module load python/3.12.4
