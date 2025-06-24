@@ -20,7 +20,7 @@ module load python/3.11.5
 module load python/3.12.4
 # module load python/3.13.2 # too new
 virtualenv --no-download $SLURM_TMPDIR/cccbvenv # or ~/envs/cccbenvs
-source ~/envs/hf-llama/bin/activate
+virtualenv --no-download $SLURM_TMPDIR/cccbvenv
 
 du -sh *
 
