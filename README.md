@@ -18,8 +18,8 @@ cd ~/scratch/llms_serialmemory
 module load python/3.10.13
 module load python/3.11.5
 module load python/3.12.4
-module load python/3.13.2
-python -m venv ~/envs/cccbenvs
+# module load python/3.13.2 # too new
+virtualenv --no-download $SLURM_TMPDIR/env cccbvenv # or ~/envs/cccbenvs
 source ~/envs/hf-llama/bin/activate
 
 du -sh *
